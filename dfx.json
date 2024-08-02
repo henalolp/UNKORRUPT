@@ -1,0 +1,26 @@
+{
+  "canisters": {
+    "UN_backend": {
+      "main": "src/UN_backend/main.mo",
+      "type": "motoko"
+    },
+    "UN_frontend": {
+      "dependencies": [
+        "UN_backend"
+      ],
+      "source": [
+        "src/UN_frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "UN_frontend"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
