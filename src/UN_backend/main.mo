@@ -11,22 +11,27 @@ import Vector "mo:vector";
 import Random "mo:base/Random";
 import Blob "mo:base/Blob";
 
-actor Backend {
+shared ({ caller }) actor class Backend() {
   type Result<A, B> = Types.Result<A, B>;
   type SharedCourseWithResources = Types.SharedCourseWithResources;
   type SharedCourse = Types.SharedCourse;
   type User = Types.User;
+  type SharedUser = Types.SharedUser;
   type Course = Types.Course;
   type Question = Types.Question;
   type ResourceType = Types.ResourceType;
+  type CourseStatus = Types.CourseStatus;
+  type QuestionOption = Types.QuestionOption;
+  type Resource = Types.Resource;
+  type EnrolledCourse = Types.EnrolledCourse;
+  type SubmittedAnswer = Types.SubmittedAnswer;
 
   stable let members = Map.new<Principal, User>();
   stable let courses = Vector.new<Course>();
 
   stable var nextUserId = 0;
   stable var nextCourseId = 0;
-  stable var nextResourceId = 0;
-  stable var nextQuestionId = 0;
+  stable var owner = caller;
 
   private func _getCourse(courseId : Nat) : ?Course {
     Vector.getOpt(courses, courseId);
@@ -46,10 +51,20 @@ actor Backend {
     };
   };
 
-  public query func listApprovedCourses() : async [SharedCourse] {
-    let approvedCourses = Vector.new<Types.SharedCourse>();
+  private func courseEqual(course1 : EnrolledCourse, course2 : EnrolledCourse) : Bool {
+    course1.id == course2.id;
+  };
+
+  public shared ({ caller }) func changeOwner(newOwner : Principal) {
+    assert owner == caller;
+    owner := newOwner;
+  };
+
+  // List all courses
+  public query func listCourses(status : CourseStatus) : async [SharedCourse] {
+    let filteredCourses = Vector.new<Types.SharedCourse>();
     for (course in Vector.vals(courses)) {
-      if (course.status == #Approved) {
+      if (course.status == status) {
         let sharedCourse = {
           id = course.id;
           title = course.title;
@@ -58,19 +73,20 @@ actor Backend {
           reportCount = course.reportCount;
           status = course.status;
         };
-        Vector.add(approvedCourses, sharedCourse);
+        Vector.add(filteredCourses, sharedCourse);
       };
     };
-    return Vector.toArray(approvedCourses);
+    return Vector.toArray(filteredCourses);
   };
 
+  // Get user enrolled courses
   public shared ({ caller }) func getUserEnrolledCourses() : async Result<[SharedCourse], Text> {
     let user = Map.get(members, phash, caller);
     switch (user) {
       case (?member) {
         let enrolledCourses = Vector.new<SharedCourse>();
-        for (courseId in Vector.vals(member.enrolledCourses)) {
-          let course = _getCourse(courseId);
+        for (enrolledCourse in Vector.vals(member.enrolledCourses)) {
+          let course = _getCourse(enrolledCourse.id);
           switch (course) {
             case (?c) {
               let sharedCourse = {
@@ -84,7 +100,7 @@ actor Backend {
               Vector.add(enrolledCourses, sharedCourse);
             };
             case (null) {
-              return #err("Course " # Nat.toText(courseId) # " not found");
+              return #err("Course " # Nat.toText(enrolledCourse.id) # " not found");
             };
           };
         };
@@ -96,6 +112,7 @@ actor Backend {
     };
   };
 
+  // Get course details including resources
   public query func getCourseDetails(courseId : Nat) : async Result<SharedCourseWithResources, Text> {
     let course = _getCourse(courseId);
     switch (course) {
@@ -142,6 +159,229 @@ actor Backend {
       };
       case (null) {
         return #err("Course " # Nat.toText(courseId) # " not found");
+      };
+    };
+  };
+
+  // Get user profile
+  public shared ({ caller }) func getProfile() : async Result<SharedUser, Text> {
+    let user = Map.get(members, phash, caller);
+    switch (user) {
+      case (?member) {
+        let sharedUser = {
+          id = member.id;
+          username = member.username;
+          country = member.country;
+          state = member.state;
+        };
+        return #ok(sharedUser);
+      };
+      case (null) {
+        return #err("Member not found");
+      };
+    };
+  };
+
+  // Enroll in a course
+  public shared ({ caller }) func enrollCourse(courseId : Nat) : async Result<Text, Text> {
+    let user = Map.get(members, phash, caller);
+    switch (user) {
+      case (?member) {
+        let course = _getCourse(courseId);
+        switch (course) {
+          case (?c) {
+            let enrolledCourse = {
+              id = c.id;
+              completed = false;
+            };
+            if (Vector.contains(member.enrolledCourses, enrolledCourse, courseEqual)) {
+              return #err("Course already enrolled");
+            };
+            Vector.add(member.enrolledCourses, enrolledCourse);
+
+            // Update course enrolled count
+            let updatedCourse = {
+              id = c.id;
+              title = c.title;
+              summary = c.summary;
+              enrolledCount = c.enrolledCount + 1;
+              reportCount = c.reportCount;
+              status = c.status;
+              resources = c.resources;
+              questions = c.questions;
+              nextResourceId = c.nextResourceId;
+              nextQuestionId = c.nextQuestionId;
+            };
+            Vector.put(courses, c.id, updatedCourse);
+
+            return #ok("Course enrolled successfully");
+          };
+          case (null) {
+            return #err("Course " # Nat.toText(courseId) # " not found");
+          };
+        };
+      };
+      case (null) {
+        return #err("Member not found");
+      };
+    };
+  };
+
+  // Create new resource for course
+  public shared ({ caller }) func createResource(courseId : Nat, title : Text, description : Text, url : Text, rType : ResourceType) : async Result<Text, Text> {
+    assert caller == owner;
+    let course = _getCourse(courseId);
+    switch (course) {
+      case (?c) {
+        let resource = {
+          id = c.nextResourceId;
+          title = title;
+          description = description;
+          url = url;
+          rType = rType;
+        };
+        Vector.add(c.resources, resource);
+        let updatedCourse = {
+          id = c.id;
+          title = c.title;
+          summary = c.summary;
+          enrolledCount = c.enrolledCount;
+          reportCount = c.reportCount;
+          status = c.status;
+          resources = c.resources;
+          questions = c.questions;
+          nextResourceId = c.nextResourceId + 1;
+          nextQuestionId = c.nextQuestionId;
+        };
+        Vector.put(courses, c.id, updatedCourse);
+      };
+      case (null) {
+        return #err("Course " # Nat.toText(courseId) # " not found");
+      };
+    };
+    return #ok("Resource created successfully");
+  };
+
+  // Update course details
+  public shared ({ caller }) func updateCourse(courseId : Nat, title : Text, summary : Text, status : CourseStatus) : async Result<Text, Text> {
+    assert caller == owner;
+    let course = _getCourse(courseId);
+    switch (course) {
+      case (?c) {
+        let updatedCourse = {
+          id = c.id;
+          title = title;
+          summary = summary;
+          status = status;
+          enrolledCount = c.enrolledCount;
+          reportCount = c.reportCount;
+          resources = c.resources;
+          questions = c.questions;
+          nextResourceId = c.nextResourceId;
+          nextQuestionId = c.nextQuestionId;
+        };
+        Vector.put(courses, c.id, updatedCourse);
+        return #ok("Course updated successfully");
+      };
+      case (null) {
+        return #err("Course " # Nat.toText(courseId) # " not found");
+      };
+    };
+  };
+
+  // Add a question to a course
+  public shared ({ caller }) func addQuestion(courseId : Nat, data : Question) : async Result<Text, Text> {
+    assert caller == owner;
+    let course = _getCourse(courseId);
+    switch (course) {
+      case (?c) {
+        let question = {
+          id = c.nextQuestionId;
+          options = data.options;
+          correctOption = data.correctOption;
+          hint = data.hint;
+          description = data.description;
+        };
+        Vector.add(c.questions, question);
+        let updatedCourse = {
+          id = c.id;
+          title = c.title;
+          summary = c.summary;
+          enrolledCount = c.enrolledCount;
+          reportCount = c.reportCount;
+          status = c.status;
+          resources = c.resources;
+          questions = c.questions;
+          nextResourceId = c.nextResourceId;
+          nextQuestionId = c.nextQuestionId + 1;
+        };
+        Vector.put(courses, c.id, updatedCourse);
+        return #ok("Question added successfully");
+      };
+      case (null) {
+        return #err("Course " # Nat.toText(courseId) # " not found");
+      };
+    };
+  };
+
+  // Submit questions attempt
+  public shared ({ caller }) func submitQuestionsAttempt(courseId : Nat, answers : [SubmittedAnswer]) : async Result<Text, Text> {
+    let user = Map.get(members, phash, caller);
+    switch (user) {
+      case (?member) {
+        let course = _getCourse(courseId);
+        switch (course) {
+          case (?c) {
+            let enrolledCourse = {
+              id = c.id;
+              completed = true;
+            };
+            if (Vector.contains(member.enrolledCourses, enrolledCourse, courseEqual) == false) {
+              return #err("Course not enrolled");
+            };
+
+            let len = Vector.size(c.questions);
+            if (len == 0) {
+              return #err("Course has no questions");
+            };
+            if (Array.size(answers) > len) {
+              return #err("Number of answers is greater than the number of questions");
+            };
+
+            var correctCount = 0;
+            for (i in Iter.range(0, len)) {
+              let answer = answers[i];
+              let question = Vector.get(c.questions, answer.questionId);
+              if (question.correctOption == answer.option) {
+                correctCount += 1;
+              };
+            };
+
+            if (correctCount != len) {
+              return #err("You did not get all the questions, Try again");
+            };
+
+            var enrolledCourseIndex = 0;
+            for (i in Iter.range(0, Vector.size(member.enrolledCourses))) {
+              if (Vector.get(member.enrolledCourses, i).id == c.id) {
+                enrolledCourseIndex := i;
+              };
+            };
+            
+            Vector.put(member.enrolledCourses, enrolledCourseIndex, enrolledCourse);
+
+            // Update user object
+            Map.set(members, phash, caller, member);
+
+            return #ok("You have successfully completed the course");
+          };
+          case (null) {
+            return #err("Course " # Nat.toText(courseId) # " not found");
+          };
+        };
+      };
+      case (null) {
+        return #err("Member not found");
       };
     };
   };

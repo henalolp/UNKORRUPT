@@ -12,7 +12,19 @@ module {
     username : Text;
     country : Text;
     state : Text;
-    enrolledCourses : Vector<Nat>;
+    enrolledCourses : Vector<EnrolledCourse>;
+  };
+
+  public type EnrolledCourse = {
+    id : Nat;
+    completed : Bool;
+  };
+
+  public type SharedUser = {
+    id : Nat;
+    username : Text;
+    country : Text;
+    state : Text;
   };
 
   public type CourseStatus = {
@@ -31,6 +43,8 @@ module {
     status : CourseStatus;
     resources : Vector<Resource>;
     questions : Vector<Question>;
+    nextQuestionId : Nat;
+    nextResourceId : Nat;
   };
 
   public type SharedCourse = {
@@ -80,5 +94,10 @@ module {
     option : Nat;
     description : Text;
     reason : Text;
+  };
+
+  public type SubmittedAnswer = {
+    questionId : Nat;
+    option : Nat;
   };
 };
