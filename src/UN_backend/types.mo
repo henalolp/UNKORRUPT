@@ -12,6 +12,7 @@ module {
     username : Text;
     country : Text;
     state : Text;
+    enrolledCourses : Vector<Nat>;
   };
 
   public type CourseStatus = {
@@ -30,6 +31,25 @@ module {
     status : CourseStatus;
     resources : Vector<Resource>;
     questions : Vector<Question>;
+  };
+
+  public type SharedCourse = {
+    id : Nat;
+    title : Text;
+    summary : Text;
+    enrolledCount : Nat;
+    reportCount : Nat;
+    status : CourseStatus;
+  };
+
+  public type SharedCourseWithResources = {
+    id : Nat;
+    title : Text;
+    summary : Text;
+    enrolledCount : Nat;
+    reportCount : Nat;
+    status : CourseStatus;
+    resources : [Resource];
   };
 
   public type ResourceType = {
@@ -51,7 +71,7 @@ module {
   public type Question = {
     id : Nat;
     description : Text;
-    options : Vector<QuestionOption>;
+    options : [QuestionOption];
     correctOption : Nat;
     hint : Text;
   };
