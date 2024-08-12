@@ -391,7 +391,7 @@ shared ({ caller }) actor class Backend() {
                 enrolledCourseIndex := i;
               };
             };
-            
+
             Vector.put(member.enrolledCourses, enrolledCourseIndex, enrolledCourse);
 
             // Update user object
@@ -408,5 +408,66 @@ shared ({ caller }) actor class Backend() {
         return #err("Member not found");
       };
     };
+  };
+
+  // Make call to AI model
+  public query func generateCourse(title : Text, description : Text) : async ?Text {
+    let prompt = "
+      Create a detailed course outline in JSON format for a course titled " Understanding Corruption ". The course should cover the definition, types, and impacts of corruption. Include a description, recommended resources (books, articles, videos, slides, reports), and multiple-choice questions with detailed explanations for each answer.
+
+      Note: This data should be taken from live and verified sources online. Every Url generated should point to active working URL.
+
+      IMPORTANT: Return only the json format, no extra text, just the json file, don't explain
+
+      Generate 20 questions
+
+      JSON Structure:
+
+      title: " # title # "
+      description: " # description # "
+      resources: An array of objects, each containing title, description, URL, and resource type (Book, Article, Video, Slides, Report)
+      questions: An array of objects, each containing the question, an array of options with descriptions and explanations, and the correct answer index.
+
+      {
+          'title': '',
+          'description': '',
+          'resources': [
+            {
+              'title': '',
+              'description': '',
+              'url': '',
+              'rType': 'Book | Article | Video | Slides | Report'
+            }
+          ],
+          'questions': [
+            {
+              'q': '',
+              'options': [
+                {
+                  'o': 1,
+                  'description': '',
+                  'reason': 'Why correct or wrong'
+                },
+                {
+                  'o': 2,
+                  'description': '',
+                  'reason': 'Why correct or wrong'
+                },
+                {
+                  'o': 3,
+                  'description': '',
+                  'reason': 'Why correct or wrong'
+                },
+                {
+                  'o': 4,
+                  'description': '',
+                  'reason': 'Why correct or wrong'
+                }
+              ],
+              'correct': 1
+            }
+          ]
+        }
+    ";
   };
 };
