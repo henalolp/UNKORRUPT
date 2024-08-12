@@ -134,6 +134,7 @@ shared ({ caller }) actor class Backend() {
     };
   };
 
+  // Get random course questions
   public shared func getRandomCourseQuestions(courseId : Nat, questionCount : Nat) : async Result<[Question], Text> {
     let course = _getCourse(courseId);
     switch (course) {
@@ -159,6 +160,29 @@ shared ({ caller }) actor class Backend() {
       };
       case (null) {
         return #err("Course " # Nat.toText(courseId) # " not found");
+      };
+    };
+  };
+
+  // Register a new user
+  public shared func registerUser(username : Text, country : Text, state : Text) : async Result<Text, Text> {
+    let user = Map.get(members, phash, caller);
+
+    switch (user) {
+      case (?_) {
+        return #err("User already registered");
+      };
+      case (null) {
+        let newUser = {
+          id = nextUserId;
+          username = username;
+          country = country;
+          state = state;
+          enrolledCourses = Vector.new<EnrolledCourse>();
+        };
+        Map.set(members, phash, caller, newUser);
+        nextUserId := nextUserId + 1;
+        return #ok("User registered successfully");
       };
     };
   };

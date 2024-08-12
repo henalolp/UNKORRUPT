@@ -1,0 +1,42 @@
+[
+  {
+    "title": "",
+    "description": "",
+    "resources": [
+      {
+        "title": "",
+        "description": "",
+        "url": "",
+        "rType": "Book | Article | Video | Slides | Report"
+      }
+    ],
+    "questions": [
+      {
+        "q": "",
+        "options": [
+          {
+            "o": 1,
+            "description": "",
+            "reason": "Why correct or wrong"
+          },
+          {
+            "o": 2,
+            "description": "",
+            "reason": "Why correct or wrong"
+          },
+          {
+            "o": 3,
+            "description": "",
+            "reason": "Why correct or wrong"
+          },
+          {
+            "o": 4,
+            "description": "",
+            "reason": "Why correct or wrong"
+          }
+        ],
+        "correct": 1
+      }
+    ]
+  }
+]
