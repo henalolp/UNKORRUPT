@@ -1,11 +1,20 @@
 import Nat "mo:base/Nat";
 import Text "mo:base/Text";
-import Iter "mo:base/Iter";
-import Principal "mo:base/Principal";
+// import Iter "mo:base/Iter";
+
 import Debug "mo:base/Debug";
 import Array "mo:base/Array";
 
-actor CourseManager {
+
+import Principal "mo:base/Principal";
+actor CourseManager{
+  public query func greet(name : Text) : async Text {
+    return "Hello, " # name # "!";
+  };
+  public shared ({caller}) func whoami() : async Principal {
+    return caller;
+  };
+
 
   // List of predefined courses
   let courses: [Text] = [
@@ -83,7 +92,6 @@ actor CourseManager {
     "Token minted"
   };
 
-  
 public func validateAnswersAndMintToken(user: Principal, course: Text, answers: [Nat]) : async Bool {
     let questionsOpt = Array.find(courseQuestions, func(x: (Text, [((Text, [Text]), Nat)])) : Bool { x.0 == course });
     switch (questionsOpt) {
@@ -93,26 +101,25 @@ public func validateAnswersAndMintToken(user: Principal, course: Text, answers: 
         case (?(_, questions)) {
             let correctAnswers = Array.map(questions, func(q: ((Text, [Text]), Nat)) : Nat { q.1 });
             if (answers == correctAnswers) {
-                var userIndex = -1;
-                var userFound = false;
-                for (i in Iter.range(0, userCourses.size() - 1)) {
-                    let (currentUser, _) = userCourses[i];
+                var updatedUserCourses = Array.map<(Principal, [Text]), (Principal, [Text])>(userCourses, func (entry) {
+                    let (currentUser, completedCourses) = entry;
                     if (currentUser == user) {
-                        userIndex := i;
-                        userFound := true;
-                    };
+                        if (not contains<Text>(completedCourses, course, Text.equal)) {
+                            (user, Array.append(completedCourses, [course]))
+                        } else {
+                            entry
+                        }
+                    } else {
+                        entry
+                    }
+                });
+                
+                let userFound = Array.find<(Principal, [Text])>(updatedUserCourses, func(entry) { entry.0 == user });
+                if (userFound == null) {
+                    updatedUserCourses := Array.append(updatedUserCourses, [(user, [course])]);
                 };
-                if (userFound) {
-                    let (_, completedCourses) = userCourses[userIndex];
-                    if (not contains<Text>(completedCourses, course, Text.equal)) {
-                        let updatedCourses = Array.append(completedCourses, [course]);
-                        userCourses := Array.tabulate(userCourses.size(), func (i: Nat) : (Principal, [Text]) {
-                            if (i == userIndex) { (user, updatedCourses) } else { userCourses[i] }
-                        });
-                    };
-                } else {
-                    userCourses := Array.append(userCourses, [(user, [course])]);
-                };
+                
+                userCourses := updatedUserCourses;
                 let _ = mintToken(user, course);
                 true
             } else {
@@ -121,4 +128,6 @@ public func validateAnswersAndMintToken(user: Principal, course: Text, answers: 
         }
     }
 };
+
+
 }
