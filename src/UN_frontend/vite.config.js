@@ -3,12 +3,16 @@ import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import environment from 'vite-plugin-environment';
 import dotenv from 'dotenv';
+import commonjs from 'vite-plugin-commonjs';import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 dotenv.config({ path: '../../.env' });
 
 export default defineConfig({
   build: {
     emptyOutDir: true,
+    rollupOptions: {
+      external: ['@dfinity/use-auth-client']
+    }
   },
   optimizeDeps: {
     esbuildOptions: {
@@ -29,6 +33,10 @@ export default defineConfig({
     react(),
     environment("all", { prefix: "CANISTER_" }),
     environment("all", { prefix: "DFX_" }),
+    commonjs(),
+    nodeResolve({
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    }),
   ],
   resolve: {
     alias: [

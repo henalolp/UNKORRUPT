@@ -1,11 +1,20 @@
 import Nat "mo:base/Nat";
 import Text "mo:base/Text";
-import Iter "mo:base/Iter";
-import Principal "mo:base/Principal";
+// import Iter "mo:base/Iter";
+
 import Debug "mo:base/Debug";
 import Array "mo:base/Array";
 
-actor CourseManager {
+
+import Principal "mo:base/Principal";
+actor CourseManager{
+  public query func greet(name : Text) : async Text {
+    return "Hello, " # name # "!";
+  };
+  public shared ({caller}) func whoami() : async Principal {
+    return caller;
+  };
+
 
   // List of predefined courses
   let courses : [Text] = [

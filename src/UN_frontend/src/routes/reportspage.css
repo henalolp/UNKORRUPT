@@ -1,0 +1,38 @@
+.reports-container {
+    margin-top: 40px;
+  }
+  
+  .reports-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+  }
+  
+  .report-card {
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .report-image img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+  }
+  
+  .report-details {
+    padding: 10px;
+  }
+  
+  .report-details h3 {
+    font-size: 16px;
+    margin: 5px 0;
+  }
+  
+  .report-details p {
+    font-size: 14px;
+    color: #666;
+  }
+  

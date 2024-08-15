@@ -1,0 +1,23 @@
+/* src/components/Layout.css */
+
+/* Layout container */
+.layout {
+    display: flex;  /* Use flexbox to align sidebar and content side by side */
+  }
+  
+  /* Content area */
+  .content {
+    margin-left: 60px;  /* Offset the content area to the right of the sidebar */
+    padding: 20px;  /* Add padding inside the content area */
+    width: calc(100% - 60px);  /* Calculate width based on sidebar width */
+  }
+  
+  /* Optional - You can also add styles for different screen sizes */
+  @media (max-width: 768px) {
+    .content {
+      margin-left: 0;  /* Remove margin on small screens */
+      width: 100%;  /* Make content take up the full width */
+      padding: 10px;  /* Adjust padding for smaller screens */
+    }
+  }
+  
