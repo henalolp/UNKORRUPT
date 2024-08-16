@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { idlFactory, canisterId } from "declarations/UN_backend";
-import { useAuthClient } from "../../../../src/index";
+import { idlFactory, canisterId } from "../../../declarations/UN_backend";
+import { useAuthClient } from "../../../index";
 import { useNavigate } from "react-router-dom";
+
 
 function Auth() {
   const navigate = useNavigate();

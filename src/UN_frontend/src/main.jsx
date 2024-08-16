@@ -15,26 +15,26 @@ const router = createBrowserRouter([
     path: "/",
     element: <Auth />,
   },
-  {
-    path: "coursePage",
-    element: <CoursePage />,
-  },
-  {
-    path: "reportForm",
-    element: <ReportForm />,
-  },
-  {
-    path: "profilePage",
-    element: <ProfilePage />,
-  },
-  {
-    path: "progressPage",
-    element: <ProgressPage />,
-  },
-  {
-    path: "chat/:courseId", // New route for ChatPage with dynamic courseId
-    element: <ChatPage />,
-  },
+  // {
+  //   path: "coursePage",
+  //   element: <CoursePage />,
+  // },
+  // {
+  //   path: "reportForm",
+  //   element: <ReportForm />,
+  // },
+  // {
+  //   path: "profilePage",
+  //   element: <ProfilePage />,
+  // },
+  // {
+  //   path: "progressPage",
+  //   element: <ProgressPage />,
+  // },
+  // {
+  //   path: "chat/:courseId", // New route for ChatPage with dynamic courseId
+  //   element: <ChatPage />,
+  // },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(

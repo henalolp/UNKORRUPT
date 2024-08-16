@@ -4,9 +4,14 @@
       "main": "src/UN_backend/main.mo",
       "type": "motoko"
     },
+    "internet-identity": {
+      "type": "pull",
+      "id": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+    },
     "UN_frontend": {
       "dependencies": [
-        "UN_backend"
+        "UN_backend",
+        "internet-identity"
       ],
       "source": [
         "src/UN_frontend/dist"

@@ -27,7 +27,7 @@
   }
   
   .profile-avatar {
-    background-image: url('/public/profile.svg');
+    background-image: url("../../public/profile.svg");
     background-size: cover;
     background-position: center;
     width: 100px;

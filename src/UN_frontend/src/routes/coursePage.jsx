@@ -1,6 +1,6 @@
 import React from "react";
 import "../courseee.css";
-import logo from "../logo.jpg";
+import logo from "../../public/course.svg";
 import { FaPlay } from "react-icons/fa";
 import Layout from "../components/Layout";
 import { useNavigate } from "react-router-dom";
