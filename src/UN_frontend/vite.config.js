@@ -3,7 +3,8 @@ import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import environment from 'vite-plugin-environment';
 import dotenv from 'dotenv';
-import commonjs from 'vite-plugin-commonjs';import { nodeResolve } from '@rollup/plugin-node-resolve';
+import commonjs from 'vite-plugin-commonjs';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 dotenv.config({ path: '../../.env' });
 

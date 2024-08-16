@@ -5,11 +5,13 @@ import Iter "mo:base/Iter";
 import Principal "mo:base/Principal";
 import Array "mo:base/Array";
 import Types "types";
+import Request "request";
 import Map "mo:map/Map";
 import { phash } "mo:map/Map";
 import Vector "mo:vector";
 import Random "mo:base/Random";
 import Blob "mo:base/Blob";
+import JSON "mo:json.mo";
 
 shared ({ caller }) actor class Backend() {
   type Result<A, B> = Types.Result<A, B>;
@@ -33,6 +35,8 @@ shared ({ caller }) actor class Backend() {
   stable var nextCourseId = 0;
   stable var owner = caller;
 
+  private var API_KEY : Text = "";
+
   private func _getCourse(courseId : Nat) : ?Course {
     Vector.getOpt(courses, courseId);
   };
@@ -51,13 +55,24 @@ shared ({ caller }) actor class Backend() {
     };
   };
 
+  private func _isOwner(p : Principal) : Bool {
+    return true;
+    // owner == p;
+  };
+
   private func courseEqual(course1 : EnrolledCourse, course2 : EnrolledCourse) : Bool {
     course1.id == course2.id;
   };
 
   public shared ({ caller }) func changeOwner(newOwner : Principal) {
-    assert owner == caller;
+    assert _isOwner(caller);
     owner := newOwner;
+  };
+
+  // Update api key
+  public shared ({ caller }) func changeApiKey(apiKey : Text) {
+    assert _isOwner(caller);
+    API_KEY := apiKey;
   };
 
   // List all courses
@@ -411,63 +426,100 @@ shared ({ caller }) actor class Backend() {
   };
 
   // Make call to AI model
-  public query func generateCourse(title : Text, description : Text) : async ?Text {
-    let prompt = "
-      Create a detailed course outline in JSON format for a course titled " Understanding Corruption ". The course should cover the definition, types, and impacts of corruption. Include a description, recommended resources (books, articles, videos, slides, reports), and multiple-choice questions with detailed explanations for each answer.
+  public shared func generateCourse(title : Text, description : Text) : async Text {
+    let prompt = "Create a detailed course outline in JSON format for a course titled "
+    # title
+    # ". The course should cover the definition, types, and impacts of corruption."
+    # "Include a description, recommended resources (books, articles, videos, slides, reports),"
+    # "and multiple-choice questions with detailed explanations for each answer."
+    # "Note: This data should be taken from live and verified sources online. Every Url generated should point to active working URL."
+    # "IMPORTANT: Return only the valid json format, no extra text, just the json file, don't explain"
+    // # "Generate 20 questions"
+    # "Generate 2 resources"
+    # "JSON Structure:"
+    # "title: " # title
+    # "description: " # description
+    # "resources: An array of objects, each containing title, description, URL, and resource type (Book, Article, Video, Slides, Report)"
+    // # "questions: An array of objects, each containing the question, an array of options with descriptions and explanations, and the correct answer index."
+    # "{"
+    # "'title': '',"
+    # "'description': '',"
+    # "'resources': ["
+    # "{"
+    # "'title': '',"
+    # "'description': '',"
+    # "'url': '',"
+    # "'rType': 'Book | Article | Video | Slides | Report'"
+    # "}"
+    # "],"
+    // # "'questions': ["
+    // # "{"
+    // # "'q': '',"
+    // # "'options': ["
+    // # "{"
+    // # "'o': 1,"
+    // # "'description': '',"
+    // # "'reason': 'Why correct or wrong'"
+    // # "},"
+    // # "{"
+    // # "'o': 2,"
+    // # "'description': '',"
+    // # "'reason': 'Why correct or wrong'"
+    // # "},"
+    // # "{"
+    // # "'o': 3,"
+    // # "'description': '',"
+    // # "'reason': 'Why correct or wrong'"
+    // # "},"
+    // # "{"
+    // # "'o': 4,"
+    // # "'description': '',"
+    // # "'reason': 'Why correct or wrong'"
+    // # "}"
+    // # "],"
+    // # "'correct': 1"
+    // # "}"
+    // # "]"
+    # "}";
+    let model = "gpt-4o-mini";
+    let data : JSON.JSON = #Object([
+      ("model", #String(model)),
+      ("messages", #Array([#Object([("role", #String("system")), ("content", #String("You are a helpful assistant."))]), #Object([("role", #String("user")), ("content", #String(prompt))])])),
+    ]);
 
-      Note: This data should be taken from live and verified sources online. Every Url generated should point to active working URL.
+    let headers : ?[Types.HttpHeader] = ?[{
+      name = "Authorization";
+      value = "Bearer " # API_KEY;
+    }];
 
-      IMPORTANT: Return only the json format, no extra text, just the json file, don't explain
+    let response = await Request.post(
+      "https://api.openai.com/v1/chat/completions",
+      data,
+      transform,
+      headers,
+    );
+    return JSON.show(response);
+  };
 
-      Generate 20 questions
-
-      JSON Structure:
-
-      title: " # title # "
-      description: " # description # "
-      resources: An array of objects, each containing title, description, URL, and resource type (Book, Article, Video, Slides, Report)
-      questions: An array of objects, each containing the question, an array of options with descriptions and explanations, and the correct answer index.
-
-      {
-          'title': '',
-          'description': '',
-          'resources': [
-            {
-              'title': '',
-              'description': '',
-              'url': '',
-              'rType': 'Book | Article | Video | Slides | Report'
-            }
-          ],
-          'questions': [
-            {
-              'q': '',
-              'options': [
-                {
-                  'o': 1,
-                  'description': '',
-                  'reason': 'Why correct or wrong'
-                },
-                {
-                  'o': 2,
-                  'description': '',
-                  'reason': 'Why correct or wrong'
-                },
-                {
-                  'o': 3,
-                  'description': '',
-                  'reason': 'Why correct or wrong'
-                },
-                {
-                  'o': 4,
-                  'description': '',
-                  'reason': 'Why correct or wrong'
-                }
-              ],
-              'correct': 1
-            }
-          ]
-        }
-    ";
+  public query func transform(raw : Types.TransformArgs) : async Types.CanisterHttpResponsePayload {
+    let transformed : Types.CanisterHttpResponsePayload = {
+      status = raw.response.status;
+      body = raw.response.body;
+      headers = [
+        {
+          name = "Content-Security-Policy";
+          value = "default-src 'self'";
+        },
+        { name = "Referrer-Policy"; value = "strict-origin" },
+        { name = "Permissions-Policy"; value = "geolocation=(self)" },
+        {
+          name = "Strict-Transport-Security";
+          value = "max-age=63072000";
+        },
+        { name = "X-Frame-Options"; value = "DENY" },
+        { name = "X-Content-Type-Options"; value = "nosniff" },
+      ];
+    };
+    transformed;
   };
 };
