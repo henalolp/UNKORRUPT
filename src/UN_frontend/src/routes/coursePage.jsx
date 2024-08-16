@@ -31,7 +31,7 @@ const CoursePage = () => {
   }, [])
 
   return (
-    <div className="container">
+    <div className="course-container">
       <Layout />
       <div className="course-wrapper">
         <img src={logo} alt="Course Selection" className="course-image" />

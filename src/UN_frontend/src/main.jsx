@@ -7,6 +7,7 @@ import ProfilePage from "./routes/ProfilePage";
 import ProgressPage from "./routes/ProgressPage";
 import ChatPage from "./routes/ChatPage"; // Import the ChatPage
 import "./tailwind.css";
+import "./index.scss";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 const router = createBrowserRouter([
@@ -14,26 +15,26 @@ const router = createBrowserRouter([
     path: "/",
     element: <Auth />,
   },
-  // {
-  //   path: "coursePage",
-  //   element: <CoursePage />,
-  // },
-  // {
-  //   path: "reportForm",
-  //   element: <ReportForm />,
-  // },
-  // {
-  //   path: "profilePage",
-  //   element: <ProfilePage />,
-  // },
-  // {
-  //   path: "progressPage",
-  //   element: <ProgressPage />,
-  // },
-  // {
-  //   path: "chat/:courseId", // New route for ChatPage with dynamic courseId
-  //   element: <ChatPage />,
-  // },
+  {
+    path: "coursePage",
+    element: <CoursePage />,
+  },
+  {
+    path: "reportForm",
+    element: <ReportForm />,
+  },
+  {
+    path: "profilePage",
+    element: <ProfilePage />,
+  },
+  {
+    path: "progressPage",
+    element: <ProgressPage />,
+  },
+  {
+    path: "chat/:courseId", // New route for ChatPage with dynamic courseId
+    element: <ChatPage />,
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(

@@ -1,17 +1,18 @@
 /* src/components/Sidebar.css */
 .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
+    /* position: fixed;    */
+    height: 30%;
     width: 60px;
     background-color: #A020F0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px 0;
+    padding: 20px 15px;
     vertical-align: middle;
+    border-radius: 30px;
   }
+
+
   
   .sidebar-icon {
     color: white;
