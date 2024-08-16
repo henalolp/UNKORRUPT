@@ -15,6 +15,7 @@ const router = createBrowserRouter([
     path: "/",
     element: <Auth />,
   },
+<<<<<<< HEAD
   {
     path: "coursePage",
     element: <CoursePage />,
@@ -39,6 +40,28 @@ const router = createBrowserRouter([
     path: "quizPage", // New route for ChatPage with dynamic courseId
     element: <QuizPage />,
   },
+=======
+  // {
+  //   path: "coursePage",
+  //   element: <CoursePage />,
+  // },
+  // {
+  //   path: "reportForm",
+  //   element: <ReportForm />,
+  // },
+  // {
+  //   path: "profilePage",
+  //   element: <ProfilePage />,
+  // },
+  // {
+  //   path: "progressPage",
+  //   element: <ProgressPage />,
+  // },
+  // {
+  //   path: "chat/:courseId", // New route for ChatPage with dynamic courseId
+  //   element: <ChatPage />,
+  // },
+>>>>>>> f5776af5d6cdffca7d81b616dcb2b23776aeebf7
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(

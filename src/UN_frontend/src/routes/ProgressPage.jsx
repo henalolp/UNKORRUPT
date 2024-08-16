@@ -8,7 +8,7 @@ const ProgressPage = () => {
   const navigate = useNavigate();
 
   const handleBackClick = () => {
-    navigate('/coursePage'); // Replace with the correct path to your courses page
+    navigate('/'); // Replace with the correct path to your courses page
   };
 
   return (
