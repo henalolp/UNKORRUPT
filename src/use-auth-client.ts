@@ -3,7 +3,6 @@ import {
   AuthClient,
   AuthClientCreateOptions,
   AuthClientLoginOptions,
-  InternetIdentityAuthResponseSuccess,
 } from '@dfinity/auth-client';
 import {
   type Identity,
@@ -101,20 +100,20 @@ export function useAuthClient(options?: UseAuthClientOptions) {
    * Wraps the onSuccess and onError callbacks with promises for convenience
    * @returns {Promise<InternetIdentityAuthResponseSuccess | void>} - Returns a promise that resolves to the response from the identity provider
    */
-  function login(): Promise<InternetIdentityAuthResponseSuccess | void> {
+  function login(): Promise<any | void> {
     return new Promise((resolve, reject) => {
       if (authClient) {
         const callback = options?.loginOptions?.onSuccess;
         const errorCb = options?.loginOptions?.onError;
         authClient.login({
           ...options?.loginOptions,
-          onSuccess: (successResponse?: InternetIdentityAuthResponseSuccess) => {
+          onSuccess: (successResponse?: any) => {
             setIsAuthenticated(true);
             setIdentity(authClient.getIdentity());
             if (successResponse !== undefined) {
-              callback?.(successResponse);
+              callback?.();
             } else {
-              (callback as () => void)?.();
+              callback?.();
             }
             resolve(successResponse);
           },
@@ -151,7 +150,7 @@ export function useAuthClient(options?: UseAuthClientOptions) {
 }
 
 const createActor = async (options: CreateActorOptions) => {
-  const agent = options.agent || (await HttpAgent.create({ ...options.agentOptions }));
+  const agent = options.agent || (new HttpAgent({ ...options.agentOptions }));
 
   if (options.agent && options.agentOptions) {
     console.warn(

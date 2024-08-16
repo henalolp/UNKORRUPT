@@ -1,22 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../courseee.css";
 import logo from "../../public/course.svg";
 import { FaPlay } from "react-icons/fa";
 import Layout from "../components/Layout";
 import { useNavigate } from "react-router-dom";
 import { NavLink } from 'react-router-dom';
+import { UN_backend } from "../../../declarations/UN_backend";
+import { CourseStatus } from "../helper/enum";
 
 const CoursePage = () => {
   const navigate = useNavigate();
-  const courses = [
-    { id: 1, title: "Introduction to Anti-Corruption Principles" },
-    { id: 2, title: "Anti-Corruption in Public Procurement" },
-    { id: 3, title: "Ethical Guidelines and Policies" },
-    { id: 4, title: "Acting for the Rule of Law" },
-    { id: 5, title: "Advanced Anti-Corruption Strategies" },
-    { id: 6, title: "Corruption in Public Finance Management" },
-    { id: 7, title: "Global Perspectives on Anti-Corruption" },
-  ];
+  const [courses, setCourses] = useState([]);
+  // const courses = [
+  //   { id: 1, title: "Introduction to Anti-Corruption Principles" },
+  //   { id: 2, title: "Anti-Corruption in Public Procurement" },
+  //   { id: 3, title: "Ethical Guidelines and Policies" },
+  //   { id: 4, title: "Acting for the Rule of Law" },
+  //   { id: 5, title: "Advanced Anti-Corruption Strategies" },
+  //   { id: 6, title: "Corruption in Public Finance Management" },
+  //   { id: 7, title: "Global Perspectives on Anti-Corruption" },
+  // ];
+
+  useEffect(() => {
+    // Load courses
+    async function load() {
+      const response = await UN_backend.listCourses(CourseStatus.Approved);
+      console.log(response);
+    }
+    load();
+  }, [])
 
   return (
     <div className="container">

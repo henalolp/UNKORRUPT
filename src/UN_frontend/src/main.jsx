@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
 import Auth from "./routes/auth";
 import CoursePage from "./routes/coursePage";
 import ReportForm from "./routes/ReportForm";

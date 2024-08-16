@@ -131,8 +131,10 @@ module {
     body : [Nat8];
   };
 
+  public type TransformFn = shared query TransformArgs -> async HttpResponsePayload;
+
   public type TransformRawResponseFunction = {
-    function : shared query TransformArgs -> async HttpResponsePayload;
+    function : TransformFn;
     context : Blob;
   };
 
@@ -148,7 +150,7 @@ module {
   };
 
   public type TransformContext = {
-    function : shared query TransformArgs -> async HttpResponsePayload;
+    function : TransformFn;
     context : Blob;
   };
 
