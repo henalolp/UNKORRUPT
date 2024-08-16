@@ -1,6 +1,6 @@
 // src/components/Sidebar.jsx
 import React from "react";
-import { FaHome, FaCommentDots, FaClipboardList, FaCog } from "react-icons/fa";
+import { FaHome, FaCommentDots, FaClipboardList, FaCog,FaQuestionCircle } from "react-icons/fa";
 import "./Sidebar.css"; // Make sure to create and style this file
 // import ReportForm from "../routes/ReportForm";
 import { NavLink } from 'react-router-dom';
@@ -28,6 +28,9 @@ const Sidebar = () => {
       </NavLink>
       <NavLink to="/coursePage" className={({ isActive }) => isActive ? 'active' : undefined}>
         <i className="sidebar-icon"></i> <FaCommentDots style={{ color: "#FFFFFF" }}/>
+      </NavLink>
+      <NavLink to="/quizPage" className={({ isActive }) => isActive ? 'active' : undefined}>
+        <i className="sidebar-icon"></i> <FaQuestionCircle style={{ color: "#FFFFFF" }}/>
       </NavLink>
       <NavLink to="/reportForm" className={({ isActive }) => isActive ? 'active' : undefined}>
         <i className="sidebar-icon"></i> <FaClipboardList style={{ color: "#FFFFFF" }}/>

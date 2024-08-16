@@ -8,6 +8,7 @@ import ProgressPage from "./routes/ProgressPage";
 import ChatPage from "./routes/ChatPage"; // Import the ChatPage
 import "./tailwind.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import QuizPage from "./routes/QuizPage";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
   {
     path: "chat/:courseId", // New route for ChatPage with dynamic courseId
     element: <ChatPage />,
+  },
+  {
+    path: "quizPage", // New route for ChatPage with dynamic courseId
+    element: <QuizPage />,
   },
 ]);
 

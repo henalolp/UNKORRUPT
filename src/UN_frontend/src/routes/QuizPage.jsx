@@ -35,6 +35,10 @@ const Quiz = () => {
     }
   };
 
+  const reloadQuiz = () =>{
+		window.location.reload(false);
+	}
+
   const onAnswerSelected = (answer, index) => {
     setSelectedAnswerIndex(index);
     if (answer === correctAnswer) {
@@ -96,6 +100,7 @@ const Quiz = () => {
           <p>
             Wrong Answers:<span> {result.wrongAnswers}</span>
           </p>
+          <button className='reload-quiz-button' onClick={() => reloadQuiz()}><span>want to play again?</span></button>
         </div>
       )}
     </div>
