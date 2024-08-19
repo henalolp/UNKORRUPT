@@ -1,18 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 .profile-container {
-    font-family: 'Inter', sans-serif;
-    max-width: 500px;
-    margin: auto;
-    padding: 20px;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: flex; 
+    align-items: center;  
+    margin: 20px;   
+    min-height: 100vh;
 }
 
+.profile-container div{
+    display: flex;
+    flex-direction: column;
+
+}
 .profile-header {
     text-align: center;
     background: url('/profile.svg') no-repeat center center; /* Set the background image */
