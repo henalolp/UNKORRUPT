@@ -1,11 +1,21 @@
 .progress-container {
     display: flex;
-    flex-direction: column;
+    max-width: 1200px;
+    flex-direction:column;
     align-items: center;
     padding: 20px;
     background-color: #f9f9f9;
     min-height: 100vh;
     box-sizing: border-box;
+  }
+
+  .everything {
+    /* display: flex;
+    flex-direction: column; */
+    display: flex;   
+    margin: 20px;   
+    min-height: 100vh;
+    padding: 20px;
   }
   
   .progress-header {
@@ -27,7 +37,7 @@
   }
   
   .profile-avatar {
-    background-image: url('/public/profile.svg');
+    background-image: url("../../public/profile.svg");
     background-size: cover;
     background-position: center;
     width: 100px;
@@ -162,3 +172,45 @@
     }
   }
   
+  @media (min-width: 1920px) {
+    .everything {
+        /* Adjustments for large screens */
+        padding: 40px;   /* Increase padding for better spacing */
+        font-size: 1.5rem; /* Increase base font size for readability */
+    }
+
+    .progress-header {
+        padding: 30px; /* Increase header padding for larger screens */
+    }
+
+    .toggle-buttons {
+        width: 90%; /* Adjust toggle buttons width for larger screens */
+    }
+
+    .toggle-button {
+        font-size: 18px; /* Increase font size for better visibility */
+        padding: 15px; /* Increase padding for larger touch targets */
+    }
+
+    .course-progress {
+        gap: 30px; /* Increase gap between course items for better spacing */
+    }
+
+    .course-item {
+        width: 150px; /* Increase item width for larger screens */
+    }
+
+    .progress-circle {
+        width: 100px; /* Increase circle size for better visibility */
+        height: 100px;
+        font-size: 22px; /* Increase font size inside circles */
+    }
+
+    .progress-circle span {
+        font-size: 18px; /* Increase span font size for readability */
+    }
+
+    .course-item p {
+        font-size: 16px; /* Increase paragraph font size for readability */
+    }
+}

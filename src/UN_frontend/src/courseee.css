@@ -9,11 +9,12 @@ body {
 }
 
 /* Container */
-.container {
+.course-container {
     display: flex;
-    justify-content: center;
+    justify-content: center;   
     padding: 20px;
     min-height: 100vh;
+    
 }
 
 /* Course Wrapper */

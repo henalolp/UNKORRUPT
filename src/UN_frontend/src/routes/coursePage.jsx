@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../courseee.css";
-import logo from "../logo.jpg";
+import logo from "../../public/course.svg";
 import { FaPlay } from "react-icons/fa";
 import Layout from "../components/Layout";
 import { useNavigate } from "react-router-dom";
@@ -31,7 +31,7 @@ const CoursePage = () => {
   // }, [])
 
   return (
-    <div className="container">
+    <div className="course-container">
       <Layout />
       <div className="course-wrapper">
         <img src={logo} alt="Course Selection" className="course-image" />

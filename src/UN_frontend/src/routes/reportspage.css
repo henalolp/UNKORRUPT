@@ -1,6 +1,14 @@
 .reports-container {
     margin-top: 40px;
   }
+
+  .container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    min-height: 100vh;
+}
+
   
   .reports-grid {
     display: grid;

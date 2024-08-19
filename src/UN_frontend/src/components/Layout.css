@@ -2,14 +2,17 @@
 
 /* Layout container */
 .layout {
-    display: flex;  /* Use flexbox to align sidebar and content side by side */
+  display: flex; 
+  justify-content:center; 
+  align-items: center;
+  /* height: 100vh;  */
   }
   
-  /* Content area */
+  Content area
   .content {
-    margin-left: 60px;  /* Offset the content area to the right of the sidebar */
-    padding: 20px;  /* Add padding inside the content area */
-    width: calc(100% - 60px);  /* Calculate width based on sidebar width */
+    margin-left: 60px;  
+    padding: 20px; 
+    width: calc(100% - 60px);  
   }
   
   /* Optional - You can also add styles for different screen sizes */
