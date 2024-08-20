@@ -43,11 +43,26 @@ const ReportsPage = () => {
 
   const [likes, setLikes] = useState(initialLikes);
 
+  const [activeTab, setActiveTab] = useState('New Reports'); // State to manage the active tab
+
   const handleLike = (id) => {
     setLikes({
       ...likes,
       [id]: likes[id] + 1,
     });
+  };
+
+  const renderReports = () => {
+    switch (activeTab) {
+      case 'New Reports':
+        return reports.slice(0, 2); // Show only the first two reports
+      case 'All Reports':
+        return reports; // Show all reports
+      case 'Analytics':
+        return []; // No reports to show for analytics (can be updated based on actual requirement)
+      default:
+        return reports;
+    }
   };
 
   return (
@@ -56,13 +71,28 @@ const ReportsPage = () => {
       <div className="reports-cont">
         <h2>Reports!</h2>
         <div className="report-tabs">
-          <span className="active-tab">New Reports</span>
-          <span>All Reports</span>
-          <span>Analytics</span>
+          <span
+            className={activeTab === 'New Reports' ? 'active-tab' : ''}
+            onClick={() => setActiveTab('New Reports')}
+          >
+            New Reports
+          </span>
+          <span
+            className={activeTab === 'All Reports' ? 'active-tab' : ''}
+            onClick={() => setActiveTab('All Reports')}
+          >
+            All Reports
+          </span>
+          <span
+            className={activeTab === 'Analytics' ? 'active-tab' : ''}
+            onClick={() => setActiveTab('Analytics')}
+          >
+            Analytics
+          </span>
         </div>
         <div className="new-reports-section">
           <div className="reports-grid">
-            {reports.map((report) => (
+            {renderReports().map((report) => (
               <div key={report.id} className="report-card">
                 <div className="report-image">
                   <img src={report.image} alt={report.name} />
@@ -76,27 +106,11 @@ const ReportsPage = () => {
                 </div>
               </div>
             ))}
+            {activeTab === 'Analytics' && (
+              <p>No analytics available at the moment.</p>
+            )}
           </div>
         </div>
-        {/* <div className="all-reports-section">
-          <h3>All Reports</h3>
-          <div className="reports-grid">
-            {reports.map((report) => (
-              <div key={report.id} className="report-card">
-                <div className="report-image">
-                  <img src={report.image} alt={report.name} />
-                </div>
-                <div className="report-details">
-                  <h3>{report.name}</h3>
-                  <p>{report.category}</p>
-                  <button className="like-button" onClick={() => handleLike(report.id)}>
-                    👍 {likes[report.id]}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div> */}
       </div>
     </div>
   );
