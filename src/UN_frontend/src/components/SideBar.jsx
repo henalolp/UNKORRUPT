@@ -13,9 +13,9 @@ const Sidebar = () => {
       <NavLink to="/" end className={({ isActive }) => isActive ? 'active' : undefined}>
         <i className="sidebar-icon"></i> <FaHome style={{ color: "#FFFFFF" }}  />
       </NavLink>
-      <NavLink to="/coursePage" className={({ isActive }) => isActive ? 'active' : undefined}>
+      {/* <NavLink to="/coursePage" className={({ isActive }) => isActive ? 'active' : undefined}>
         <i className="sidebar-icon"></i> <FaCommentDots style={{ color: "#FFFFFF" }}/>
-      </NavLink>
+      </NavLink> */}
       <NavLink to="/quizPage" className={({ isActive }) => isActive ? 'active' : undefined}>
         <i className="sidebar-icon"></i> <FaQuestionCircle style={{ color: "#FFFFFF" }}/>
       </NavLink>
