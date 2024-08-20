@@ -17,7 +17,8 @@ body {
   padding: 15px;
   max-width: 2000px;
   margin: 50px;
-  height: 100vh;  
+  height: 100vh; 
+  justify-content: center; 
 }
 
 h2 {
@@ -46,14 +47,23 @@ h2 {
 
 .new-reports-section,
 .all-reports-section {
+  display: flex;
   margin-bottom: 40px;
+
 }
 
 .reports-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(2, 1fr); /* Set to always have 2 columns */
+  gap: 20px; /* Keep the gap between items */
 }
+
+@media (max-width: 768px) {
+  .reports-grid {
+    grid-template-columns: 1fr; /* Stack items in a single column on smaller screens */
+  }
+}
+
 
 .report-card {
   background-color: #fff;
