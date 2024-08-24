@@ -26,6 +26,7 @@ export MINTER=$(dfx canister id UN_backend)
 
 export FEATURE_FLAGS=true
 
+dfx identity use default
 dfx start --clean --background
 dfx deploy icrc1_ledger_canister --argument "(variant {Init =
 record {
