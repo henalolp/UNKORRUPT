@@ -5,6 +5,7 @@ import { CiEdit } from "react-icons/ci";
 import { IoSettingsOutline } from "react-icons/io5";
 import { CiShare2 } from "react-icons/ci";
 import { IoMdHelpCircleOutline } from "react-icons/io";
+import Layout from "../components/Layout";
 
 const ProfilePage = () => {
   return (

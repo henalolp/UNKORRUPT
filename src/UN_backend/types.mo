@@ -2,11 +2,14 @@ import Text "mo:base/Text";
 import Nat "mo:base/Nat";
 import Result "mo:base/Result";
 import Nat64 "mo:base/Nat64";
+import Principal "mo:base/Principal";
 import Vector "mo:vector";
 
 module {
   public type Vector<T> = Vector.Vector<T>;
   public type Result<A, B> = Result.Result<A, B>;
+
+  public let INVALID_CANISTER_ID = "invalid!canister!id";
 
   public type User = {
     id : Nat;
@@ -100,6 +103,18 @@ module {
   public type SubmittedAnswer = {
     questionId : Nat;
     option : Nat;
+  };
+
+  // Report types
+  public type Report = {
+    id: Nat;
+    country: Text;
+    state: Text;
+    details: Text;
+    category: Text;
+    image: Blob;
+    upvotes: Nat;
+    owner: Principal;
   };
 
   // HTTP Request types
