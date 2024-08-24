@@ -1,22 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@100;200;300;400;500;600;700;800&display=swap');
 
-body {
-  font-family: 'Anek Malayalam', sans-serif;
-  background: linear-gradient(90.04deg, #470247 0.03%, #996972 99.96%);
-  color: #11052c;
-  display: flex;
-  justify-content: center;
-  margin: 10;
-  padding: 0 30px;
+.quizbody {
+  display: flex;     
+  justify-content: center; /* This centers the container horizontally */
+  min-height: 100vh;
+  margin: auto;
+  padding: 20px;
 }
 
 .quiz-container {
-  max-width: 500px;
-  min-width: 250px;
-  background: #ffffff;
-  border-radius: 4px;
-  margin-top: 300px;
-  padding: 30px 60px;
+    max-width: 1200px;
+    margin: auto;
+    background: #fff;
+    padding: 50px;
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    color: #333;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .quiz-container .active-question-no {

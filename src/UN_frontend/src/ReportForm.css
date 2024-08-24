@@ -5,10 +5,10 @@ body {
 }
 
 .form-container {
-    max-width: 600px;
-    /* margin: auto; */
+    max-width: 1200px;
+    margin: auto;
     background: #fff;
-    padding: 30px;
+    padding: 50px;
     width: 100%;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
@@ -18,10 +18,12 @@ body {
 }
 
 
-.container {
-    display: flex;   
-    margin: 20px;   
+.containerf {
+    display: flex;     
+    justify-content: center; /* This centers the container horizontally */
     min-height: 100vh;
+    margin: auto;
+    padding: 20px;
 }
 
 

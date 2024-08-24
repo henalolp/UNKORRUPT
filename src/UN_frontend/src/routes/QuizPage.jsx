@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { quiz } from "../components/quiz/questions";
 import "./quiz.css";
+import Layout from "../components/Layout";
 
 const Quiz = () => {
   const [activeQuestion, setActiveQuestion] = useState(0);
@@ -21,10 +22,10 @@ const Quiz = () => {
     setResult((prev) =>
       selectedAnswer
         ? {
-            ...prev,
-            score: prev.score + 5,
-            correctAnswers: prev.correctAnswers + 1,
-          }
+          ...prev,
+          score: prev.score + 5,
+          correctAnswers: prev.correctAnswers + 1,
+        }
         : { ...prev, wrongAnswers: prev.wrongAnswers + 1 }
     );
     if (activeQuestion !== questions.length - 1) {
@@ -35,9 +36,9 @@ const Quiz = () => {
     }
   };
 
-  const reloadQuiz = () =>{
-		window.location.reload(false);
-	}
+  const reloadQuiz = () => {
+    window.location.reload(false);
+  }
 
   const onAnswerSelected = (answer, index) => {
     setSelectedAnswerIndex(index);
@@ -51,59 +52,63 @@ const Quiz = () => {
   const addLeadingZero = (number) => (number > 9 ? number : `0${number}`);
 
   return (
-    <div className="quiz-container">
-      {!showResult ? (
-        <div>
+    <div className="quizbody">
+      <Layout />
+      <div className="quiz-container">
+        {!showResult ? (
           <div>
-            <span className="active-question-no">
-              {addLeadingZero(activeQuestion + 1)}
-            </span>
-            <span className="total-question">
-              /{addLeadingZero(questions.length)}
-            </span>
-          </div>
-          <h2>{question}</h2>
-          <ul>
-            {choices.map((answer, index) => (
-              <li
-                onClick={() => onAnswerSelected(answer, index)}
-                key={answer}
-                className={
-                  selectedAnswerIndex === index ? "selected-answer" : null
-                }
+            <div>
+              <span className="active-question-no">
+                {addLeadingZero(activeQuestion + 1)}
+              </span>
+              <span className="total-question">
+                /{addLeadingZero(questions.length)}
+              </span>
+            </div>
+            <h2>{question}</h2>
+            <ul>
+              {choices.map((answer, index) => (
+                <li
+                  onClick={() => onAnswerSelected(answer, index)}
+                  key={answer}
+                  className={
+                    selectedAnswerIndex === index ? "selected-answer" : null
+                  }
+                >
+                  {answer}
+                </li>
+              ))}
+            </ul>
+            <div className="flex-right">
+              <button
+                onClick={onClickNext}
+                disabled={selectedAnswerIndex === null}
               >
-                {answer}
-              </li>
-            ))}
-          </ul>
-          <div className="flex-right">
-            <button
-              onClick={onClickNext}
-              disabled={selectedAnswerIndex === null}
-            >
-              {activeQuestion === questions.length - 1 ? "Finish" : "Next"}
-            </button>
+                {activeQuestion === questions.length - 1 ? "Finish" : "Next"}
+              </button>
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="result">
-          <h3>Result</h3>
-          <p>
-            Total Question: <span>{questions.length}</span>
-          </p>
-          <p>
-            Total Score:<span> {result.score}</span>
-          </p>
-          <p>
-            Correct Answers:<span> {result.correctAnswers}</span>
-          </p>
-          <p>
-            Wrong Answers:<span> {result.wrongAnswers}</span>
-          </p>
-          <button className='reload-quiz-button' onClick={() => reloadQuiz()}><span>want to play again?</span></button>
-        </div>
-      )}
+        ) : (
+          <div className="result">
+            <h3>Result</h3>
+            <p>
+              Total Question: <span>{questions.length}</span>
+            </p>
+            <p>
+              Total Score:<span> {result.score}</span>
+            </p>
+            <p>
+              Correct Answers:<span> {result.correctAnswers}</span>
+            </p>
+            <p>
+              Wrong Answers:<span> {result.wrongAnswers}</span>
+            </p>
+            <button className='reload-quiz-button' onClick={() => reloadQuiz()}><span>want to play again?</span></button>
+          </div>
+        )}
+      </div>
     </div>
+
   );
 };
 

@@ -9,7 +9,7 @@ import { IoMdHelpCircleOutline } from "react-icons/io";
 const ProfilePage = () => {
   return (
     <div className="profile-container">
-      <Sidebar />
+      <Layout />
       <div className="profile-header">
         <div className="profile-avatar"></div>
         <h1>Varun Israni</h1>

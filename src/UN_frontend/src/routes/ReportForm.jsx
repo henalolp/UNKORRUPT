@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import '../../src/ReportForm.css'; // Importing CSS for styling
 import Layout from '../components/Layout';
-import ReportsPage from './ReportsPage'; // Assuming ReportsPage is in the same directory
-import Sidebar from '../components/SideBar';
+import ReportsPage from './ReportsPage'; 
+
 
 const ReportForm = () => {
   const [reports, setReports] = useState([]);
@@ -40,12 +40,11 @@ const ReportForm = () => {
   };
 
   return (
-    <div className='container'>
+    <div className='containerf'>
 
       {/* <Sidebar /> */}
       <Layout />
-      <div className="form-container">
-        
+      <div className="form-container">        
         <a href="#" className="back-link">← File Report</a>
         <form className="report-form" onSubmit={handleSubmit}>
           <br />
@@ -79,10 +78,17 @@ const ReportForm = () => {
               value={formData.category}
               onChange={handleChange}
             >
-              <option value="">Please select...</option>
-              <option value="bug">Bug</option>
-              <option value="account">Account Issue</option>
-              <option value="payment">Payment</option>
+              {/* <option value="">Please select...</option> */}
+              <option value="Private Sector">Private Sector </option>
+              <option value="Public Sector">Public Sector</option>
+              <option value="Judicial Corruption">Judicial Corruption</option>
+              <option value="Natural Resources">Natural Resources</option>
+              <option value="International Aid and Development">International Aid and Development</option>
+              <option value="Elections and Political Processes ">Elections and Political Processes </option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Education<">Education</option>
+              <option value="Law Enforcement">Law Enforcement</option>
+              <option value="Procurement and Public Contracting">Procurement and Public Contracting</option>
             </select>
           </div>
           <div className="form-group">
@@ -107,7 +113,6 @@ const ReportForm = () => {
           <button id="send-button" type="submit">Send</button>
         </form>
 
-        <ReportsPage reports={reports} />
       </div>
     </div>
 
