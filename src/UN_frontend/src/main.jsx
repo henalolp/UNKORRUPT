@@ -41,7 +41,7 @@ const router = createBrowserRouter([
   },
   {
     path: "quizPage", // New route for ChatPage with dynamic courseId
-    element: <Quiz />,
+    element: <QuizPage/>,
   },
   {
     path: "reportsPage", // New route for ChatPage with dynamic courseId
