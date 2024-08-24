@@ -79,5 +79,6 @@ let courses : [Text] = [
     ("Advanced Anti-Corruption Strategies", ["https://www.unodc.org/documents/corruption/Publications/2022/THE_TIME_IS_NOW_FR_FINAL_16.11.2022.pdf"]),
     ("Corruption in Public Finance Management", ["https://www.unodc.org/documents/corruption/Publications/2013/Guidebook_on_anti-corruption_in_public_procurement_and_the_management_of_public_finances.pdf"]),
     ("Global Perspectives on Anti-Corruption", ["https://www.unodc.org/documents/corruption/Publications/2016/V1508935.pdf", "https://www.unodc.org/documents/corruption/Publications/2022/THE_TIME_IS_NOW_FR_FINAL_16.11.2022.pdf"]),
+    Victims of Corruption: Back for Payback
   ];
 ```

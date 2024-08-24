@@ -12,3 +12,10 @@ export const ResourceType = {
   Slides: { 'Slides': null },
   Video: { 'Video': null },
 }
+
+
+export const getEnum = (option, enumObject) => {
+  for (let key of Object.keys(enumObject)) {
+    
+  }
+}
