@@ -3,7 +3,7 @@
 body {
   font-family: 'Inter', sans-serif; /* Updated font family */
   font-size: 1.5rem;
-  background: linear-gradient(to bottom, #030303, #9B51E0); /* Dark purple gradient */
+  background: linear-gradient(to bottom, #030303, #9B51E0) !important; /* Dark purple gradient */
   color: white; /* Ensures text is readable against the dark background */
 }
 

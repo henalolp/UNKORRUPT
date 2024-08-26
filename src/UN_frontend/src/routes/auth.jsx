@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { idlFactory, canisterId } from "../../../declarations/UN_backend";
-import { useAuthClient } from "../../../../src/index";
+import { useAuthClient } from "../index";
 import { useNavigate } from "react-router-dom";
 import './Auth.css'; // Import the CSS file
 

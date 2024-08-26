@@ -216,9 +216,8 @@ shared ({ caller }) actor class Backend() {
   };
 
   // Register a new user
-  public shared func registerUser(username : Text, country : Text, state : Text) : async Result<Text, Text> {
+  public shared ({ caller }) func registerUser(username : Text, country : Text, state : Text) : async Result<Text, Text> {
     let user = Map.get(members, phash, caller);
-
     switch (user) {
       case (?_) {
         return #err("User already registered");

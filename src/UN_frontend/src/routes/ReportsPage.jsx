@@ -1,54 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './reportspage.css';
 import Layout from '../components/Layout';
 import repoot from '../assets/report1.svg'; // Assuming the path is correct
+import { UN_backend } from '../../../declarations/UN_backend';
+import { parseValues } from '../helper/parser';
 
 const ReportsPage = () => {
   // Hardcoded data with the same image for all reports
-  const reports = [
-    {
-      id: 1,
-      name: 'Over the Horizon',
-      category: 'Photo',
-      image: repoot,
-      likes: 10,
-    },
-    {
-      id: 2,
-      name: 'Morning Dew',
-      category: 'Photo',
-      image: repoot,
-      likes: 5,
-    },
-    {
-      id: 3,
-      name: 'Urban Exploration',
-      category: 'Video',
-      image: repoot,
-      likes: 15,
-    },
-    {
-      id: 4,
-      name: 'Nature Sounds',
-      category: 'Audio',
-      image: repoot,
-      likes: 20,
-    },
-  ];
-
-  const initialLikes = reports.reduce((acc, report) => {
-    acc[report.id] = report.likes || 0;
-    return acc;
-  }, {});
-
-  const [likes, setLikes] = useState(initialLikes);
+  const [reports, setReports] = useState([]);
+  const [upvotes, setUpvotes] = useState([]);
 
   const [activeTab, setActiveTab] = useState('New Reports'); // State to manage the active tab
 
   const handleLike = (id) => {
-    setLikes({
-      ...likes,
-      [id]: likes[id] + 1,
+    setUpvotes({
+      ...upvotes,
+      [id]: upvotes[id] + 1,
     });
   };
 
@@ -64,6 +31,23 @@ const ReportsPage = () => {
         return reports;
     }
   };
+
+  useEffect(() => {
+    // Load reports
+    async function load() {
+      const response = await UN_backend.listReports('');
+      console.log(response)
+      setReports(await parseValues(response));
+    }
+    load();
+  }, [])
+
+  useEffect(() => {
+    setUpvotes(reports.reduce((acc, report) => {
+      acc[report.id] = report.upvotes || 0;
+      return acc;
+    }, {}))
+  }, [reports])
 
   return (
     <div className="all-reports">
@@ -98,10 +82,10 @@ const ReportsPage = () => {
                   <img src={report.image} alt={report.name} />
                 </div>
                 <div className="report-details">
-                  <h3>{report.name}</h3>
+                  <h3>{report.country}</h3>
                   <p>{report.category}</p>
                   <button className="like-button" onClick={() => handleLike(report.id)}>
-                    👍 {likes[report.id]}
+                    👍 {upvotes[report.id]}
                   </button>
                 </div>
               </div>

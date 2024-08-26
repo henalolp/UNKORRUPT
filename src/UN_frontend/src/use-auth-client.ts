@@ -14,6 +14,8 @@ import {
 } from '@dfinity/agent';
 import type { IDL } from '@dfinity/candid';
 import { Principal } from '@dfinity/principal';
+import { createBackendActor } from './helper/auth';
+import { LOGIN, useAuth } from './lib/AuthContext';
 
 export interface CreateActorOptions {
   /**
@@ -64,6 +66,7 @@ export function useAuthClient(options?: UseAuthClientOptions) {
   const [identity, setIdentity] = React.useState<Identity | null>(null);
   const [actor, setActor] = React.useState<Actor | null>(null);
   const [isAuthenticated, setIsAuthenticated] = React.useState<boolean>(false);
+  const { dispatch } = useAuth();
 
   // load the auth client on mount
   React.useEffect(() => {
@@ -100,14 +103,14 @@ export function useAuthClient(options?: UseAuthClientOptions) {
    * Wraps the onSuccess and onError callbacks with promises for convenience
    * @returns {Promise<InternetIdentityAuthResponseSuccess | void>} - Returns a promise that resolves to the response from the identity provider
    */
-  function login(): Promise<any | void> {
-    return new Promise((resolve, reject) => {
+  async function login() {
+    const res = await new Promise((resolve, reject) => {
       if (authClient) {
         const callback = options?.loginOptions?.onSuccess;
         const errorCb = options?.loginOptions?.onError;
         authClient.login({
           ...options?.loginOptions,
-          onSuccess: (successResponse?: any) => {
+          onSuccess: async (successResponse?: any) => {
             setIsAuthenticated(true);
             setIdentity(authClient.getIdentity());
             if (successResponse !== undefined) {
@@ -124,6 +127,27 @@ export function useAuthClient(options?: UseAuthClientOptions) {
         });
       }
     });
+    const actor = await createBackendActor(identity);
+    // Check if member exists
+    const member = await actor.getProfile();
+    if ((member as any).ok) {
+      dispatch({
+        type: LOGIN,
+        payload: {
+          principal: identity?.getPrincipal(),
+          member: (member as any).ok,
+        },
+      })
+    } else {
+      const member = await actor.registerUser('', '', '');
+      dispatch({
+        type: LOGIN,
+        payload: {
+          principal: identity?.getPrincipal(),
+          member: {},
+        },
+      })
+    }
   }
 
   async function logout() {

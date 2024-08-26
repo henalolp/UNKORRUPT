@@ -1,153 +1,220 @@
 import React, { useState } from 'react';
 import '../../src/ReportForm.css'; // Importing CSS for styling
 import Layout from '../components/Layout';
+import { allCountries, getCountryStates } from '../helper/countries';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { Center, FormControl, FormErrorMessage, Input, Select, Spinner, Textarea, useToast } from '@chakra-ui/react'
+import { createActor, UN_backend } from '../../../declarations/UN_backend';
+import withAuth from '../lib/withAuth';
+import { useAuthClient } from '../use-auth-client';
+import { createBackendActor, createClient } from '../helper/auth';
 
 const ReportForm = () => {
-  const [reports, setReports] = useState([]);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    category: '',
-    details: '',
-    image: null,
-    country: '', // Add country to your form data state
-  });
+  const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (event) => {
-    const { name, value, files } = event.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: files ? files[0] : value,
-    }));
-  };
+  const categories = [
+    'Private Sector',
+    'Public Sector',
+    'Judicial Corruption',
+    'Natural Resources',
+    'International Aid and Development',
+    'Elections and Political Processes',
+    'Healthcare',
+    'Education',
+    'Law Enforcement',
+    'Procurement and Public Contracting',
+  ]
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (formData.name && formData.email && formData.category && formData.details) {
-      setReports((prevReports) => [
-        ...prevReports,
-        { ...formData, id: prevReports.length + 1 },
-      ]);
-      setFormData({
-        name: '',
-        email: '',
-        category: '',
-        details: '',
-        image: null,
-        country: '', // Reset country
-      });
+  function getExtension(fileName) {
+    const lastIndex = fileName.lastIndexOf('.');
+    if (lastIndex === -1) {
+      return ''; // no extension found
     }
-  };
+    return fileName.substring(lastIndex + 1).toLowerCase();
+  }
 
-  const countries = [
-    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", 
-    "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", 
-    "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", 
-    "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia", 
-    "Comoros", "Congo, Democratic Republic of the", "Congo, Republic of the", "Costa Rica", "Cote d'Ivoire", "Croatia", 
-    "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor", "Ecuador", 
-    "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", 
-    "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", 
-    "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", 
-    "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Korea, North", "Korea, South", "Kosovo", "Kuwait", 
-    "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", 
-    "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", 
-    "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", 
-    "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Macedonia", 
-    "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", 
-    "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", 
-    "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", 
-    "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Sudan", "Spain", "Sri Lanka", 
-    "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Togo", "Tonga", 
-    "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", 
-    "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", 
-    "Yemen", "Zambia", "Zimbabwe"
-    // Add more countries as needed
-  ];
+  async function getBuffer(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsArrayBuffer(file)
+      reader.onload = () => {
+        resolve(new Uint8Array(reader.result))
+      }
+      reader.onerror = reject
+    })
+  }
+
+  const { identity } = useAuthClient();
+
+  const formik = useFormik({
+    initialValues: {
+      country: '',
+      state: '',
+      category: '',
+      details: '',
+      image: null,
+    },
+    validationSchema: Yup.object({
+      country: Yup.string().required('Required'),
+      state: Yup.string().required('Required'),
+      category: Yup.string().required('Required'),
+      details: Yup.string().min(30, "Minimum of 30 characters").required('Required'),
+      image: Yup.mixed()
+        .required('Image is required')
+        .test({
+          message: 'Please provide a supported file type',
+          test: (file, context) => {
+            const isValid = ['png', 'jpg', 'jpeg'].includes(getExtension(file?.name));
+            if (!isValid) context?.createError();
+            return isValid;
+          }
+        })
+        .test("fileSize", "The file is too large", (value) => {
+          if (!value.size) return true
+          return value.size <= 3 * 1024 * 1024
+        }),
+    }),
+    onSubmit: async (values, { resetForm }) => {
+      let imageBuffer = ""
+      await getBuffer(values.image)
+        .then(res => {
+          imageBuffer = res
+        })
+        .catch(err => {
+          console.log(err);
+          throw new Error('Base64 operation failed')
+        });
+      setIsLoading(true);
+      try {
+        const authClient = await createClient();
+        const actor = await createBackendActor(authClient.getIdentity());
+        const response = await actor.createReport(values.country, values.state, values.details, values.category, imageBuffer)
+        console.log(response)
+        if (response.ok === null) {
+          toast({
+            title: 'Report created',
+            description: 'Your report has been filed successfully. Thanks for filing your report.',
+            isClosable: true,
+            position: 'top',
+            duration: 3000,
+            status: 'success',
+          });
+          resetForm();
+        } else {
+          toast({
+            title: 'Error creating report',
+            description: response.err,
+            isClosable: true,
+            position: 'top',
+            duration: 3000,
+            status: 'error',
+          })
+        }
+      } catch (e) {
+        setIsLoading(false);
+        throw e;
+      }
+      finally {
+        setIsLoading(false);
+      }
+    },
+  });
 
   return (
     <div className='containerf'>
       <Layout />
       <div className="form-container">
         <a href="#" className="back-link">← File Report</a>
-        <form className="report-form" onSubmit={handleSubmit}>
-          <br />
-          <div className="form-group">
-            <label htmlFor="name">Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              placeholder="Edit Your Name"
-              value={formData.name}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Edit Your Email"
-              value={formData.email}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="form-group">
+        <form className="report-form" onSubmit={formik.handleSubmit}>
+          <FormControl className="form-group" isInvalid={formik.errors.country}>
             <label htmlFor="country">Country</label>
-            <select
+            <Select
               id="country"
               name="country"
-              value={formData.country}
-              onChange={handleChange}
+              value={formik.values.country}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              placeholder='Select your country'
             >
-              <option value="">Select your country</option>
-              {countries.map((country, index) => (
-                <option key={index} value={country}>{country}</option>
+              {allCountries.filter((country) => {
+                return country.region === 'Africa'
+              }).map((country, index) => (
+                <option key={index} value={country.code2}>{country.name}</option>
               ))}
-            </select>
-          </div>
-          <div className="form-group">
+            </Select>
+            <FormErrorMessage>{formik.errors.country}</FormErrorMessage>
+          </FormControl>
+          <FormControl className="form-group" isInvalid={formik.errors.state}>
+            <label htmlFor="state">State</label>
+            <Select
+              id="state"
+              name="state"
+              value={formik.values.state}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            >
+              <option value="">Select your state</option>
+              {formik.values.country && getCountryStates(formik.values.country).map((state, index) => (
+                <option key={index} value={state.code}>{state.name}</option>
+              ))}
+            </Select>
+            <FormErrorMessage>{formik.errors.state}</FormErrorMessage>
+          </FormControl>
+          <FormControl className="form-group" isInvalid={formik.errors.category}>
             <label htmlFor="category">Category</label>
-            <select
+            <Select
               id="category"
               name="category"
-              value={formData.category}
-              onChange={handleChange}
+              value={formik.values.category}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
             >
               <option value="">Please select...</option>
-              <option value="Private Sector">Private Sector</option>
-              <option value="Public Sector">Public Sector</option>
-              <option value="Judicial Corruption">Judicial Corruption</option>
-              <option value="Natural Resources">Natural Resources</option>
-              <option value="International Aid and Development">International Aid and Development</option>
-              <option value="Elections and Political Processes">Elections and Political Processes</option>
-              <option value="Healthcare">Healthcare</option>
-              <option value="Education">Education</option>
-              <option value="Law Enforcement">Law Enforcement</option>
-              <option value="Procurement and Public Contracting">Procurement and Public Contracting</option>
-            </select>
-          </div>
-          <div className="form-group">
+              {
+                categories.map((item, index) => {
+                  return (
+                    <option key={index} value={item}>{item}</option>
+                  )
+                })
+              }
+            </Select>
+            <FormErrorMessage>{formik.errors.category}</FormErrorMessage>
+          </FormControl>
+          <FormControl className="form-group" isInvalid={formik.errors.details}>
             <label htmlFor="details">Details</label>
-            <textarea
+            <Textarea
               id="details"
               name="details"
               placeholder="Describe the issue"
-              value={formData.details}
-              onChange={handleChange}
-            ></textarea>
-          </div>
-          <div className="form-group">
+              value={formik.values.details}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            />
+            <FormErrorMessage>{formik.errors.details}</FormErrorMessage>
+          </FormControl>
+          <FormControl className="form-group" isInvalid={formik.errors.image}>
             <label htmlFor="image-upload">Upload Image</label>
-            <input
+            <Input
               type="file"
               id="image-upload"
               name="image"
-              onChange={handleChange}
+              accept='.png, .jpg, .jpeg'
+              onChange={(event) => {
+                formik.setFieldValue("image", event.currentTarget.files[0]);
+              }}
+              onBlur={formik.handleBlur}
             />
-          </div>
+            <FormErrorMessage>{formik.errors.image}</FormErrorMessage>
+          </FormControl>
+          {
+            isLoading && (
+              <Center mb={3}>
+                <Spinner />
+              </Center>
+            )
+          }
           <button id="send-button" type="submit">Send</button>
         </form>
       </div>
@@ -155,4 +222,6 @@ const ReportForm = () => {
   );
 };
 
-export default ReportForm;
+const Page = withAuth(ReportForm);
+
+export default Page;
