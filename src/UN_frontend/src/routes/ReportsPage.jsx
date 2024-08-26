@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './reportspage.css';
 import Layout from '../components/Layout';
-import repoot from '../../public/report1.svg'; // Assuming the path is correct
+import repoot from '../assets/report1.svg'; // Assuming the path is correct
 
 const ReportsPage = () => {
   // Hardcoded data with the same image for all reports

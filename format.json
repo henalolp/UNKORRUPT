@@ -5,37 +5,21 @@
     "resources": [
       {
         "title": "",
-        "description": "",
-        "url": "",
-        "rType": "Book | Article | Video | Slides | Report"
+        "d": "",
+        "u": "",
+        "t": "Book | Article | Video | Slides | Report"
       }
     ],
-    "questions": [
+    "qs": [
       {
-        "q": "",
-        "options": [
-          {
-            "o": 1,
-            "description": "",
-            "reason": "Why correct or wrong"
-          },
-          {
-            "o": 2,
-            "description": "",
-            "reason": "Why correct or wrong"
-          },
-          {
-            "o": 3,
-            "description": "",
-            "reason": "Why correct or wrong"
-          },
-          {
-            "o": 4,
-            "description": "",
-            "reason": "Why correct or wrong"
-          }
+        "question": "",
+        "o": [
+            "Option 1",
+            "Option 2",
+            "Option 3",
+            "Option 4"
         ],
-        "correct": 1
+        "answer": 1
       }
     ]
   }

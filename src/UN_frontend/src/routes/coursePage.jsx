@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../courseee.css";
-import logo from "../../public/course.svg";
+import logo from "../assets/course.svg";
 import { FaPlay } from "react-icons/fa";
 import Layout from "../components/Layout";
 import { useNavigate } from "react-router-dom";
@@ -11,21 +11,12 @@ import { CourseStatus } from "../helper/enum";
 const CoursePage = () => {
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
-  // const courses = [
-  //   { id: 1, title: "Introduction to Anti-Corruption Principles" },
-  //   { id: 2, title: "Anti-Corruption in Public Procurement" },
-  //   { id: 3, title: "Ethical Guidelines and Policies" },
-  //   { id: 4, title: "Acting for the Rule of Law" },
-  //   { id: 5, title: "Advanced Anti-Corruption Strategies" },
-  //   { id: 6, title: "Corruption in Public Finance Management" },
-  //   { id: 7, title: "Global Perspectives on Anti-Corruption" },
-  // ];
 
   useEffect(() => {
     // Load courses
     async function load() {
       const response = await UN_backend.listCourses(CourseStatus.Approved);
-      console.log(response);
+      setCourses(response);
     }
     load();
   }, [])
@@ -40,7 +31,7 @@ const CoursePage = () => {
           <p className="course-description">
             What do you want to learn today? Interact with our AI powered
             courses to learn about and fight corruption. Get a token for every
-            successifully completed course!
+            successfully completed course!
           </p>
           <h2 className="syllabus-title">Syllabus</h2>
           <div className="course-grid">
@@ -54,7 +45,7 @@ const CoursePage = () => {
                   })
                 }
               >
-                <div className="course-number">{course.id}</div>
+                <div className="course-number">{(Number(course.id) + 1).toString()}</div>
                 <h3 className="course-card-title">{course.title}</h3>
                 <FaPlay style={{ color: "#A020F0" }} />
               </div>

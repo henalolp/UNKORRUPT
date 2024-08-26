@@ -11,7 +11,11 @@ import { phash } "mo:map/Map";
 import Vector "mo:vector";
 import Random "mo:base/Random";
 import Blob "mo:base/Blob";
+import Error "mo:base/Error";
 import JSON "mo:json.mo";
+import ICRC1 "mo:icrc1-types";
+import Utils "utils";
+import serdeJson "mo:serde/JSON";
 
 shared ({ caller }) actor class Backend() {
   type Result<A, B> = Types.Result<A, B>;
@@ -27,13 +31,20 @@ shared ({ caller }) actor class Backend() {
   type Resource = Types.Resource;
   type EnrolledCourse = Types.EnrolledCourse;
   type SubmittedAnswer = Types.SubmittedAnswer;
+  type Report = Types.Report;
 
   stable let members = Map.new<Principal, User>();
   stable let courses = Vector.new<Course>();
+  stable let reports = Vector.new<Report>();
+  stable let reportUpvotes = Vector.new<Vector.Vector<Principal>>();
 
   stable var nextUserId = 0;
   stable var nextCourseId = 0;
+  stable var nextReportId = 0;
   stable var owner = caller;
+
+  var icrc1Actor_ : ICRC1.Service = actor ("mxzaz-hqaaa-aaaar-qaada-cai");
+  var icrc1TokenCanisterId_ : Text = Types.INVALID_CANISTER_ID;
 
   private var API_KEY : Text = "";
 
@@ -58,6 +69,31 @@ shared ({ caller }) actor class Backend() {
   private func _isOwner(p : Principal) : Bool {
     return true;
     // owner == p;
+  };
+
+  // get token canister id
+  public query func get_icrc1_token_canister_id() : async Text {
+    icrc1TokenCanisterId_;
+  };
+
+  // set icrc1 token canister
+  public shared ({ caller }) func set_icrc1_token_canister(tokenCanisterId : Text) : async Result<(), Text> {
+    if (_isOwner(caller) == false) return #err("Not authorized");
+
+    let icrc1Canister = try {
+      #ok(await Utils.createIcrcActor(tokenCanisterId));
+    } catch e #err(e);
+
+    switch (icrc1Canister) {
+      case (#ok(icrc1Actor)) {
+        icrc1Actor_ := icrc1Actor;
+        icrc1TokenCanisterId_ := tokenCanisterId;
+        #ok;
+      };
+      case (#err(e)) {
+        #err("Failed to instantiate icrc1 token canister from given id(" # tokenCanisterId # ") for reason " # Error.message(e));
+      };
+    };
   };
 
   private func courseEqual(course1 : EnrolledCourse, course2 : EnrolledCourse) : Bool {
@@ -266,9 +302,33 @@ shared ({ caller }) actor class Backend() {
     };
   };
 
+  // Create a course
+  public shared ({ caller }) func createCourse(title : Text, summary : Text) : async Result<Nat, Text> {
+    assert _isOwner(caller);
+
+    let resources = Vector.new<Resource>();
+    let questions = Vector.new<Question>();
+    let course = {
+      id = nextCourseId;
+      title = title;
+      summary = summary;
+      enrolledCount = 0;
+      reportCount = 0;
+      status = #Approved;
+      resources = resources;
+      questions = questions;
+      nextQuestionId = 0;
+      nextResourceId = 0;
+    };
+
+    Vector.add(courses, course);
+    nextCourseId := nextCourseId + 1;
+    #ok(nextCourseId - 1);
+  };
+
   // Create new resource for course
   public shared ({ caller }) func createResource(courseId : Nat, title : Text, description : Text, url : Text, rType : ResourceType) : async Result<Text, Text> {
-    assert caller == owner;
+    assert _isOwner(caller);
     let course = _getCourse(courseId);
     switch (course) {
       case (?c) {
@@ -303,7 +363,7 @@ shared ({ caller }) actor class Backend() {
 
   // Update course details
   public shared ({ caller }) func updateCourse(courseId : Nat, title : Text, summary : Text, status : CourseStatus) : async Result<Text, Text> {
-    assert caller == owner;
+    assert _isOwner(caller);
     let course = _getCourse(courseId);
     switch (course) {
       case (?c) {
@@ -330,7 +390,7 @@ shared ({ caller }) actor class Backend() {
 
   // Add a question to a course
   public shared ({ caller }) func addQuestion(courseId : Nat, data : Question) : async Result<Text, Text> {
-    assert caller == owner;
+    assert _isOwner(caller);
     let course = _getCourse(courseId);
     switch (course) {
       case (?c) {
@@ -407,12 +467,41 @@ shared ({ caller }) actor class Backend() {
               };
             };
 
-            Vector.put(member.enrolledCourses, enrolledCourseIndex, enrolledCourse);
+            let previousValue = Vector.get(member.enrolledCourses, enrolledCourseIndex);
+            if (previousValue.completed) {
+              return #err("You have already completed this course before");
+            };
 
-            // Update user object
-            Map.set(members, phash, caller, member);
+            // Transfer tokens to user
+            // Make the icrc1 intercanister transfer call, catching if error'd:
+            let response : Result<ICRC1.TransferResult, Text> = try {
+              #ok(await icrc1Actor_.icrc1_transfer({ amount = 5; created_at_time = null; from_subaccount = null; fee = null; memo = null; to = { owner = caller; subaccount = null } }));
+            } catch (e) {
+              #err(Error.message(e));
+            };
 
-            return #ok("You have successfully completed the course");
+            // Parse the results of the icrc1 intercansiter transfer call:
+            switch (response) {
+              case (#ok(transferResult)) {
+                switch (transferResult) {
+                  case (#Ok _) {
+                    // Updated enrolled course to completed
+                    Vector.put(member.enrolledCourses, enrolledCourseIndex, enrolledCourse);
+                    // Update user object
+                    Map.set(members, phash, caller, member);
+                    return #ok("You have successfully completed the course");
+                  };
+                  case (#Err _) #err(
+                    "The icrc1 transfer call could not be completed as requested."
+                  );
+                };
+              };
+              case (#err(_)) {
+                #err(
+                  "The intercanister icrc1 transfer call caught an error and did not finish processing."
+                );
+              };
+            };
           };
           case (null) {
             return #err("Course " # Nat.toText(courseId) # " not found");
@@ -427,19 +516,16 @@ shared ({ caller }) actor class Backend() {
 
   // Make call to AI model
   public shared func generateCourse(title : Text, description : Text) : async Text {
-    let prompt = "Create a detailed course outline in JSON format for a course titled "
+    let prompt = "Create a detailed course description in JSON format for a course titled "
     # title
-    # ". The course should cover the definition, types, and impacts of corruption."
-    # "Include a description, recommended resources (books, articles, videos, slides, reports),"
-    # "and multiple-choice questions with detailed explanations for each answer."
+    # ". Include a description and recommended resources (books, articles, videos, slides, reports),"
     # "Note: This data should be taken from live and verified sources online. Every Url generated should point to active working URL."
     # "IMPORTANT: Return only the valid json format, no extra text, just the json file, don't explain"
-    // # "Generate 20 questions"
-    # "Generate 2 resources"
     # "JSON Structure:"
     # "title: " # title
     # "description: " # description
-    # "resources: An array of objects, each containing title, description, URL, and resource type (Book, Article, Video, Slides, Report)"
+    # "resources: An array of objects, each containing title, description, URL, and resource type (Book, Article, Video, Slides, Report)."
+    # " Don't add the ```json``` text"
     // # "questions: An array of objects, each containing the question, an array of options with descriptions and explanations, and the correct answer index."
     # "{"
     # "'title': '',"
@@ -451,7 +537,7 @@ shared ({ caller }) actor class Backend() {
     # "'url': '',"
     # "'rType': 'Book | Article | Video | Slides | Report'"
     # "}"
-    # "],"
+    # "]"
     // # "'questions': ["
     // # "{"
     // # "'q': '',"
@@ -498,7 +584,23 @@ shared ({ caller }) actor class Backend() {
       transform,
       headers,
     );
-    return JSON.show(response);
+
+    switch (response) {
+      case (#Array val) {
+        let item = val[0];
+        switch (item) {
+          case (#Object kvs) {
+            let message = kvs[1].1;
+            switch (message) {
+              case (#Object items) {
+                let content = items[1].1;
+                return JSON.show(content);
+              };
+            };
+          };
+        };
+      };
+    };
   };
 
   public query func transform(raw : Types.TransformArgs) : async Types.CanisterHttpResponsePayload {
@@ -521,5 +623,87 @@ shared ({ caller }) actor class Backend() {
       ];
     };
     transformed;
+  };
+
+  // Create a new report
+  public shared ({ caller }) func createReport(country : Text, state : Text, details : Text, category : Text, image : Blob) : async Result<(), Text> {
+    let user = Map.get(members, phash, caller);
+    switch (user) {
+      case (?_) {
+        let report : Report = {
+          id = nextReportId;
+          country = country;
+          state = state;
+          details = details;
+          category = category;
+          image = image;
+          upvotes = 0;
+          owner = caller;
+        };
+        Vector.add<Report>(reports, report);
+
+        // Create a new upvote array with same id to ensure upvoting is unique
+        let upvotes = Vector.new<Principal>();
+        Vector.add(reportUpvotes, upvotes);
+
+        nextReportId := nextReportId + 1;
+        #ok();
+      };
+      case (null) {
+        return #err("Member not found");
+      };
+    };
+  };
+
+  // List reports by category
+  public query func listReports(category : Text) : async [Report] {
+    if (category == "") {
+      return Vector.toArray(reports);
+    };
+    let filtered = Vector.new<Report>();
+    for (report in Vector.vals(reports)) {
+      if (report.category == category) {
+        Vector.add(filtered, report);
+      };
+    };
+    Vector.toArray(filtered);
+  };
+
+  // Upvote a report
+  public shared ({ caller }) func upvoteReport(reportId : Nat) : async Result<Nat, Text> {
+    let user = Map.get(members, phash, caller);
+    switch (user) {
+      case (?_) {
+        switch (Vector.getOpt(reports, reportId)) {
+          case (?report) {
+            let upvotes = Vector.get(reportUpvotes, reportId);
+            let hasUpvoted = Vector.forSome<Principal>(upvotes, func x { x == caller });
+            if (hasUpvoted) {
+              return #ok(report.upvotes);
+            };
+            Vector.add(upvotes, caller);
+            Vector.put(reportUpvotes, reportId, upvotes);
+            let updatedReport = {
+              id = report.id;
+              country = report.country;
+              state = report.state;
+              details = report.details;
+              category = report.category;
+              image = report.image;
+              upvotes = report.upvotes + 1;
+              owner = report.owner;
+            };
+            Vector.put(reports, reportId, updatedReport);
+            #ok(updatedReport.upvotes);
+          };
+          case (null) {
+            #err("Report not found");
+          };
+        };
+      };
+      case (null) {
+        #err("Member not found");
+      };
+    };
   };
 };
