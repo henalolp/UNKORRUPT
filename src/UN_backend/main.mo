@@ -12,10 +12,13 @@ import Vector "mo:vector";
 import Random "mo:base/Random";
 import Blob "mo:base/Blob";
 import Error "mo:base/Error";
+import Debug "mo:base/Debug";
+import Time "mo:base/Time";
 import JSON "mo:json.mo";
 import ICRC1 "mo:icrc1-types";
 import Utils "utils";
 import serdeJson "mo:serde/JSON";
+import { recurringTimer } = "mo:base/Timer";
 
 shared ({ caller }) actor class Backend() {
   type Result<A, B> = Types.Result<A, B>;
@@ -32,11 +35,16 @@ shared ({ caller }) actor class Backend() {
   type EnrolledCourse = Types.EnrolledCourse;
   type SubmittedAnswer = Types.SubmittedAnswer;
   type Report = Types.Report;
+  type RunStatus = Types.RunStatus;
+  type ThreadRun = Types.ThreadRun;
+  type SendMessageStatus = Types.SendMessageStatus;
+  type Message = Types.Message;
 
   stable let members = Map.new<Principal, User>();
   stable let courses = Vector.new<Course>();
   stable let reports = Vector.new<Report>();
   stable let reportUpvotes = Vector.new<Vector.Vector<Principal>>();
+  stable var threadRunQueue = Vector.new<ThreadRun>();
 
   stable var nextUserId = 0;
   stable var nextCourseId = 0;
@@ -47,6 +55,17 @@ shared ({ caller }) actor class Backend() {
   var icrc1TokenCanisterId_ : Text = Types.INVALID_CANISTER_ID;
 
   private var API_KEY : Text = "";
+  private var ASSISTANT_ID : Text = "";
+
+  private func _getInProgressThreadRuns(threadId : Text) : [ThreadRun] {
+    let runs = Vector.new<ThreadRun>();
+    for (run in Vector.vals(threadRunQueue)) {
+      if (run.threadId == threadId) {
+        Vector.add(runs, run);
+      };
+    };
+    Vector.toArray(runs);
+  };
 
   private func _getCourse(courseId : Nat) : ?Course {
     Vector.getOpt(courses, courseId);
@@ -105,10 +124,16 @@ shared ({ caller }) actor class Backend() {
     owner := newOwner;
   };
 
-  // Update api key
+  // Set api key
   public shared ({ caller }) func changeApiKey(apiKey : Text) {
     assert _isOwner(caller);
     API_KEY := apiKey;
+  };
+
+  // Set assistant id
+  public shared ({ caller }) func setAssistantId(id : Text) {
+    assert _isOwner(caller);
+    ASSISTANT_ID := id;
   };
 
   // List all courses
@@ -264,12 +289,68 @@ shared ({ caller }) actor class Backend() {
         let course = _getCourse(courseId);
         switch (course) {
           case (?c) {
+            for (_course in Vector.vals(member.enrolledCourses)) {
+              if (_course.id == c.id) {
+                return #err("Course already enrolled");
+              };
+            };
+
+            // Create thread
+            let headers : ?[Types.HttpHeader] = ?[
+              {
+                name = "Authorization";
+                value = "Bearer " # API_KEY;
+              },
+              {
+                name = "OpenAI-Beta";
+                value = "assistants=v2";
+              },
+            ];
+
+            let response = await Request.post(
+              "https://api.openai.com/v1/threads/",
+              null,
+              transform,
+              headers,
+            );
+
+            if (response.status != 200) {
+              return #err("Failed to create thread");
+            };
+
+            var threadId = "";
+
+            switch (response.body) {
+              case (#Object(v)) {
+                label findId for ((k, v) in v.vals()) {
+                  if (k == "id") {
+                    switch (v) {
+                      case (#String(v)) {
+                        threadId := v;
+                        break findId;
+                      };
+                      case (_) {
+                        return #err("Json parse failed");
+                      };
+                    };
+                  };
+                };
+              };
+              case (_) {
+                return #err("Json parse failed");
+              };
+            };
+
+            if (threadId == "") {
+              return #err("Create thread failed");
+            };
+
+            let messages = Vector.new<Message>();
             let enrolledCourse = {
               id = c.id;
               completed = false;
-            };
-            if (Vector.contains(member.enrolledCourses, enrolledCourse, courseEqual)) {
-              return #err("Course already enrolled");
+              threadId = threadId;
+              messages = messages;
             };
             Vector.add(member.enrolledCourses, enrolledCourse);
 
@@ -430,75 +511,85 @@ shared ({ caller }) actor class Backend() {
         let course = _getCourse(courseId);
         switch (course) {
           case (?c) {
-            let enrolledCourse = {
-              id = c.id;
-              completed = true;
-            };
-            if (Vector.contains(member.enrolledCourses, enrolledCourse, courseEqual) == false) {
-              return #err("Course not enrolled");
-            };
 
-            let len = Vector.size(c.questions);
-            if (len == 0) {
-              return #err("Course has no questions");
-            };
-            if (Array.size(answers) > len) {
-              return #err("Number of answers is greater than the number of questions");
-            };
+            var enrolledCourse : ?EnrolledCourse = null;
 
-            var correctCount = 0;
-            for (i in Iter.range(0, len)) {
-              let answer = answers[i];
-              let question = Vector.get(c.questions, answer.questionId);
-              if (question.correctOption == answer.option) {
-                correctCount += 1;
+            label findCourse for (_course in Vector.vals(member.enrolledCourses)) {
+              if (_course.id == c.id) {
+                enrolledCourse := ?_course;
+                break findCourse;
               };
             };
 
-            if (correctCount != len) {
-              return #err("You did not get all the questions, Try again");
-            };
-
-            var enrolledCourseIndex = 0;
-            for (i in Iter.range(0, Vector.size(member.enrolledCourses))) {
-              if (Vector.get(member.enrolledCourses, i).id == c.id) {
-                enrolledCourseIndex := i;
+            switch (enrolledCourse) {
+              case (null) {
+                return #err("Course not enrolled");
               };
-            };
+              case (?enrolledCourse) {
 
-            let previousValue = Vector.get(member.enrolledCourses, enrolledCourseIndex);
-            if (previousValue.completed) {
-              return #err("You have already completed this course before");
-            };
-
-            // Transfer tokens to user
-            // Make the icrc1 intercanister transfer call, catching if error'd:
-            let response : Result<ICRC1.TransferResult, Text> = try {
-              #ok(await icrc1Actor_.icrc1_transfer({ amount = 5; created_at_time = null; from_subaccount = null; fee = null; memo = null; to = { owner = caller; subaccount = null } }));
-            } catch (e) {
-              #err(Error.message(e));
-            };
-
-            // Parse the results of the icrc1 intercansiter transfer call:
-            switch (response) {
-              case (#ok(transferResult)) {
-                switch (transferResult) {
-                  case (#Ok _) {
-                    // Updated enrolled course to completed
-                    Vector.put(member.enrolledCourses, enrolledCourseIndex, enrolledCourse);
-                    // Update user object
-                    Map.set(members, phash, caller, member);
-                    return #ok("You have successfully completed the course");
-                  };
-                  case (#Err _) #err(
-                    "The icrc1 transfer call could not be completed as requested."
-                  );
+                let len = Vector.size(c.questions);
+                if (len == 0) {
+                  return #err("Course has no questions");
                 };
-              };
-              case (#err(_)) {
-                #err(
-                  "The intercanister icrc1 transfer call caught an error and did not finish processing."
-                );
+                if (Array.size(answers) > len) {
+                  return #err("Number of answers is greater than the number of questions");
+                };
+
+                var correctCount = 0;
+                for (i in Iter.range(0, len)) {
+                  let answer = answers[i];
+                  let question = Vector.get(c.questions, answer.questionId);
+                  if (question.correctOption == answer.option) {
+                    correctCount += 1;
+                  };
+                };
+
+                if (correctCount != len) {
+                  return #err("You did not get all the questions, Try again");
+                };
+
+                var enrolledCourseIndex = 0;
+                for (i in Iter.range(0, Vector.size(member.enrolledCourses))) {
+                  if (Vector.get(member.enrolledCourses, i).id == c.id) {
+                    enrolledCourseIndex := i;
+                  };
+                };
+
+                let previousValue = Vector.get(member.enrolledCourses, enrolledCourseIndex);
+                if (previousValue.completed) {
+                  return #err("You have already completed this course before");
+                };
+
+                // Transfer tokens to user
+                // Make the icrc1 intercanister transfer call, catching if error'd:
+                let response : Result<ICRC1.TransferResult, Text> = try {
+                  #ok(await icrc1Actor_.icrc1_transfer({ amount = 5; created_at_time = null; from_subaccount = null; fee = null; memo = null; to = { owner = caller; subaccount = null } }));
+                } catch (e) {
+                  #err(Error.message(e));
+                };
+
+                // Parse the results of the icrc1 intercansiter transfer call:
+                switch (response) {
+                  case (#ok(transferResult)) {
+                    switch (transferResult) {
+                      case (#Ok _) {
+                        // Updated enrolled course to completed
+                        Vector.put(member.enrolledCourses, enrolledCourseIndex, enrolledCourse);
+                        // Update user object
+                        Map.set(members, phash, caller, member);
+                        return #ok("You have successfully completed the course");
+                      };
+                      case (#Err _) #err(
+                        "The icrc1 transfer call could not be completed as requested."
+                      );
+                    };
+                  };
+                  case (#err(_)) {
+                    #err(
+                      "The intercanister icrc1 transfer call caught an error and did not finish processing."
+                    );
+                  };
+                };
               };
             };
           };
@@ -514,6 +605,130 @@ shared ({ caller }) actor class Backend() {
   };
 
   // Make call to AI model
+  public shared ({ caller }) func sendThreadMessage(threadId : Text, prompt : Text) : async Result<SendMessageStatus, SendMessageStatus> {
+    let user = Map.get(members, phash, caller);
+    switch (user) {
+      case (?member) {
+        var enrolledCourse : ?EnrolledCourse = null;
+        var enrolledCourseIdx = 0;
+
+        for (_course in Vector.vals(member.enrolledCourses)) {
+          if (_course.threadId == threadId) {
+            enrolledCourse := ?_course;
+          };
+          enrolledCourseIdx := enrolledCourseIdx + 1;
+        };
+
+        switch (enrolledCourse) {
+          case (null) {
+            return #err(#Failed("Enrolled course with thread id not found"));
+          };
+          case (?eCourse) {
+            // Check if there is no pending run
+            let inProgressRuns = _getInProgressThreadRuns(threadId);
+            if (Array.size(inProgressRuns) > 0) {
+              return #err(#ThreadLock({ runId = inProgressRuns[0].runId }));
+            };
+
+            var data = #Object([
+              ("role", #String("user")),
+              ("content", #String(prompt)),
+            ]);
+
+            let headers : ?[Types.HttpHeader] = ?[
+              {
+                name = "Authorization";
+                value = "Bearer " # API_KEY;
+              },
+              {
+                name = "OpenAI-Beta";
+                value = "assistants=v2";
+              },
+            ];
+
+            let response = await Request.post(
+              "https://api.openai.com/v1/threads/" # threadId # "/messages",
+              data,
+              transform,
+              headers,
+            );
+
+            if (response.status != 200) {
+              return #err(#Failed("Failed to create message"));
+            };
+
+            let newMessage = {
+              content = prompt;
+              role = #User;
+            };
+
+            Vector.add(eCourse.messages, newMessage);
+            Vector.put(member.enrolledCourses, enrolledCourseIdx, eCourse);
+            Map.set(members, phash, caller, member);
+
+            // Create new run
+            data := #Object([
+              ("assistant_id", #String(ASSISTANT_ID)),
+              ("instructions", #String("You are a helpful assistant, here to train users on the impacts of corruption and how to mitigate them based on the files you have been trained with and all your responses must be in markdown format")),
+            ]);
+            let runResponse = await Request.post(
+              "https://api.openai.com/v1/threads/" # threadId # "/runs",
+              data,
+              transform,
+              headers,
+            );
+
+            Debug.print(JSON.show(runResponse.body));
+
+            var runId = "";
+
+            switch (runResponse.body) {
+              case (#Object(v)) {
+                label findId for ((k, v) in v.vals()) {
+                  if (k == "id") {
+                    switch (v) {
+                      case (#String(v)) {
+                        runId := v;
+                        break findId;
+                      };
+                      case (_) {
+                        return #err(#Failed("Json parse failed"));
+                      };
+                    };
+                  };
+                };
+              };
+              case (_) {
+                return #err(#Failed("Json parse failed"));
+              };
+            };
+
+            if (runId == "") {
+              return #err(#Failed("Run failed"));
+            };
+
+            let threadRun = {
+              runId = runId;
+              threadId = threadId;
+              status = #InProgress;
+              timestamp = Time.now();
+              lastExecuted = null;
+            };
+
+            Vector.add(threadRunQueue, threadRun);
+
+            return #ok(#Completed({ runId = runId }));
+          };
+        };
+      };
+      case (null) {
+        return #err(#Failed("Member not found"));
+      };
+    };
+
+  };
+
+  // Make call to AI model
   public shared func generateCourse(title : Text, description : Text) : async Text {
     let prompt = "Create a detailed course description in JSON format for a course titled "
     # title
@@ -525,7 +740,6 @@ shared ({ caller }) actor class Backend() {
     # "description: " # description
     # "resources: An array of objects, each containing title, description, URL, and resource type (Book, Article, Video, Slides, Report)."
     # " Don't add the ```json``` text"
-    // # "questions: An array of objects, each containing the question, an array of options with descriptions and explanations, and the correct answer index."
     # "{"
     # "'title': '',"
     # "'description': '',"
@@ -537,34 +751,6 @@ shared ({ caller }) actor class Backend() {
     # "'rType': 'Book | Article | Video | Slides | Report'"
     # "}"
     # "]"
-    // # "'questions': ["
-    // # "{"
-    // # "'q': '',"
-    // # "'options': ["
-    // # "{"
-    // # "'o': 1,"
-    // # "'description': '',"
-    // # "'reason': 'Why correct or wrong'"
-    // # "},"
-    // # "{"
-    // # "'o': 2,"
-    // # "'description': '',"
-    // # "'reason': 'Why correct or wrong'"
-    // # "},"
-    // # "{"
-    // # "'o': 3,"
-    // # "'description': '',"
-    // # "'reason': 'Why correct or wrong'"
-    // # "},"
-    // # "{"
-    // # "'o': 4,"
-    // # "'description': '',"
-    // # "'reason': 'Why correct or wrong'"
-    // # "}"
-    // # "],"
-    // # "'correct': 1"
-    // # "}"
-    // # "]"
     # "}";
     let model = "gpt-4o-mini";
     let data : JSON.JSON = #Object([
@@ -579,25 +765,38 @@ shared ({ caller }) actor class Backend() {
 
     let response = await Request.post(
       "https://api.openai.com/v1/chat/completions",
-      data,
+      ?data,
       transform,
       headers,
     );
 
-    switch (response) {
+    switch (response.body) {
       case (#Array val) {
+        Debug.print("Got here 1");
         let item = val[0];
+        Debug.print(debug_show (item));
         switch (item) {
           case (#Object kvs) {
+            Debug.print("Got here 2");
             let message = kvs[1].1;
+            Debug.print(debug_show (message));
             switch (message) {
               case (#Object items) {
                 let content = items[1].1;
                 return JSON.show(content);
               };
+              case (_) {
+                return "";
+              };
             };
           };
+          case (_) {
+            return "";
+          };
         };
+      };
+      case (_) {
+        return "";
       };
     };
   };
@@ -705,4 +904,94 @@ shared ({ caller }) actor class Backend() {
       };
     };
   };
+
+  // Jobs
+  private func pollRuns() : async () {
+    let newThreadRunQueue = Vector.new<ThreadRun>();
+    var runIdx = 0;
+    // Poll for run status
+    for (run in Vector.vals(threadRunQueue)) {
+      switch (run.status) {
+        case (#InProgress) {
+          // Poll run id
+          let headers : ?[Types.HttpHeader] = ?[
+            {
+              name = "Authorization";
+              value = "Bearer " # API_KEY;
+            },
+            {
+              name = "OpenAI-Beta";
+              value = "assistants=v2";
+            },
+          ];
+
+          let response = await Request.get(
+            "https://api.openai.com/v1/threads/" # run.threadId # "/runs/" # run.runId,
+            transform,
+            headers,
+          );
+
+          var status = "";
+          var runStatus: RunStatus = #InProgress;
+
+          if (response.status != 200) {
+            status := "failed";
+          } else {
+            switch (response.body) {
+              case (#Object(v)) {
+                label findId for ((k, v) in v.vals()) {
+                  if (k == "status") {
+                    switch (v) {
+                      case (#String(v)) {
+                        status := v;
+                        break findId;
+                      };
+                      case (_) {};
+                    };
+                  };
+                };
+              };
+              case (_) {};
+            };
+
+            switch (status) {
+              case ("completed") {
+                runStatus := #Completed;
+              };
+              case ("failed") {
+                runStatus := #Failed;
+              };
+              case ("cancelled") {
+                runStatus := #Cancelled;
+              };
+              case ("expired") {
+                runStatus := #Expired;
+              };
+              case (_) {
+                runStatus := #Failed;
+              };
+            };
+          };
+        };
+        case (_) {
+          switch (run.lastExecuted) {
+            case (null) {};
+            case (?timestamp) {
+              let LIFESPAN = 3 * 60000000000; // 3 mins in nano secs
+              if (Time.now() - timestamp < LIFESPAN) {
+                // Run has not exceeded lifespan and should be kept
+                Vector.add(newThreadRunQueue, run);
+              };
+            };
+          };
+        };
+      };
+      runIdx := runIdx + 1;
+    };
+
+    threadRunQueue := newThreadRunQueue;
+  };
+
+  // Timers
+  ignore recurringTimer<system>(#seconds 5, pollRuns);
 };

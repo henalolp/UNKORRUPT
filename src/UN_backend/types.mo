@@ -3,7 +3,9 @@ import Nat "mo:base/Nat";
 import Result "mo:base/Result";
 import Nat64 "mo:base/Nat64";
 import Principal "mo:base/Principal";
+import Time "mo:base/Time";
 import Vector "mo:vector";
+import JSON "mo:json.mo";
 
 module {
   public type Vector<T> = Vector.Vector<T>;
@@ -21,7 +23,45 @@ module {
 
   public type EnrolledCourse = {
     id : Nat;
+    threadId : Text;
     completed : Bool;
+    messages : Vector<Message>;
+  };
+
+  public type RunStatus = {
+    #InProgress;
+    #Completed;
+    #Failed;
+    #Cancelled;
+    #Expired;
+  };
+
+  public type ThreadRun = {
+    runId : Text;
+    threadId : Text;
+    status : RunStatus;
+    timestamp : Time.Time;
+    lastExecuted : ?Time.Time;
+  };
+
+  public type MessgeType = {
+    #User;
+    #System;
+  };
+
+  public type Message = {
+    content : Text;
+    role : MessgeType;
+  };
+
+  public type SendMessageStatus = {
+    #Completed : {
+      runId : Text;
+    };
+    #ThreadLock : {
+      runId : Text;
+    };
+    #Failed : Text;
   };
 
   public type SharedUser = {
@@ -107,14 +147,14 @@ module {
 
   // Report types
   public type Report = {
-    id: Nat;
-    country: Text;
-    state: Text;
-    details: Text;
-    category: Text;
-    image: Blob;
-    upvotes: Nat;
-    owner: Principal;
+    id : Nat;
+    country : Text;
+    state : Text;
+    details : Text;
+    category : Text;
+    image : Blob;
+    upvotes : Nat;
+    owner : Principal;
   };
 
   // HTTP Request types
@@ -144,6 +184,11 @@ module {
     status : Nat;
     headers : [HttpHeader];
     body : [Nat8];
+  };
+
+  public type HttpReponse = {
+    status : Nat;
+    body : JSON.JSON;
   };
 
   public type TransformFn = shared query TransformArgs -> async HttpResponsePayload;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "../courseee.css";
 import logo from "../assets/course.svg";
 import { FaPlay } from "react-icons/fa";
@@ -7,19 +7,19 @@ import { useNavigate } from "react-router-dom";
 import { NavLink } from 'react-router-dom';
 import { UN_backend } from "../../../declarations/UN_backend";
 import { CourseStatus } from "../helper/enum";
+import useActorLoader from "../hooks/useActorLoader";
+import { Center, Spinner } from "@chakra-ui/react";
 
 const CoursePage = () => {
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
 
-  useEffect(() => {
-    // Load courses
-    async function load() {
-      const response = await UN_backend.listCourses(CourseStatus.Approved);
-      setCourses(response);
-    }
-    load();
-  }, [])
+  const fetcher = useCallback(async () => {
+    const response = await UN_backend.listCourses(CourseStatus.Approved);
+    setCourses(response);
+  })
+
+  const { isLoading } = useActorLoader(fetcher);
 
   return (
     <div className="course-container">
@@ -34,6 +34,13 @@ const CoursePage = () => {
             successfully completed course!
           </p>
           <h2 className="syllabus-title">Syllabus</h2>
+          {
+            isLoading && (
+              <Center>
+                <Spinner />
+              </Center>
+            )
+          }
           <div className="course-grid">
             {courses.map((course) => (
               <div

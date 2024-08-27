@@ -69,7 +69,8 @@ const ChatPage = () => {
       if (courseDetails && courseDetails.resources.length > 0) {
         const resourceMessages = courseDetails.resources.map((resource) => ({
           sender: "system",
-          text: `${resource.title}: ${resource.description}\nLink: ${resource.url}`,
+          text: `${resource.title}: ${resource.description}`,
+          link: resource.url,
         }));
         setMessages((prevMessages) => [...prevMessages, ...resourceMessages]);
       } else {
@@ -117,7 +118,13 @@ const ChatPage = () => {
                 className={`message ${message.sender === "user" ? "user-message" : "system-message"
                   }`}
               >
-                {message.text}
+                {
+                  message.link ? (
+                    <a href={message.link} target='_blank'>{message.text}</a>
+                  ) : (
+                    message.text
+                  )
+                }
               </div>
             ))}
           </div>
