@@ -28,6 +28,13 @@ module {
     messages : Vector<Message>;
   };
 
+  public type SharedEnrolledCourse = {
+    id : Nat;
+    threadId : Text;
+    completed : Bool;
+    messages : [Message];
+  };
+
   public type RunStatus = {
     #InProgress;
     #Completed;
@@ -36,12 +43,29 @@ module {
     #Expired;
   };
 
+  public type ThreadRunJob = {
+    #Message;
+    #Question;
+  };
+
   public type ThreadRun = {
     runId : Text;
     threadId : Text;
     status : RunStatus;
     timestamp : Time.Time;
     lastExecuted : ?Time.Time;
+    job : ThreadRunJob;
+    var processing : Bool;
+  };
+
+  public type SharedThreadRun = {
+    runId : Text;
+    threadId : Text;
+    status : RunStatus;
+    timestamp : Time.Time;
+    lastExecuted : ?Time.Time;
+    job : ThreadRunJob;
+    processing : Bool;
   };
 
   public type MessgeType = {
@@ -50,6 +74,7 @@ module {
   };
 
   public type Message = {
+    runId : ?Text;
     content : Text;
     role : MessgeType;
   };
@@ -131,13 +156,11 @@ module {
     description : Text;
     options : [QuestionOption];
     correctOption : Nat;
-    hint : Text;
   };
 
   public type QuestionOption = {
     option : Nat;
     description : Text;
-    reason : Text;
   };
 
   public type SubmittedAnswer = {

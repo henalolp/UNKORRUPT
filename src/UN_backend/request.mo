@@ -5,6 +5,7 @@ import Text "mo:base/Text";
 import Result "mo:base/Result";
 import Iter "mo:base/Iter";
 import Buffer "mo:base/Buffer";
+import Debug "mo:base/Debug";
 import Source "mo:uuid/async/SourceV4";
 import UUID "mo:uuid/UUID";
 import Types "types";
@@ -37,9 +38,11 @@ module Request {
     let jsonBody = switch (Text.decodeUtf8(response_body)) {
       case (null) { #Object([("error", #String("No response"))]) };
       case (?y) {
-        switch (JSON.parse(y)) {
+        // Clean y
+        let t = Text.replace(y, #text "1.0", "1");
+        switch (JSON.parse(t)) {
           case (null) {
-            #Object([("error", #String("Invalid json string"))]);
+            #Object([("error", #String("Invalid json string: " # y))]);
           };
           case (?json) { json };
         };

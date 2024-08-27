@@ -7,9 +7,47 @@ import Principal "mo:base/Principal";
 import Text "mo:base/Text";
 import Result "mo:base/Result";
 import JSON "mo:json.mo";
+import Types "types";
+import Vector "mo:vector";
 
 module Utils {
   type Result<A, B> = Result.Result<A, B>;
+  type Model = {
+    id : Nat;
+  };
+
+  type ModelConvertible = {
+    #resource : Vector.Vector<Types.Resource>;
+    #question : Vector.Vector<Types.Question>;
+  };
+
+  public func resourceEqual(a : Types.Resource, b : Types.Resource) : Bool {
+    return a.id == b.id;
+  };
+
+  public func questionEqual(a : Types.Question, b : Types.Question) : Bool {
+    return a.id == b.id;
+  };
+
+  public func vecContains(x : ModelConvertible, id : Nat) : Bool {
+    switch (x) {
+      case (#resource(v)) {
+        for (k in Vector.vals(v)) {
+          if (k.id == id) {
+            return true;
+          };
+        };
+      };
+      case (#question(v)) {
+        for (k in Vector.vals(v)) {
+          if (k.id == id) {
+            return true;
+          };
+        };
+      };
+    };
+    return false;
+  };
 
   public func createIcrcActor(canisterId : Text) : async ICRC1.Service {
     actor (canisterId);
@@ -25,4 +63,8 @@ module Utils {
   }) : ICRC1.Account {
     { owner = canisterId; subaccount = ?(computeUserSubaccountAccount(user)) };
   };
+
+  // public func threadFilter(k : Text, v : Types.ThreadRun) : Bool {
+
+  // };
 };
