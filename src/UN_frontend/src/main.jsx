@@ -8,8 +8,9 @@ import ProgressPage from "./routes/ProgressPage";
 import ChatPage from "./routes/ChatPage"; // Import the ChatPage
 import ReportsPage from "./routes/ReportsPage";
 import Quiz from "./routes/QuizPage";
+import HomePage from "./routes/HomePage";
 import App from "./App";
-import "./index.scss";
+// import "./index.scss";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import QuizPage from "./routes/QuizPage";
 import { ChakraProvider } from '@chakra-ui/react'
@@ -19,7 +20,7 @@ import theme from "./helper/theme";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Auth />,
+    element: <HomePage />,
   },
   {
     path: "coursePage",
