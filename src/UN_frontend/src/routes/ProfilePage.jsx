@@ -15,6 +15,7 @@ import {
   MDBIcon,
 } from "mdb-react-ui-kit";
 import "mdb-react-ui-kit/dist/css/mdb.min.css";
+import Layout from "../components/Layout";
 
 const ProfilePage = () => {
   return (

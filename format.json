@@ -2,24 +2,24 @@
   {
     "title": "",
     "description": "",
-    "resources": [
-      {
-        "title": "",
-        "d": "",
-        "u": "",
-        "t": "Book | Article | Video | Slides | Report"
-      }
-    ],
     "qs": [
       {
-        "question": "",
+        "q": "",
         "o": [
             "Option 1",
             "Option 2",
             "Option 3",
             "Option 4"
         ],
-        "answer": 1
+        "a": 1
+      }
+    ],
+    "resources": [
+      {
+        "title": "",
+        "d": "",
+        "u": "",
+        "t": "Book | Article | Video | Slides | Report"
       }
     ]
   }
