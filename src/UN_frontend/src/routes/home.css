@@ -1,17 +1,28 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Make sure body and html are 100% height */
+}
+
 .hbody {
     margin: 0;
+    height: 100%; /* Cover the whole page */
     font-family: Arial, sans-serif;
     background-color: white; /* Light mode background color */
     color: black; /* Light mode text color */
+    display: flex; /* Use flex to make child containers fill space */
+    flex-direction: column; /* Stack children vertically */
 }
 
 .container {
-    width: 100vw; /* Full width of the viewport */
-    height: 100vh; /* Full height of the viewport */
-    margin: auto;
+    flex: 1; /* Allow the container to grow and fill remaining space */
+    display: flex;
+    flex-direction: column; /* Ensure it stacks content vertically */
     box-sizing: border-box; 
     background-color: white; 
+    width: 100%; /* Make sure it spans full width */
 }
+
 
 .header {
     display: flex;
@@ -92,7 +103,7 @@
 }
 
 .hero .hero-actions .btn-link {
-    /* color: #A020F0; */
+    color: #A020F0;
     text-decoration: none;
 }
 
@@ -110,8 +121,8 @@
     text-align: center;
     margin: 0;
     max-width: 100%;
-    width: 100vw; /* Full width of the viewport */
-    box-sizing: border-box; /* Includes padding in the width/height */
+    width: 100vw; 
+    box-sizing: border-box;
     background-color: white; 
 }
 
@@ -123,6 +134,7 @@
 .section-title h3 {
     color: black;
     margin-bottom: 10px;
+    font-weight: bold;
 }
 
 .section-title p {
@@ -612,7 +624,7 @@
 
 .testimonials {
     padding: 60px 20px;
-    background-color: #1a1a1a; /* Darker background for testimonials */
+    background-color: white; /* Darker background for testimonials */
     color: white;
 }
 

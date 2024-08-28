@@ -100,6 +100,7 @@ export default function HomePage() {
                             <h3>We help you make a difference</h3>
                             <ul>
                                 <li>
+                                    <img src="/gunicon.png" alt="" />
                                     <strong>Understand corruption</strong>
                                     <p>
                                         The platform helps you answer all your questions about
@@ -107,10 +108,12 @@ export default function HomePage() {
                                     </p>
                                 </li>
                                 <li>
+                                    <img src="" alt="" />
                                     <strong>Learn how to fight corruption</strong>
                                     <p>To overcome it, you have to understand it.</p>
                                 </li>
                                 <li>
+                                    <img src="" alt="" />
                                     <strong>Fight corruption</strong>
                                     <p>Participate in our programs and help combat corruption.</p>
                                 </li>

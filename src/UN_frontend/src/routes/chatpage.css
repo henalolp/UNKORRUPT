@@ -35,7 +35,7 @@ body {
     display: flex;
     align-items: center;
     padding: 20px;
-    background-color: #a020f0;
+    background-color: rgba(160, 32, 240, 0.5); /* 50% transparency */
     color: #ffffff;
 }
 
