@@ -9,6 +9,7 @@ import ChatPage from "./routes/ChatPage"; // Import the ChatPage
 import ReportsPage from "./routes/ReportsPage";
 import Quiz from "./routes/QuizPage";
 import App from "./App";
+import Admin from "./routes/Admin";
 // import LandingPage from "./routes/LandingPage";
 // import RootLayout from "./app/layout";
 import HomePage from "./routes/HomePage";
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
   {
     path: "auth",
     element: <Auth />,
+  },
+  {
+    path: "admin",
+    element: <Admin />,
   },
   {
     path: "reportForm",
@@ -57,6 +62,7 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
+  
   <React.StrictMode>
     <RouterProvider router={router} />
   </React.StrictMode>

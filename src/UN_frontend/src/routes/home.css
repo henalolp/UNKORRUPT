@@ -317,7 +317,7 @@ body, html {
     background-color: #A020F0; /* Bright purple background for CTA */
     color: #fff;
     text-align: center;
-    padding: 30px 40px; /* Increased padding for emphasis */
+    padding: 10px 200px; /* Increased padding for emphasis */
     border-radius: 15px; /* Rounded corners */
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
     margin: 40px auto; /* Center the CTA with some margin */
@@ -593,15 +593,15 @@ body, html {
 }
 
 .benefits {
-    padding: 40px 20px;
+    padding: 80px 40px;
     margin-bottom: 40px;
-    display: flex;
+    
     color: black;
     background-color: white; 
 }
 
 .dark-mode .benefits {
-    background-color: #1e1e1e; /* Dark mode background */
+    background-color: black; /* Dark mode background */
     color: white; /* Light text for dark mode */
 }
 
@@ -788,7 +788,7 @@ body, html {
     background-color: #A020F0; /* Bright purple background for CTA */
     color: #fff;
     text-align: center;
-    padding: 30px 40px; /* Increased padding for emphasis */
+    padding: 10px 200px; /* Increased padding for emphasis */
     border-radius: 15px; /* Rounded corners */
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
     margin: 40px auto; /* Center the CTA with some margin */
@@ -828,8 +828,8 @@ body, html {
 }
 
 .dark-mode .cta .btn-primary {
-    background-color: #121212; /* Button background for dark mode */
-    color: #bb86fc; /* Text color matching dark mode theme */
+    background-color: white; /* Button background for dark mode */
+    color: #A020F0; /* Text color matching dark mode theme */
 }
 
 .dark-mode .cta .btn-primary:hover {

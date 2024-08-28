@@ -1,41 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
 
 body {
-  font-family: 'Inter', sans-serif; /* Updated font family */
+  font-family: 'Poppins', sans-serif; /* Updated font family to Poppins */
   font-size: 1.5rem;
   background: linear-gradient(to bottom, #030303, #9B51E0) !important; 
   color: white; /* Ensures text is readable against the dark background */
 }
-
-// img {
-//   max-width: 50vw;
-//   max-height: 25vw;
-//   display: block;
-//   margin: auto;
-// }
-
-// form {
-//   display: flex;
-//   justify-content: center;
-//   gap: 0.5em;
-//   flex-flow: row wrap;
-//   max-width: 40vw;
-//   margin: auto;
-//   align-items: baseline;
-// }
-
-// button[type="submit"] {
-//   padding: 5px 20px;
-//   margin: 10px auto;
-//   float: right;
-// }
-
-// #greeting {
-//   margin: 10px auto;
-//   padding: 10px 60px;
-//   border: 1px solid #222;
-// }
-
-// #greeting:empty {
-//   display: none;
-// }
