@@ -2,106 +2,87 @@
     margin: 0;
     font-family: Arial, sans-serif;
     background-color: white; /* Light mode background color */
-    color: white; 
+    color: black; /* Light mode text color */
 }
-  
-.dark-mode .hbody {
-    background-color: black; 
-    color: white;
-}
-  
+
 .container {
     width: 100vw; /* Full width of the viewport */
     height: 100vh; /* Full height of the viewport */
     margin: auto;
-    padding: 50px;
-    box-sizing: border-box; /* Includes padding in the width/height */
-    background-color: white; /* Light mode container color */
+    box-sizing: border-box; 
+    background-color: white; 
 }
-  
-.dark-mode .container {
-    background-color: black; /* Dark mode container color */
-}
-  
+
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 0;
+    padding: 25px 5px;
 }
-  
+
 .header .logo {
     display: flex;
     align-items: center;
 }
-  
+
 .header .logo img {
     height: 50px;
     margin-right: 10px;
 }
-  
+
 .header .logo .patriot-ai { 
-    font-size: 1.75rem;
-    color: #7018a8;
+    font-size: 1.5rem;
+    color: #A020F0;
     font-weight: bold;
 }
-  
+
 .header .nav a {
     margin-right: 20px;
     text-decoration: none;
     color: black;
+    font-size: smaller;
 }
-  
-.dark-mode .header .nav a {
-    margin-right: 20px;
-    text-decoration: none;
-    color: white;
-}
-  
+
 .header .btn-primary {
-    background-color: #7018a8;
+    background-color: #A020F0;
     color: #fff;
-    padding: 10px 20px;
+    padding: 15px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-size: smaller;
 }
-  
-.header .btn-primary:hover {
+
+.btn-primary:hover {
     background-color: #5b1491;
 }
-  
+
 .hero {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 60px 0;
 }
-  
+
 .hero .hero-content {
     max-width: 600px;
-    color: black; /* Default text color for light mode */
+    color: black; /* Default text color */
 }
-  
-.dark-mode .hero .hero-content {
-    color: white; /* Text color for dark mode */
-}
-  
-.dark-mode .hero h1 {
-    color: white; /* Text color for dark mode */
-}
-  
+
 .hero h1 {
-    font-size: 2.5rem;
+    font-size: 3.5rem;
     margin-bottom: 20px;
+    font-weight: bold;
+    color:black;
+
 }
-  
+
 .hero p {
     margin-bottom: 20px;
 }
-  
+
 .hero .hero-actions .btn-secondary {
-    background-color: #7018a8;
+    background-color: #A020F0;
     color: #fff;
     padding: 10px 20px;
     border: none;
@@ -109,180 +90,819 @@
     text-decoration: none;
     margin-right: 10px;
 }
-  
+
 .hero .hero-actions .btn-link {
-    color: #7018a8;
+    /* color: #A020F0; */
     text-decoration: none;
 }
-  
+
+.btn-secondary:hover{
+    background-color: #5b1491;
+}
+
+
+
 .hero img {
     height: 500px; /* Increased size of the hero image */
 }
-  
+
 .section-title {
     text-align: center;
-    padding: 60px 0; 
-    margin-bottom: 40px;
+    margin: 0;
+    max-width: 100%;
+    width: 100vw; /* Full width of the viewport */
+    box-sizing: border-box; /* Includes padding in the width/height */
+    background-color: white; 
 }
 
-.dark-mode .section-title {
-    background-color: black;
-}
-  
 .section-title h2 {
-    color: #7018a8;
+    color: #A020F0;
     margin-bottom: 10px;
 }
-  
+
 .section-title h3 {
     color: black;
     margin-bottom: 10px;
 }
-  
-.dark-mode .section-title h3 {
-    color: white;
-    margin-bottom: 10px;
-}
-  
+
 .section-title p {
     color: black;
     margin-bottom: 10px;
 }
-  
-.dark-mode .section-title p {
-    color: white;
-    margin-bottom: 10px;
-}
-  
+
 .partners {
     display: flex;
     justify-content: space-around; /* Centers the logos */
     margin: 20px 0;
 }
-  
+
 .partners img {
     height: 100px; /* Reduced size of the partner logos */
     margin: 0 20px;
 }
-  
+
 .benefits {
     padding: 40px 20px;
     margin-bottom: 40px;
     display: flex;
     color: black;
 }
-  
-.dark-mode .benefits {
-    padding: 40px 20px;
-    margin-bottom: 40px;
-    display: flex;
-    background-color: black;
-    color: white;
-}
-  
+
 .benefits h3 {
     margin-bottom: 20px;
 }
-  
+
 .benefits ul {
     list-style: none;
     padding: 0;
 }
-  
+
 .benefits ul li {
     margin-bottom: 20px;
 }
-  
+
 .benefits ul li p {
     margin: 5px 0 0;
 }
-  
+
 .testimonials {
-    padding: 40px 20px;
-    color: black;
+    padding: 60px 20px;
+    background-color: #1a1a1a; /* Darker background for testimonials */
+    color: white;
 }
-  
-.dark-mode .testimonials {
-    padding: 40px 20px;
-    color: #fff;
-}
-  
+
 .testimonials h2 {
     text-align: center;
     margin-bottom: 20px;
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: #A020F0; /* Purple color for the section title */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
-  
+
+.testimonials p {
+    margin-bottom: 10px;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
 .testimonials .testimonial {
+    background-color: #262626; /* Slightly lighter than the background */
     padding: 20px;
     margin: 10px 0;
-    border-radius: 10px;
-    text-align: center;
+    border-radius: 15px;
+    text-align: left;
+    color: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 300px;
+    margin: 0 auto 20px auto; /* Center the testimonials */
 }
-  
+
+.testimonials .testimonial img {
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+    object-fit: cover;
+    margin-right: 15px;
+}
+
+.testimonials .testimonial span {
+    display: block;
+    font-size: 0.875rem;
+    color: #a1a1aa; /* Lighter gray for the name */
+    margin-top: 10px;
+}
+
+.testimonials .testimonial strong {
+    display: block;
+    margin-top: 10px;
+    font-weight: 500;
+}
+
+.testimonials .testimonial .highlight {
+    color: #a78bfa; /* Purple highlight color */
+    font-weight: 600;
+}
+
+.testimonials-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
 .faq {
-    padding: 40px 20px;
-}
-  
-.faq h2 {
+    padding: 60px 20px;
+    background-color: #ffffff; /* Light background */
+    color: #333333; /* Dark text color */
     text-align: center;
+}
+
+.faq h2 {
+    font-weight: 600;
+    font-size: 1.75rem;
+    color: #A020F0; /* Purple color for the section title */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     margin-bottom: 20px;
 }
-  
-.faq .faq-item {
-    margin-bottom: 10px;
+
+.faq p {
+    color: #6b7280; /* Gray color for description */
+    font-weight: 400;
+    margin-bottom: 40px;
 }
-  
-.faq .faq-question {
-    background-color: #7018a8;
-    color: #fff;
-    padding: 10px;
-    width: 100%;
+
+.faq .faq-item {
+    background-color: #f9fafb; /* Light gray background for FAQ items */
+    border: 1px solid #e5e7eb; /* Border color */
+    border-radius: 10px;
+    margin-bottom: 10px;
+    padding: 15px 20px;
     text-align: left;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.faq .faq-question {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    font-weight: 500;
+    font-size: 1rem;
+    color: #111827; /* Darker text for question */
+    cursor: pointer;
 }
-  
+
+.faq .faq-question:hover {
+    color: #6b7280; /* Hover effect */
+}
+
 .faq .faq-answer {
-    padding: 10px;
-    background-color: #f1f1f1;
-    margin-top: 5px;
-    border-radius: 5px;
-    color: #333;
+    margin-top: 10px;
+    font-size: 0.875rem;
+    color: #4b5563; /* Slightly lighter gray for the answer */
+    line-height: 1.6;
 }
-  
+
+.faq .faq-answer p {
+    margin: 0;
+    font-size: larger;
+}
+
+.faq .faq-question .icon {
+    transition: transform 0.3s ease;
+}
+
+.faq .faq-item.active .faq-question .icon {
+    transform: rotate(180deg); /* Rotate icon when active */
+}
+
+/* CTA Section */
 .cta {
-    background-color: #7018a8;
+    background-color: #A020F0; /* Bright purple background for CTA */
     color: #fff;
     text-align: center;
-    padding: 40px 20px;
+    padding: 30px 40px; /* Increased padding for emphasis */
+    border-radius: 15px; /* Rounded corners */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+    margin: 40px auto; /* Center the CTA with some margin */
+    max-width: 800px; /* Restrict max-width for better readability */
 }
-  
+
+.cta h2 {
+    font-size: 2rem; /* Larger font size for the heading */
+    margin-bottom: 10px;
+    font-weight: 700; /* Bold font for emphasis */
+}
+
+.cta p {
+    margin-bottom: 20px;
+    font-size: 1.2rem; /* Slightly larger font for better readability */
+    font-weight: 400;
+}
+
 .cta .btn-primary {
     background-color: #fff;
-    color: #7018a8;
+    color: #A020F0; /* Button text color matching the CTA background */
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+}
+
+.cta .btn-primary:hover {
+    background-color:  #5b1491;
+}
+
+/* Footer Section */
+.footer {
+    display: flex;
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #f9fafb; /* Light gray background for footer */
+    color: #6b7280; /* Gray text color */
+    font-size: smaller;
+}
+
+.footer .footer-links {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap; /* Ensure links wrap on smaller screens */
+    gap: 30px;
+}
+
+.footer .footer-links a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: #6b7280; /* Gray color for links */
+    font-weight: 500;
+}
+
+.footer .footer-links a:hover {
+    color: #7e22ce; /* Hover color matches the CTA button */
+}
+
+.footer .footer-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.footer .footer-logo img {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.footer .footer-logo span {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #A020F0 /* Logo text color matches CTA button */
+}
+
+.footer .social-links {
+    margin-top: 20px;
+}
+
+.footer .social-links a {
+    margin: 0 10px;
+    color: #6b7280; /* Gray color for social icons */
+    font-size: 1.5rem;
+}
+
+.footer .social-links a:hover {
+    color: #A020F0; /* Hover color matches the CTA button */
+}
+
+/* General Styles */
+.hbody {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: white; /* Light mode background color */
+    color: black; /* Light mode text color */
+}
+
+.dark-mode .hbody {
+    background-color: #121212; /* Dark mode background color */
+    color: white; /* Dark mode text color */
+}
+
+.container {
+    width: 100vw; /* Full width of the viewport */
+    height: 100vh; /* Full height of the viewport */
+    margin: auto;
+    box-sizing: border-box; 
+    background-color: white; 
+}
+
+.dark-mode .container {
+    background-color: #121212; /* Dark mode container background */
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.header .logo {
+    display: flex;
+    align-items: center;
+}
+
+.header .logo img {
+    height: 50px;
+    margin-right: 10px;
+}
+
+.header .logo .patriot-ai { 
+    font-size: 1.75rem;
+    color: #A020F0;
+    font-weight: bold;
+}
+
+.dark-mode .header .logo .patriot-ai {
+    color: #bb86fc; /* Softer purple for dark mode */
+}
+
+.header .nav a {
+    margin-right: 20px;
+    text-decoration: none;
+    color: black;
+}
+
+.dark-mode .header .nav a {
+    color: white; /* Light text for dark mode */
+}
+
+.header .btn-primary {
+    background-color: #A020F0;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background-color: #5b1491;
+}
+
+.hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 60px 0;
+}
+
+.hero .hero-content {
+    max-width: 600px;
+    color: black; /* Default text color */
+}
+
+.dark-mode .hero .hero-content {
+    color: white; /* Light text for dark mode */
+}
+
+.dark-mode .hero h1 {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: white;
+}
+
+.hero p {
+    margin-bottom: 20px;
+}
+
+.hero .hero-actions .btn-secondary {
+    background-color: #A020F0;
+    color: #fff;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     text-decoration: none;
+    margin-right: 10px;
 }
-  
-.footer {
+
+.hero .hero-actions .btn-link {
+    text-decoration: none;
+    color: #A020F0;
+}
+
+.dark-mode .hero .hero-actions .btn-link {
+    color: #bb86fc; /* Softer purple for dark mode */
+}
+
+.btn-secondary:hover {
+    background-color: #5b1491;
+}
+
+.hero img {
+    height: 500px; /* Increased size of the hero image */
+}
+
+.section-title {
     text-align: center;
-    padding: 20px 0;
+    margin: 0;
+    max-width: 100%;
+    width: 100vw; /* Full width of the viewport */
+    box-sizing: border-box; /* Includes padding in the width/height */
+    background-color: white; 
 }
-  
-.footer-links {
+
+.dark-mode .section-title {
+    background-color: #121212; /* Dark mode background */
+}
+
+.section-title h2 {
+    color: #A020F0;
+    margin-bottom: 10px;
+}
+
+.dark-mode .section-title h2 {
+    color: #bb86fc; /* Softer purple for dark mode */
+}
+
+.section-title h3 {
+    color: black;
+    margin-bottom: 10px;
+}
+
+.dark-mode .section-title h3 {
+    color: white; /* Light text for dark mode */
+}
+
+.section-title p {
+    color: black;
+    margin-bottom: 10px;
+}
+
+.dark-mode .section-title p {
+    color: white; /* Light text for dark mode */
+}
+
+.partners {
     display: flex;
-    justify-content: center;
+    justify-content: space-around; /* Centers the logos */
+    margin: 20px 0;
+}
+
+.partners img {
+    height: 100px; /* Reduced size of the partner logos */
+    margin: 0 20px;
+}
+
+.benefits {
+    padding: 40px 20px;
+    margin-bottom: 40px;
+    display: flex;
+    color: black;
+    background-color: white; 
+}
+
+.dark-mode .benefits {
+    background-color: #1e1e1e; /* Dark mode background */
+    color: white; /* Light text for dark mode */
+}
+
+.benefits h3 {
+    margin-bottom: 20px;
+}
+
+.benefits ul {
+    list-style: none;
+    padding: 0;
+}
+
+.benefits ul li {
+    margin-bottom: 20px;
+}
+
+.benefits ul li p {
+    margin: 5px 0 0;
+}
+
+.testimonials {
+    padding: 60px 20px;
+    background-color: #1a1a1a; /* Darker background for testimonials */
+    color: white;
+}
+
+.testimonials h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: #A020F0; /* Purple color for the section title */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.dark-mode .testimonials h2 {
+    color: #bb86fc; /* Softer purple for dark mode */
+}
+
+.testimonials p {
+    margin-bottom: 10px;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+.testimonials .testimonial {
+    background-color: #262626; /* Slightly lighter than the background */
+    padding: 20px;
+    margin: 10px 0;
+    border-radius: 15px;
+    text-align: left;
+    color: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 300px;
+    margin: 0 auto 20px auto; /* Center the testimonials */
+}
+
+.testimonials .testimonial img {
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+    object-fit: cover;
+    margin-right: 15px;
+}
+
+.testimonials .testimonial span {
+    display: block;
+    font-size: 0.875rem;
+    color: #a1a1aa; /* Lighter gray for the name */
     margin-top: 10px;
 }
-  
-.footer-links a {
+
+.testimonials .testimonial strong {
+    display: block;
+    margin-top: 10px;
+    font-weight: 500;
+}
+
+.testimonials .testimonial .highlight {
+    color: #a78bfa; /* Purple highlight color */
+    font-weight: 600;
+}
+
+.testimonials-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.faq {
+    padding: 60px 20px;
+    background-color: #ffffff; /* Light background */
+    color: #333333; /* Dark text color */
+    text-align: center;
+    
+}
+
+.dark-mode .faq {
+    background-color: #121212; /* Dark mode background */
+    color: white; /* Light text for dark mode */
+}
+
+.faq h2 {
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: #A020F0; /* Purple color for the section title */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+}
+
+.dark-mode .faq h2 {
+    color: #bb86fc; /* Softer purple for dark mode */
+}
+
+.faq p {
+    color: #6b7280; /* Gray color for description */
+    font-weight: 400;
+    margin-bottom: 40px;
+}
+
+.dark-mode .faq p {
+    color: #b0b0b0; /* Lighter gray for dark mode */
+}
+
+.faq .faq-item {
+    background-color: #f9fafb; /* Light gray background for FAQ items */
+    border: 1px solid #e5e7eb; /* Border color */
+    border-radius: 10px;
+    margin-bottom: 10px;
+    padding: 15px 20px;
+    text-align: left;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode .faq .faq-item {
+    background-color: #1e1e1e; /* Dark mode background for FAQ items */
+    border: 1px solid #3c3c3c; /* Darker border for dark mode */
+}
+
+.faq .faq-question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+    font-size: 1rem;
+    color: #111827; /* Darker text for question */
+    cursor: pointer;
+}
+
+.dark-mode .faq .faq-question {
+    color: white; /* Light text for dark mode */
+}
+
+.faq .faq-question:hover {
+    color: #6b7280; /* Hover effect */
+}
+
+.faq .faq-answer {
+    margin-top: 10px;
+    font-size: 0.875rem;
+    color: #4b5563; /* Slightly lighter gray for the answer */
+    line-height: 1.6;
+}
+
+.dark-mode .faq .faq-answer {
+    color: #b0b0b0; /* Lighter gray for dark mode */
+}
+
+.faq .faq-question .icon {
+    transition: transform 0.3s ease;
+}
+
+.faq .faq-item.active .faq-question .icon {
+    transform: rotate(180deg); /* Rotate icon when active */
+}
+
+/* CTA Section */
+.cta {
+    background-color: #A020F0; /* Bright purple background for CTA */
+    color: #fff;
+    text-align: center;
+    padding: 30px 40px; /* Increased padding for emphasis */
+    border-radius: 15px; /* Rounded corners */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+    margin: 40px auto; /* Center the CTA with some margin */
+    max-width: 800px; /* Restrict max-width for better readability */
+}
+
+.cta h2 {
+    font-size: 2rem; /* Larger font size for the heading */
+    margin-bottom: 10px;
+    font-weight: 700; /* Bold font for emphasis */
+}
+
+.cta p {
+    margin-bottom: 20px;
+    font-size: 1rem; /* Slightly larger font for better readability */
+    font-weight: 400;
+}
+
+.cta .btn-primary {
+    background-color: #fff;
+    color: #A020F0; /* Button text color matching the CTA background */
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+}
+
+.cta .btn-primary:hover {
+    background-color:  #5b1491;
+}
+
+.dark-mode .cta {
+    background-color: #A020F0; /* Darker background for CTA */
+    color: white; /* Light text for dark mode */
+}
+
+.dark-mode .cta .btn-primary {
+    background-color: #121212; /* Button background for dark mode */
+    color: #bb86fc; /* Text color matching dark mode theme */
+}
+
+.dark-mode .cta .btn-primary:hover {
+    background-color: #2a2a2a; /* Darker button background on hover */
+}
+
+/* Footer Section */
+.footer {
+    display: flex;
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #f9fafb; /* Light gray background for footer */
+    color: #6b7280; /* Gray text color */
+    font-size: smaller;
+}
+
+.dark-mode .footer {
+    background-color: #1e1e1e; /* Darker background for footer */
+    color: white; /* Light text color for footer */
+}
+
+.footer .footer-links {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap; /* Ensure links wrap on smaller screens */
+    gap: 30px;
+}
+
+.footer .footer-links a {
     margin: 0 10px;
     text-decoration: none;
-    color: inherit;
+    color: #6b7280; /* Gray color for links */
+    font-weight: 500;
 }
+
+.dark-mode .footer .footer-links a {
+    color: #bb86fc; /* Light link color for dark mode */
+}
+
+.footer .footer-links a:hover {
+    color: #7e22ce; /* Hover color matches the CTA button */
+}
+
+.footer .footer-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.footer .footer-logo img {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.footer .footer-logo span {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #A020F0 /* Logo text color matches CTA button */
+}
+
+.dark-mode .footer .footer-logo span {
+    color: #bb86fc; /* Softer purple for dark mode */
+}
+
+.footer .social-links {
+    margin-top: 20px;
+}
+
+.footer .social-links a {
+    margin: 0 10px;
+    color: #6b7280; /* Gray color for social icons */
+    font-size: 1rem;
+}
+
+.dark-mode .footer .social-links a {
+    color: #bb86fc; /* Softer purple for dark mode */
+}
+
+.footer .social-links a:hover {
+    color: #A020F0; /* Hover color matches the CTA button */
+}
+
+.dark-mode .footer .social-links a:hover {
+    color: #7e22ce; /* Hover color matches dark mode theme */
+}
+

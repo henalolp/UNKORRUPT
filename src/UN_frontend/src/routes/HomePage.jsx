@@ -1,20 +1,35 @@
-import React, { useState } from "react";
-import { FaSun, FaMoon, FaChevronDown, FaChevronUp } from "react-icons/fa"; // Import the icons
+import React, { useState, useEffect } from "react";
+import { FaSun, FaMoon, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import "./home.css";
+import { IoSunnyOutline } from "react-icons/io5";
+
 
 export default function HomePage() {
-    const [darkMode, setDarkMode] = useState(false);
-    const [faqOpen, setFaqOpen] = useState([false, false, false, false]); // State to track open/close status of FAQs
+    const [darkMode, setDarkMode] = useState(() => {
+        const savedMode = localStorage.getItem('darkMode');
+        return savedMode ? JSON.parse(savedMode) : false;
+    });
+
+    useEffect(() => {
+        localStorage.setItem('darkMode', JSON.stringify(darkMode));
+        document.body.classList.toggle('dark-mode', darkMode);
+    }, [darkMode]);
 
     const toggleDarkMode = () => {
         setDarkMode(!darkMode);
-        document.body.classList.toggle("dark-mode");
     };
 
+    const [faqOpen, setFaqOpen] = useState([false, false, false, false]);
+    const navigate = useNavigate(); // Initialize navigate
+
     const toggleFaq = (index) => {
-        const newFaqOpen = [...faqOpen];
-        newFaqOpen[index] = !newFaqOpen[index];
+        const newFaqOpen = faqOpen.map((item, i) => (i === index ? !item : false));
         setFaqOpen(newFaqOpen);
+    };
+
+    const handleLoginClick = () => {
+        navigate('/auth'); // Redirect to the authentication page
     };
 
     return (
@@ -23,7 +38,7 @@ export default function HomePage() {
                 <header className="header">
                     <div className="logo">
                         <img src="/patriot.png" alt="PatriotAi Logo" />
-                        <span className="patriot-ai">PatriotAi</span> {/* Updated class */}
+                        <span className="patriot-ai">PatriotAi</span>
                     </div>
                     <nav className="nav">
                         <a href="#">Product</a>
@@ -32,12 +47,14 @@ export default function HomePage() {
                         <a href="#">Company</a>
                         <a href="#">Blog</a>
                     </nav>
-                    <button className="btn-primary">Log in with Internet</button>
+                    <button className="btn-primary" onClick={handleLoginClick}>
+                        Log in with Internet
+                    </button>
                     <div className="theme-toggle" onClick={toggleDarkMode}>
                         {darkMode ? (
-                            <FaSun size={24} color="#FFD700" /> // Sun icon for light mode
+                            <IoSunnyOutline size={24} color="#FFD700" />
                         ) : (
-                            <FaMoon size={24} color="#4B0082" /> // Moon icon for dark mode
+                            <FaMoon size={24} color="#4B0082" />
                         )}
                     </div>
                 </header>
@@ -58,85 +75,78 @@ export default function HomePage() {
                                 View on Github
                             </a>
                         </div>
-                        <div></div>
                     </div>
                     <img src="/vr.png" alt="Hero" className="hero-image" />
                 </section>
+
                 <div className="partners">
                     <img src="/un.png" alt="" />
                     <img src="/ic.png" alt="" />
                 </div>
 
-                <div className="section-title">
+                <section className="section-title">
                     <div className="benefits1">
-                    <h2>PATRIOTAI BENEFITS</h2>
-                    <h3>Why PatriotAi?</h3>
-                    <p>
-                        PatriotAi is a free learning platform where you get to learn about
-                        corruption. We offer a variety of courses where you can interact with
-                        AI to ask any questions.
-                    </p>
+                        <h2>PATRIOT AI  BENEFITS</h2>
+                        <h3>Why PatriotAi?</h3>
+                        <p>
+                            PatriotAi is a free learning platform where you get to learn about
+                            corruption. We offer a variety of courses where you can interact with
+                            AI to ask any questions.
+                        </p>
                     </div>
                     <div className="benefits">
-                    <img src="/roboto.png" alt="Hero" className="hero-image" />
-                    <div>
-                        <h3>We help you make a difference</h3>
-                        <ul>
-                            <li>
-                                <strong>Understand corruption</strong>
-                                <p>
-                                    The platform helps you answer all your questions about
-                                    corruption and get rewards for it!
-                                </p>
-                            </li>
-                            <li>
-                                <strong>Learn how to fight corruption</strong>
-                                <p>To overcome it, you have to understand it.</p>
-                            </li>
-                            <li>
-                                <strong>Fight corruption</strong>
-                                <p>Participate in our programs and help combat corruption.</p>
-                            </li>
-                        </ul>
+                        <img src="/roboto.png" alt="Hero" className="hero-image" />
+                        <div>
+                            <h3>We help you make a difference</h3>
+                            <ul>
+                                <li>
+                                    <strong>Understand corruption</strong>
+                                    <p>
+                                        The platform helps you answer all your questions about
+                                        corruption and get rewards for it!
+                                    </p>
+                                </li>
+                                <li>
+                                    <strong>Learn how to fight corruption</strong>
+                                    <p>To overcome it, you have to understand it.</p>
+                                </li>
+                                <li>
+                                    <strong>Fight corruption</strong>
+                                    <p>Participate in our programs and help combat corruption.</p>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                    </div>
-                  
-                </div>
-
-                {/* <section className="benefits">
-                    
-                </section> */}
+                </section>
 
                 <section className="testimonials">
-                    <h2>Here's what our customers said</h2>
-                    <div className="testimonial">
-                        <img src="/user1.jpg" alt="user" />
-                        <p>
-                            "I got to share my story and I got a response asking if I want to
-                            share more details."
-                        </p>
-                        <span>Sarah, UAE</span>
-                    </div>
-                    <div className="testimonial">
-                        <img src="/user1.jpg" alt="user" />
-                        <p>
-                            "PatriotAi has come in handy in my understanding of corruption and
-                            how to identify it."
-                        </p>
-                        <span>Daniel, Kenya</span>
-                    </div>
-                    <div className="testimonial">
-                        <img src="/user1.jpg" alt="user" />
-                        <p>
-                            "I can't wait to collect more tokens in my next course. This is so
-                            much fun."
-                        </p>
-                        <span>Khamla, South Africa</span>
+                    <h2>Testimonials</h2>
+                    <div className="testimonials-container">
+                        <div className="testimonial">
+                            <img src="/user1.jpg" alt="user" />
+                            <p>"I got to <span className="highlight">share</span> my story and I got a response asking if I want to share more details."</p>
+                            <strong>Sarah</strong>
+                            <span>UAE</span>
+                        </div>
+                        <div className="testimonial">
+                            <img src="/user1.jpg" alt="user" />
+                            <p>"PatriotAi has come in handy in my <span className="highlight">understanding</span> of corruption and how to identify it."</p>
+                            <strong>Daniel</strong>
+                            <span>Kenya</span>
+                        </div>
+                        <div className="testimonial">
+                            <img src="/user1.jpg" alt="user" />
+                            <p>"I can't wait to collect more <span className="highlight">tokens</span> in my next course. This is so much fun."</p>
+                            <strong>Khamla</strong>
+                            <span>South Africa</span>
+                        </div>
                     </div>
                 </section>
 
                 <section className="faq">
-                    <h2>Frequently Asked Questions</h2>
+                    <h2>FAQ</h2>
+                    <p>Answer your customers possible questions here, it will increase the conversion rate as well as support or chat requests.</p>
+
                     {[
                         "Is PatriotAi completely free to use?",
                         "Do I need to share my personal details?",
@@ -144,13 +154,13 @@ export default function HomePage() {
                         "Do you offer technical support?"
                     ].map((question, index) => (
                         <div key={index} className={`faq-item ${faqOpen[index] ? "active" : ""}`}>
-                            <button className="faq-question" onClick={() => toggleFaq(index)}>
+                            <div className="faq-question" onClick={() => toggleFaq(index)}>
                                 {question}
                                 {faqOpen[index] ? <FaChevronUp /> : <FaChevronDown />} {/* Toggle arrow */}
-                            </button>
+                            </div>
                             {faqOpen[index] && (
                                 <div className="faq-answer">
-                                    <p>This is the answer to the FAQ question. Provide specific information here.</p>
+                                    <p>{getFaqAnswer(index)}</p>
                                 </div>
                             )}
                         </div>
@@ -177,6 +187,15 @@ export default function HomePage() {
                 </footer>
             </div>
         </div>
-
     );
+}
+
+function getFaqAnswer(index) {
+    const answers = [
+        "Yes, PatriotAi is completely free to use.",
+        "No, all you need is Internet Identity!",
+        "Our data is open to policy makers, educators and patriots. Commercialization plans are not established yet.",
+        "Yes, we offer technical support."
+    ];
+    return answers[index];
 }

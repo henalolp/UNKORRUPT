@@ -8,23 +8,27 @@ import ProgressPage from "./routes/ProgressPage";
 import ChatPage from "./routes/ChatPage"; // Import the ChatPage
 import ReportsPage from "./routes/ReportsPage";
 import Quiz from "./routes/QuizPage";
-import HomePage from "./routes/HomePage";
 import App from "./App";
-// import "./index.scss";
+// import LandingPage from "./routes/LandingPage";
+// import RootLayout from "./app/layout";
+import HomePage from "./routes/HomePage";
+// import "./tailwind.css";
+import "./index.scss";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import QuizPage from "./routes/QuizPage";
-import { ChakraProvider } from '@chakra-ui/react'
-import { AuthProvider } from "./lib/AuthContext";
-import theme from "./helper/theme";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomePage />,
+    element: <HomePage/>,
   },
   {
     path: "coursePage",
     element: <CoursePage />,
+  },
+  {
+    path: "auth",
+    element: <Auth />,
   },
   {
     path: "reportForm",
@@ -44,7 +48,7 @@ const router = createBrowserRouter([
   },
   {
     path: "quizPage", // New route for ChatPage with dynamic courseId
-    element: <QuizPage />,
+    element: <QuizPage/>,
   },
   {
     path: "reportsPage", // New route for ChatPage with dynamic courseId
@@ -54,10 +58,6 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <ChakraProvider theme={theme}>
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
-    </ChakraProvider>
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
