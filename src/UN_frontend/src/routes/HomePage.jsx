@@ -100,7 +100,7 @@ export default function HomePage() {
                             <h3>We help you make a difference</h3>
                             <ul>
                                 <li>
-                                    <img src="/gunicon.png" alt="" />
+                                    {/* <img src="/gunicon.png" alt="" /> */}
                                     <strong>Understand corruption</strong>
                                     <p>
                                         The platform helps you answer all your questions about
