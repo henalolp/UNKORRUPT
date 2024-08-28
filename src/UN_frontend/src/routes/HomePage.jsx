@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { FaSun, FaMoon, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaSun, FaMoon, FaChevronDown, FaChevronUp, FaBars, FaTimes } from "react-icons/fa"; // Import necessary icons
 import { useNavigate } from "react-router-dom";
 import "./home.css";
 import { IoSunnyOutline } from "react-icons/io5";
-
 
 export default function HomePage() {
     const [darkMode, setDarkMode] = useState(() => {
         const savedMode = localStorage.getItem('darkMode');
         return savedMode ? JSON.parse(savedMode) : false;
     });
+
+    const [isMenuOpen, setIsMenuOpen] = useState(false); // State to manage mobile menu toggle
+    const navigate = useNavigate(); // Initialize navigate
 
     useEffect(() => {
         localStorage.setItem('darkMode', JSON.stringify(darkMode));
@@ -20,16 +22,19 @@ export default function HomePage() {
         setDarkMode(!darkMode);
     };
 
-    const [faqOpen, setFaqOpen] = useState([false, false, false, false]);
-    const navigate = useNavigate(); // Initialize navigate
-
-    const toggleFaq = (index) => {
-        const newFaqOpen = faqOpen.map((item, i) => (i === index ? !item : false));
-        setFaqOpen(newFaqOpen);
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
     };
 
     const handleLoginClick = () => {
         navigate('/auth'); // Redirect to the authentication page
+    };
+
+    const [faqOpen, setFaqOpen] = useState([false, false, false, false]);
+
+    const toggleFaq = (index) => {
+        const newFaqOpen = faqOpen.map((item, i) => (i === index ? !item : false));
+        setFaqOpen(newFaqOpen);
     };
 
     return (
@@ -40,7 +45,10 @@ export default function HomePage() {
                         <img src="/patriot.png" alt="PatriotAi Logo" />
                         <span className="patriot-ai">PatriotAi</span>
                     </div>
-                    <nav className="nav">
+                    <button className="menu-toggle" onClick={toggleMenu}>
+                        {isMenuOpen ? <FaTimes size={24} color="#A020F0" /> : <FaBars size={24} color="#A020F0" />} {/* Toggle between hamburger and close icon */}
+                    </button>
+                    <nav className={`nav ${isMenuOpen ? 'active' : ''}`}>
                         <a href="#">Product</a>
                         <a href="#">Features</a>
                         <a href="#">Pricing</a>

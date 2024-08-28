@@ -918,3 +918,284 @@ body, html {
     color: #7e22ce; /* Hover color matches dark mode theme */
 }
 
+/* Updated CSS for Responsive Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 5px;
+    position: relative; /* For positioning the mobile menu */
+    z-index: 10; /* Ensure header is above other content */
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+}
+
+.nav a {
+    margin-right: 20px;
+    text-decoration: none;
+    color: black;
+    font-size: smaller;
+}
+
+.menu-toggle {
+    display: none; /* Hidden by default */
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 11; /* Ensure toggle is above the menu */
+}
+
+/* Media Query for Small Screens */
+@media (max-width: 768px) {
+    /* Centering the Header Content */
+    .header {
+        flex-direction: column; /* Stack items vertically */
+        text-align: center; /* Center-align text */
+    }
+
+    .header .nav {
+        display: none; /* Hide nav links initially on small screens */
+        flex-direction: column; /* Stack links vertically */
+        position: static; /* Default position */
+        background-color: transparent; /* Transparent background for nav */
+        width: 100%; /* Full width */
+        margin: 20px 0; /* Margin for spacing */
+    }
+
+    .nav.active {
+        display: flex; /* Show nav links when menu is open */
+    }
+
+    .nav a {
+        color: white; /* White color for mobile menu links */
+        margin: 10px 0;
+        text-align: center; /* Center align the links */
+        padding: 10px 0; /* Add padding for better touch targets */
+    }
+
+    .menu-toggle {
+        display: block; /* Show toggle button on mobile screens */
+        margin: 10px 0; /* Space above the toggle */
+    }
+
+    /* Centering the Container Content */
+    .container {
+        justify-content: center; /* Center vertically */
+        align-items: center; /* Center horizontally */
+        text-align: center; /* Center text alignment */
+        padding: 20px; /* Padding for spacing */
+    }
+
+    /* Centering the Hero Section */
+    .hero {
+        flex-direction: column; /* Stack items vertically */
+        align-items: center; /* Center align items */
+        text-align: center; /* Center align text */
+        padding: 20px 0; /* Adjust padding */
+    }
+
+    .hero .hero-content {
+        max-width: 90%; /* Reduce width for better visibility */
+        margin-bottom: 20px; /* Space between content and image */
+    }
+
+    .hero img {
+        height: auto; /* Responsive height */
+        max-width: 100%; /* Responsive width */
+        margin-bottom: 20px; /* Space below the image */
+    }
+
+    /* Centering Section Titles */
+    .section-title,
+    .benefits,
+    .testimonials,
+    .faq,
+    .cta,
+    .footer {
+        text-align: center; /* Center text */
+        align-items: center; /* Center items */
+        justify-content: center; /* Center content */
+    }
+
+    /* Centering Benefits Section */
+    .benefits {
+        flex-direction: column; /* Stack items vertically */
+        align-items: center; /* Center align items */
+        padding: 20px; /* Adjust padding */
+    }
+
+    .benefits img {
+        margin-bottom: 20px; /* Space below image */
+    }
+
+    /* Centering Testimonials Section */
+    .testimonials-container {
+        flex-direction: column; /* Stack items vertically */
+        align-items: center; /* Center align items */
+        gap: 20px; /* Space between testimonials */
+        max-width: 90%; /* Restrict max width */
+    }
+
+    /* Centering Footer Links */
+    .footer .footer-links {
+        flex-direction: column; /* Stack links vertically */
+        gap: 15px; /* Space between links */
+        margin-top: 10px; /* Margin above the links */
+    }
+
+    .footer .footer-logo {
+        margin-bottom: 10px; /* Margin below the logo */
+    }
+}
+
+/* Media Query for Smaller Screens */
+@media (max-width: 621px) {
+    /* Centering the Header Content */
+    .header {
+        flex-direction: column; /* Stack items vertically */
+        text-align: center; /* Center-align text */
+        padding: 15px 0; /* Reduce padding */
+    }
+
+    .logo {
+        margin-bottom: 10px; /* Add space below logo */
+    }
+
+    .menu-toggle {
+        margin-bottom: 15px; /* Add space below toggle */
+    }
+
+    .nav {
+        width: 100%; /* Full width */
+        margin: 0; /* Reset margin */
+    }
+
+    .btn-primary {
+        display: block; /* Show button */
+        margin: 15px auto; /* Center the button */
+    }
+
+    /* Centering the Container Content */
+    .container {
+        display: flex;
+        flex-direction: column; /* Stack content vertically */
+        justify-content: center; /* Center content vertically */
+        align-items: center; /* Center content horizontally */
+        padding: 10px; /* Reduce padding */
+        text-align: center; /* Center-align text */
+    }
+
+    /* Centering the Hero Section */
+    .hero {
+        flex-direction: column; /* Stack items vertically */
+        align-items: center; /* Center align items */
+        text-align: center; /* Center-align text */
+        padding: 30px 0; /* Reduce padding */
+    }
+
+    .hero .hero-content {
+        max-width: 100%; /* Full width */
+        margin: 0 auto 20px; /* Center and add margin */
+    }
+
+    .hero img {
+        width: 100%; /* Full width for the image */
+        height: auto; /* Maintain aspect ratio */
+        max-width: 350px; /* Limit max width for better layout */
+        margin: 0 auto 20px; /* Center image and add margin */
+    }
+
+    .hero h1 {
+        font-size: 2.5rem; /* Reduce font size for better fit */
+    }
+
+    /* Centering Section Titles */
+    .section-title,
+    .benefits,
+    .testimonials,
+    .faq,
+    .cta,
+    .footer {
+        text-align: center; /* Center text */
+        align-items: center; /* Center items */
+        justify-content: center; /* Center content */
+        width: 100%; /* Full width */
+        margin: 0 auto; /* Center content */
+    }
+
+    /* Centering Benefits Section */
+    .benefits {
+        flex-direction: column; /* Stack items vertically */
+        align-items: center; /* Center align items */
+        padding: 20px; /* Adjust padding */
+        max-width: 100%; /* Full width */
+    }
+
+    .benefits img {
+        max-width: 90%; /* Make images responsive */
+        margin-bottom: 20px; /* Space below image */
+    }
+
+    .benefits ul {
+        text-align: center; /* Center text */
+        padding: 0; /* Remove padding */
+    }
+
+    /* Centering Testimonials Section */
+    .testimonials-container {
+        flex-direction: column; /* Stack items vertically */
+        align-items: center; /* Center align items */
+        gap: 15px; /* Space between testimonials */
+        max-width: 90%; /* Restrict max width */
+    }
+
+    .testimonials .testimonial {
+        max-width: 90%; /* Reduce max width */
+        margin: 10px auto; /* Center each testimonial */
+    }
+
+    /* Centering Footer Links */
+    .footer .footer-links {
+        flex-direction: column; /* Stack links vertically */
+        gap: 10px; /* Space between links */
+        margin-top: 10px; /* Margin above the links */
+    }
+
+    .footer .footer-logo {
+        margin-bottom: 10px; /* Margin below the logo */
+    }
+
+    .footer .social-links a {
+        font-size: 1.25rem; /* Reduce icon size */
+    }
+
+     /* Make CTA Section Responsive */
+     .cta {
+        width: 90%; /* Restrict width to 90% */
+        padding: 20px 15px; /* Adjust padding for spacing */
+        margin: 20px auto; /* Center the CTA and add margin */
+        max-width: 400px; /* Set max width for better responsiveness */
+        box-sizing: border-box; /* Include padding in width */
+        border-radius: 10px; /* Adjust border radius */
+        text-align: center; /* Center-align text */
+    }
+
+    .cta h2 {
+        font-size: 1.8rem; /* Adjust font size */
+        margin-bottom: 10px; /* Add margin below the heading */
+    }
+
+    .cta p {
+        font-size: 1rem; /* Adjust font size */
+        margin-bottom: 15px; /* Add margin below the paragraph */
+    }
+
+    .cta .btn-primary {
+        padding: 10px 20px; /* Adjust button padding */
+        font-size: 0.9rem; /* Adjust button font size */
+        margin-top: 10px; /* Add margin above the button */
+    }
+}
