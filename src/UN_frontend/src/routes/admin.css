@@ -12,7 +12,7 @@
   }
    */
   .content-page {
-    background: url('/cute.png');
+    background: url('/flex.jpg');
     background-size: cover;
     flex: 1; /* Take the remaining space */
     padding: 20px; /* Add some padding */
