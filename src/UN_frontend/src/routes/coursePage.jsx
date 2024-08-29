@@ -15,6 +15,7 @@ import withAuth from "../lib/withAuth";
 const CoursePage = () => {
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
+  const [isLoadingEnroll, setIsLoadingEnroll] = useState(false);
 
   const fetcher = useCallback(async () => {
     const response = await UN_backend.listCoursesByStatus(
@@ -28,21 +29,36 @@ const CoursePage = () => {
 
   const handleSelectCourse = async (course) => {
     // Try to enroll user in course
+    setIsLoadingEnroll(true);
     const authClient = await createClient();
     const actor = await createBackendActor(authClient.getIdentity());
-    const response = await actor.enrollCourse(course.id);
-    if (response.ok) {
-      navigate(`/chat/${course.id}`, {
-        state: { title: course.title },
-      });
-    } else {
+    try {
+      const response = await actor.enrollCourse(course.id);
+      if (response.ok) {
+        navigate(`/chat/${course.id}`, {
+          state: { title: course.title },
+        });
+      } else {
+        toast({
+          title: response.err,
+          status: "error",
+          isClosable: true,
+          duration: 3000,
+          position: "top",
+        });
+      }
+    } catch (error) {
+      console.error(error);
       toast({
-        title: response.err,
-        status: 'error',
+        title: "Request error",
+        description: "Please try again",
+        status: "error",
         isClosable: true,
         duration: 3000,
-        position: 'top'
-      })
+        position: "top",
+      });
+    } finally {
+      setIsLoadingEnroll(false);
     }
   };
 
@@ -62,6 +78,11 @@ const CoursePage = () => {
           {isLoading && (
             <Center>
               <Spinner />
+            </Center>
+          )}
+          {isLoadingEnroll && (
+            <Center>
+              <Spinner size={"lg"} borderBottomColor={"#a020f0 !important"} />
             </Center>
           )}
           <div className="course-grid">

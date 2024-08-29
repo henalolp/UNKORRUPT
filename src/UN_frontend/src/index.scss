@@ -5,3 +5,8 @@ body {
   background: linear-gradient(to bottom, #030303, #9B51E0) !important; 
   color: white; /* Ensures text is readable against the dark background */
 }
+
+
+.markdown > * {
+  all: revert;
+}

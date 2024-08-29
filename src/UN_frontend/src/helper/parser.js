@@ -7,6 +7,7 @@ function blobToBase64(blob) {
 }
 
 export async function parseValue(item) {
+  if (typeof item !== 'object') return item
   for (let key of Object.keys(item)) {
     let val = item[key];
     if (typeof val == "bigint") {

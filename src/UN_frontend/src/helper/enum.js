@@ -5,6 +5,19 @@ export const CourseStatus = {
   Rejected: { Rejected: null },
 };
 
+export const RunStatus = {
+  Cancelled: { Cancelled: null },
+  InProgress: { InProgress: null },
+  Expired: { Expired: null },
+  Completed: { Completed: null },
+  Failed: { Failed: null },
+};
+
+export const MessgeType = {
+  User: { User: null },
+  System: { System: null },
+};
+
 export const ResourceType = {
   Book: { Book: null },
   Article: { Article: null },

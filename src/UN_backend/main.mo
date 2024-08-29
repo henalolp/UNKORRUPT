@@ -829,9 +829,10 @@ shared ({ caller }) actor class Backend() {
         var enrolledCourse : ?EnrolledCourse = null;
         var enrolledCourseIdx = 0;
 
-        for (_course in Vector.vals(member.enrolledCourses)) {
+        label findCourseIdx for (_course in Vector.vals(member.enrolledCourses)) {
           if (_course.threadId == threadId) {
             enrolledCourse := ?_course;
+            break findCourseIdx;
           };
           enrolledCourseIdx := enrolledCourseIdx + 1;
         };
@@ -1391,9 +1392,10 @@ shared ({ caller }) actor class Backend() {
             var enrolledCourse : ?EnrolledCourse = null;
             var enrolledCourseIdx = 0;
 
-            for (_course in Vector.vals(member.enrolledCourses)) {
+            label findCourse for (_course in Vector.vals(member.enrolledCourses)) {
               if (_course.threadId == run.threadId) {
                 enrolledCourse := ?_course;
+                break findCourse;
               };
               enrolledCourseIdx := enrolledCourseIdx + 1;
             };

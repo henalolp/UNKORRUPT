@@ -18,6 +18,7 @@ function withAuth(Component) {
   return function WithAuth(props) {
     const { state, dispatch } = useAuth();
     const toast = useToast();
+    const navigate = useNavigate();
 
     useEffect(() => {
       async function checkAuthenticated() {
@@ -28,14 +29,14 @@ function withAuth(Component) {
           const response = await actor.getProfile();
           const member = response.ok ?? null;
           if (!member) {
-            const member = await actor.registerUser('', '', '');
+            const member = await actor.registerUser("", "", "");
             dispatch({
               type: LOGIN,
               payload: {
                 principal: identity?.getPrincipal(),
                 member: {},
               },
-            })
+            });
           } else {
             dispatch({
               type: LOGIN,
@@ -52,6 +53,10 @@ function withAuth(Component) {
             duration: 5000,
             isClosable: true,
           });
+          dispatch({
+            type: LOGOUT,
+          });
+          navigate('/auth')
         }
       }
       checkAuthenticated();
@@ -61,9 +66,9 @@ function withAuth(Component) {
       return <Component {...props} />;
     } else {
       return (
-        <Box>
-          <Center>
-            <Spinner />
+        <Box h={"100vh"}>
+          <Center h={"100%"}>
+            <Spinner size={"xl"} />
           </Center>
         </Box>
       );
