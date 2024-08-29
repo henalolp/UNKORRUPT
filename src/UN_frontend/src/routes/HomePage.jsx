@@ -37,6 +37,14 @@ export default function HomePage() {
         setFaqOpen(newFaqOpen);
     };
 
+    // Scroll to a section smoothly
+    const scrollToSection = (sectionId) => {
+        const section = document.getElementById(sectionId);
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     return (
         <div className="hbody">
             <div className={`container ${darkMode ? "dark-mode" : ""}`}>
@@ -49,14 +57,12 @@ export default function HomePage() {
                         {isMenuOpen ? <FaTimes size={24} color="#A020F0" /> : <FaBars size={24} color="#A020F0" />} {/* Toggle between hamburger and close icon */}
                     </button>
                     <nav className={`nav ${isMenuOpen ? 'active' : ''}`}>
-                        <a href="#">Product</a>
-                        <a href="#">Features</a>
-                        <a href="#">Pricing</a>
-                        <a href="#">Company</a>
-                        <a href="#">Blog</a>
+                        <a href="#" onClick={() => scrollToSection('hero')}>Home</a>
+                        <a href="#" onClick={() => scrollToSection('benefits')}>Benefits</a>
+                        <a href="#" onClick={() => scrollToSection('cta')}>Contact Us</a>
                     </nav>
                     <button className="btn-primary" onClick={handleLoginClick}>
-                        Log in with Internet
+                        Get Started
                     </button>
                     <div className="theme-toggle" onClick={toggleDarkMode}>
                         {darkMode ? (
@@ -67,7 +73,7 @@ export default function HomePage() {
                     </div>
                 </header>
 
-                <section className="hero">
+                <section id="hero" className="hero">
                     <div className="hero-content">
                         <h1>AI-driven learning and corruption fighting</h1>
                         <p>
@@ -92,9 +98,9 @@ export default function HomePage() {
                     <img src="/ic.png" alt="" />
                 </div>
 
-                <section className="section-title">
+                <section id="benefits" className="section-title">
                     <div className="benefits1">
-                        <h2>PATRIOT AI  BENEFITS</h2>
+                        <h2>PATRIOT AI BENEFITS</h2>
                         <h3>Why PatriotAi?</h3>
                         <p>
                             PatriotAi is a free learning platform where you get to learn about
@@ -107,23 +113,27 @@ export default function HomePage() {
                         <div>
                             <h3>We help you make a difference</h3>
                             <ul>
-                                <li>
-                                    {/* <img src="/gunicon.png" alt="" /> */}
-                                    <strong>Understand corruption</strong>
-                                    <p>
-                                        The platform helps you answer all your questions about
-                                        corruption and get rewards for it!
-                                    </p>
+                                <li className="listing">
+                                    <img src="./coin.png" alt="" />
+                                    <div> <strong>Understand corruption</strong>
+                                        <p>
+                                            The platform helps you answer all your questions about corruption and get rewards for it!
+                                        </p>
+                                    </div>
                                 </li>
-                                <li>
-                                    <img src="" alt="" />
-                                    <strong>Learn how to fight corruption</strong>
-                                    <p>To overcome it, you have to understand it.</p>
+                                <li className="listing">
+                                    <img src="./coin.png" alt="" />
+                                    <div>
+                                        <strong>Learn how to fight corruption</strong>
+                                        <p>To overcome it, you have to understand it.</p>
+                                    </div>
                                 </li>
-                                <li>
-                                    <img src="" alt="" />
-                                    <strong>Fight corruption</strong>
-                                    <p>Participate in our programs and help combat corruption.</p>
+                                <li className="listing">
+                                    <img src="./coin.png" alt="" />
+                                    <div>
+                                        <strong>Fight corruption</strong>
+                                        <p>Participate in our programs and help combat corruption.</p>
+                                    </div>
                                 </li>
                             </ul>
                         </div>
@@ -135,19 +145,19 @@ export default function HomePage() {
                     <div className="testimonials-container">
                         <div className="testimonial">
                             <img src="/user1.jpg" alt="user" />
-                            <p>"I got to <span className="highlight">share</span> my story and I got a response asking if I want to share more details."</p>
+                            <p>"I got to <p className="highlight">share</p>my story and I got a response asking if I want to share more details."</p>
                             <strong>Sarah</strong>
                             <span>UAE</span>
                         </div>
                         <div className="testimonial">
                             <img src="/user1.jpg" alt="user" />
-                            <p>"PatriotAi has come in handy in my <span className="highlight">understanding</span> of corruption and how to identify it."</p>
+                            <p>"PatriotAi has come in handy in my <p className="highlight">understanding</p> of corruption and how to identify it."</p>
                             <strong>Daniel</strong>
                             <span>Kenya</span>
                         </div>
                         <div className="testimonial">
                             <img src="/user1.jpg" alt="user" />
-                            <p>"I can't wait to collect more <span className="highlight">tokens</span> in my next course. This is so much fun."</p>
+                            <p>"I can't wait to collect more <p className="highlight">tokens</p> in my next course. This is so much fun."</p>
                             <strong>Khamla</strong>
                             <span>South Africa</span>
                         </div>
@@ -178,7 +188,7 @@ export default function HomePage() {
                     ))}
                 </section>
 
-                <section className="cta">
+                <section id="cta" className="cta">
                     <h2>Ready for your first course?</h2>
                     <p>Get started on your patriot journey.</p>
                     <a href="#" className="btn-primary">
