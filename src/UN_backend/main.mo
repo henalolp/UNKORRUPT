@@ -60,8 +60,8 @@ shared ({ caller }) actor class Backend() {
   var icrc1Actor_ : ICRC1.Service = actor ("mxzaz-hqaaa-aaaar-qaada-cai");
   var icrc1TokenCanisterId_ : Text = Types.INVALID_CANISTER_ID;
 
-  private var API_KEY : Text = "";
-  private var ASSISTANT_ID : Text = "";
+  stable var API_KEY : Text = "";
+  stable var ASSISTANT_ID : Text = "";
 
   private func _getInProgressThreadRuns(threadId : Text) : [ThreadRun] {
     let runs = Map.filter(
@@ -228,7 +228,24 @@ shared ({ caller }) actor class Backend() {
   };
 
   // List all courses
-  public query func listCourses(status : CourseStatus) : async [SharedCourse] {
+  public query func listCourses() : async [SharedCourse] {
+    let filteredCourses = Vector.new<Types.SharedCourse>();
+    for (course in Vector.vals(courses)) {
+      let sharedCourse = {
+        id = course.id;
+        title = course.title;
+        summary = course.summary;
+        enrolledCount = course.enrolledCount;
+        reportCount = course.reportCount;
+        status = course.status;
+      };
+      Vector.add(filteredCourses, sharedCourse);
+    };
+    return Vector.toArray(filteredCourses);
+  };
+
+  // List all courses by status
+  public query func listCoursesByStatus(status : CourseStatus) : async [SharedCourse] {
     let filteredCourses = Vector.new<Types.SharedCourse>();
     for (course in Vector.vals(courses)) {
       if (course.status == status) {

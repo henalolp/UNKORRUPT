@@ -15,7 +15,7 @@ const CoursePage = () => {
   const [courses, setCourses] = useState([]);
 
   const fetcher = useCallback(async () => {
-    const response = await UN_backend.listCourses(CourseStatus.Approved);
+    const response = await UN_backend.listCoursesByStatus(CourseStatus.Approved);
     setCourses(response);
   })
 

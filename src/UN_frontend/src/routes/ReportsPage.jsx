@@ -36,7 +36,6 @@ const ReportsPage = () => {
     // Load reports
     async function load() {
       const response = await UN_backend.listReports('');
-      console.log(response)
       setReports(await parseValues(response));
     }
     load();

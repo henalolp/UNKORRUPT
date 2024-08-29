@@ -13,10 +13,16 @@ export async function parseValue(item) {
       val = Number(val);
     }
     if (typeof val == "object") {
-      // Handle Uint8Array array
-      if (val.constructor.name == 'Uint8Array') {
-        const blob = new Blob([val]);
-        val = await blobToBase64(blob);
+      switch (val.constructor.name) {
+        case "Uint8Array":
+          const blob = new Blob([val]);
+          val = await blobToBase64(blob);
+          break;
+        case "Array":
+          val = await parseValues(val);
+          break;
+        default:
+          break;
       }
     }
     item[key] = val;

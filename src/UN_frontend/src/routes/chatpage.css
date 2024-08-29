@@ -35,7 +35,10 @@ body {
     display: flex;
     align-items: center;
     padding: 20px;
-    background-color: rgba(160, 32, 240, 0.5); /* 50% transparency */
+    background-color: #a020f0;
+    color:white;
+}
+.chat-header h1{
     color: #ffffff;
 }
 
@@ -43,6 +46,7 @@ body {
     cursor: pointer;
     font-size: 24px;
     margin-right: 10px;
+    color: #ffffff;
 }
 
 /* Chat Content */
