@@ -2,6 +2,7 @@ import { useState } from "react";
 import { quiz } from "../components/quiz/questions";
 import "./quiz.css";
 import Layout from "../components/Layout";
+import withAuth from "../lib/withAuth";
 
 const Quiz = () => {
   const [activeQuestion, setActiveQuestion] = useState(0);
@@ -22,10 +23,10 @@ const Quiz = () => {
     setResult((prev) =>
       selectedAnswer
         ? {
-          ...prev,
-          score: prev.score + 5,
-          correctAnswers: prev.correctAnswers + 1,
-        }
+            ...prev,
+            score: prev.score + 5,
+            correctAnswers: prev.correctAnswers + 1,
+          }
         : { ...prev, wrongAnswers: prev.wrongAnswers + 1 }
     );
     if (activeQuestion !== questions.length - 1) {
@@ -38,7 +39,7 @@ const Quiz = () => {
 
   const reloadQuiz = () => {
     window.location.reload(false);
-  }
+  };
 
   const onAnswerSelected = (answer, index) => {
     setSelectedAnswerIndex(index);
@@ -103,13 +104,15 @@ const Quiz = () => {
             <p>
               Wrong Answers:<span> {result.wrongAnswers}</span>
             </p>
-            <button className='reload-quiz-button' onClick={() => reloadQuiz()}><span>want to play again?</span></button>
+            <button className="reload-quiz-button" onClick={() => reloadQuiz()}>
+              <span>want to play again?</span>
+            </button>
           </div>
         )}
       </div>
     </div>
-
   );
 };
 
-export default Quiz;
+const Page = withAuth(Quiz);
+export default Page;

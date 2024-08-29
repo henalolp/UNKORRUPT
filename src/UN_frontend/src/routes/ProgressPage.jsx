@@ -4,12 +4,13 @@ import "./progresspage.css";
 import { FiArrowLeft } from "react-icons/fi";
 import { BiMessageSquareDetail } from "react-icons/bi";
 import Layout from "../components/Layout";
+import withAuth from "../lib/withAuth";
 
 const ProgressPage = () => {
   const navigate = useNavigate();
 
   const handleBackClick = () => {
-    navigate('/'); // Replace with the correct path to your courses page
+    navigate("/"); // Replace with the correct path to your courses page
   };
 
   return (
@@ -66,8 +67,8 @@ const ProgressPage = () => {
         </div>
       </div>
     </div>
-
   );
 };
 
-export default ProgressPage;
+const Page = withAuth(ProgressPage);
+export default Page;

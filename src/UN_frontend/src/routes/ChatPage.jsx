@@ -4,6 +4,7 @@ import "./chatpage.css";
 import { FaArrowLeft } from "react-icons/fa";
 import { UN_backend } from "../../../declarations/UN_backend";
 import Layout from "../components/Layout";
+import withAuth from "../lib/withAuth";
 
 const ChatPage = () => {
   const { courseId } = useParams();
@@ -115,16 +116,17 @@ const ChatPage = () => {
             {messages.map((message, index) => (
               <div
                 key={index}
-                className={`message ${message.sender === "user" ? "user-message" : "system-message"
-                  }`}
+                className={`message ${
+                  message.sender === "user" ? "user-message" : "system-message"
+                }`}
               >
-                {
-                  message.link ? (
-                    <a href={message.link} target='_blank'>{message.text}</a>
-                  ) : (
-                    message.text
-                  )
-                }
+                {message.link ? (
+                  <a href={message.link} target="_blank">
+                    {message.text}
+                  </a>
+                ) : (
+                  message.text
+                )}
               </div>
             ))}
           </div>
@@ -160,8 +162,8 @@ const ChatPage = () => {
         </div>
       </div>
     </div>
-
   );
 };
 
-export default ChatPage;
+const Page = withAuth(ChatPage);
+export default Page;

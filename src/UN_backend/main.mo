@@ -432,7 +432,7 @@ shared ({ caller }) actor class Backend() {
           case (?c) {
             for (_course in Vector.vals(member.enrolledCourses)) {
               if (_course.id == c.id) {
-                return #err("Course already enrolled");
+                return #ok("Course already enrolled");
               };
             };
 

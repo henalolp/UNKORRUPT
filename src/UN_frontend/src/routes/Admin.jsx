@@ -64,6 +64,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { FiTrash } from "react-icons/fi";
 import { Principal } from "@dfinity/principal";
+import withAuth from "../lib/withAuth";
 
 const Admin = () => {
   const Pages = {
@@ -781,4 +782,5 @@ const Admin = () => {
   );
 };
 
-export default Admin;
+const Page = withAuth(Admin);
+export default Page;
