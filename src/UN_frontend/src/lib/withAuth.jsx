@@ -2,7 +2,7 @@ import { LOGIN, LOGOUT, useAuth } from "./AuthContext";
 import { useEffect } from "react";
 import { createBackendActor, createClient } from "../helper/auth";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@chakra-ui/react";
+import { Box, Center, Spinner, useToast } from "@chakra-ui/react";
 import { UN_backend } from "../../../declarations/UN_backend";
 
 let actor = UN_backend;
@@ -60,7 +60,13 @@ function withAuth(Component) {
     if (state.isAuthenticated) {
       return <Component {...props} />;
     } else {
-      return <p>You are not logged in.</p>;
+      return (
+        <Box>
+          <Center>
+            <Spinner />
+          </Center>
+        </Box>
+      );
     }
   };
 }

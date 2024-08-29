@@ -1,9 +1,11 @@
 .admin-container {
-    display: flex; /* Use flexbox to position sidebar and content */
-    height: 100vh; /* Full height for the container */
-  }
+  display: flex;
+  /* Use flexbox to position sidebar and content */
+  height: 100vh;
+  /* Full height for the container */
+}
 
-  /* .admin-all {
+/* .admin-all {
     display: flex;    
     padding: 20px;
     min-height: 100vh;
@@ -11,69 +13,79 @@
     
   }
    */
-  .content-page {
-    background: url('/flex.jpg');
-    background-size: cover;
-    flex: 1; /* Take the remaining space */
-    padding: 20px; /* Add some padding */
-    overflow-y: auto; /* Enable scrolling for long content */
-    border-right: 1px solid #ddd; /* Optional, for visual separation */
-  }
-  
-  .sbar {
-    width: 200px; /* Fixed width for the sidebar */
-    background-color: black; 
-    padding: 20px; /* Padding inside the sidebar */
-    border-left: 1px solid #ddd; /* Optional, for visual separation */
-    overflow-y: auto; /* Enable scrolling for long content */
-  }
-  
-  .sbar ul {
-    list-style-type: none; /* Remove default list styles */
-    padding: 0; /* Remove default padding */
-  }
-  
-  .sbar ul li {
-    margin: 10px 0; /* Space between list items */
-    cursor: pointer; /* Cursor pointer to indicate clickable items */
-  }
-  
-  .sbar ul li:hover {
-    color: #007bff; /* Change color on hover */
-  }
-  
+.content-page {
+  background: url('/flex.jpg');
+  background-size: cover;
+  flex: 1;
+  /* Add some padding */
+  /* Enable scrolling for long content */
+  border-right: 1px solid #ddd;
+  /* Optional, for visual separation */
+}
 
-  input[type="text"] {
-    width: 100%; /* Full width */
-    padding: 10px; /* Padding inside the input */
-    margin: 10px 0; /* Space around the input */
-    border: 1px solid #ddd; /* Light border for input */
-    border-radius: 4px; /* Rounded corners */
-    font-size: 1rem; /* Consistent font size */
-    background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent background */
-    color: #333; /* Darker text color for readability */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    outline: none; /* Remove outline on focus */
-    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
-  }
-  
-  input[type="text"]:focus {
-    border-color: #A020F0; /* Blue border on focus */
-    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2); /* Slight glow effect */
-  }
-  
-  button {
-    padding: 10px 20px; /* Padding inside the button */
-    margin-top: 10px; /* Space above the button */
-    border: none; /* Remove default border */
-    border-radius: 4px; /* Rounded corners */
-    background-color: #A020F0; 
-    color: white; /* White text color */
-    cursor: pointer; /* Pointer cursor on hover */
-    transition: background-color 0.3s ease; /* Smooth background color transition */
-  }
-  
-  button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
-  }
-  
+.overlay {
+  background-color: #000000ca;
+  /* Take the remaining space */
+  overflow-y: auto;
+  padding: 20px;
+  height: 100%;
+}
+
+.sbar {
+  width: 200px;
+  /* Fixed width for the sidebar */
+  background-color: #171923;
+  padding: 20px;
+  /* Padding inside the sidebar */
+  border-left: 1px solid #ddd;
+  /* Optional, for visual separation */
+  overflow-y: auto;
+  /* Enable scrolling for long content */
+}
+
+.sbar ul {
+  list-style-type: none;
+  /* Remove default list styles */
+  padding: 0;
+  /* Remove default padding */
+}
+
+.sbar ul li {
+  margin: 10px 0;
+  /* Space between list items */
+  cursor: pointer;
+  /* Cursor pointer to indicate clickable items */
+}
+
+.sbar ul li:hover {
+  color: #007bff;
+  /* Change color on hover */
+}
+
+
+input[type="text"],
+textarea {
+  width: 100%;
+  /* Full width */
+  padding: 10px;
+  /* Space around the input */
+  border: 1px solid #ddd;
+  /* Light border for input */
+  border-radius: 4px;
+  /* Rounded corners */
+  font-size: 1rem;
+  /* Slightly transparent background */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow for depth */
+  outline: none;
+  /* Remove outline on focus */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  /* Smooth transition */
+}
+
+input[type="text"]:focus {
+  border-color: #A020F0;
+  /* Blue border on focus */
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+  /* Slight glow effect */
+}

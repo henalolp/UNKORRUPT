@@ -23,5 +23,6 @@ dist/
 
 # environment variables
 .env
+.env.dev
 
 .mops
