@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import "../courseee.css";
+import "./courseee.css";
 import logo from "../assets/course.svg";
 import { FaPlay } from "react-icons/fa";
 import Layout from "../components/Layout";

@@ -3,8 +3,8 @@
 .quizbody {
   display: flex;     
   justify-content: center; /* This centers the container horizontally */
-  min-height: 100vh;
-  margin: auto;
+  height: 100vh;
+  margin-top: -0px;
   padding: 20px;
 }
 

@@ -5,12 +5,13 @@
   display: flex; 
   justify-content:center; 
   align-items: center;
-  /* height: 100vh;  */
+  height: 130vh; 
   }
   
   Content area
   .content {
     margin-left: 60px;  
+    margin-bottom: 10px;
     padding: 20px; 
     width: calc(100% - 60px);  
   }
