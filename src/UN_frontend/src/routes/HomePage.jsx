@@ -85,7 +85,7 @@ export default function HomePage() {
                             <a href="#" className="btn-secondary">
                                 See Courses
                             </a>
-                            <a href="https://github.com" className="btn-link">
+                            <a href="https://github.com/UNKORRUPT/UNKORRUPT" className="btn-link">
                                 View on Github
                             </a>
                         </div>
@@ -105,7 +105,7 @@ export default function HomePage() {
                         <p>
                             PatriotAi is a free learning platform where you get to learn about
                             corruption. We offer a variety of courses where you can interact with
-                            AI to ask any questions.
+                            AI and ask any questions. You also get to report cases and earn rewards from quizzes.
                         </p>
                     </div>
                     <div className="benefits">
@@ -117,22 +117,22 @@ export default function HomePage() {
                                     <img src="./coin.png" alt="" />
                                     <div> <strong>Understand corruption</strong>
                                         <p>
-                                            The platform helps you answer all your questions about corruption and get rewards for it!
+                                            We offer different courses to help you understand corruption.
                                         </p>
                                     </div>
                                 </li>
                                 <li className="listing">
                                     <img src="./coin.png" alt="" />
                                     <div>
-                                        <strong>Learn how to fight corruption</strong>
-                                        <p>To overcome it, you have to understand it.</p>
+                                        <strong>Fight corruption</strong>
+                                        <p>Once you get it, you can make reports on the platform. People learn from /respond to your data</p>
                                     </div>
                                 </li>
                                 <li className="listing">
                                     <img src="./coin.png" alt="" />
                                     <div>
-                                        <strong>Fight corruption</strong>
-                                        <p>Participate in our programs and help combat corruption.</p>
+                                        <strong>Earn rewards</strong>
+                                        <p>Complete quizes to earn patriot tokens!</p>
                                     </div>
                                 </li>
                             </ul>
