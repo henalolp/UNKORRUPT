@@ -35,6 +35,12 @@ module {
     messages : [Message];
   };
 
+  public type EnrolledCourseProgress = {
+    id : Nat;
+    title : Text;
+    completed : Bool;
+  };
+
   public type RunStatus = {
     #InProgress;
     #Completed;

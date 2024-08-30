@@ -43,6 +43,7 @@ shared ({ caller }) actor class Backend() {
   type SendMessageStatus = Types.SendMessageStatus;
   type Message = Types.Message;
   type SharedThreadRun = Types.SharedThreadRun;
+  type EnrolledCourseProgress = Types.EnrolledCourseProgress;
 
   stable let members = Map.new<Principal, User>();
   stable let courses = Vector.new<Course>();
@@ -266,11 +267,11 @@ shared ({ caller }) actor class Backend() {
   };
 
   // Get user enrolled courses
-  public shared ({ caller }) func getUserEnrolledCourses() : async Result<[SharedCourse], Text> {
+  public shared ({ caller }) func getUserEnrolledCourses() : async Result<[EnrolledCourseProgress], Text> {
     let user = Map.get(members, phash, caller);
     switch (user) {
       case (?member) {
-        let enrolledCourses = Vector.new<SharedCourse>();
+        let enrolledCourses = Vector.new<EnrolledCourseProgress>();
         for (enrolledCourse in Vector.vals(member.enrolledCourses)) {
           let course = _getCourse(enrolledCourse.id);
           switch (course) {
@@ -278,10 +279,7 @@ shared ({ caller }) actor class Backend() {
               let sharedCourse = {
                 id = c.id;
                 title = c.title;
-                summary = c.summary;
-                enrolledCount = c.enrolledCount;
-                reportCount = c.reportCount;
-                status = c.status;
+                completed = enrolledCourse.completed;
               };
               Vector.add(enrolledCourses, sharedCourse);
             };

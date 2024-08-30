@@ -75,7 +75,6 @@ const Quiz = () => {
             isClosable: true,
             position: "top",
           });
-          setShowResult(true);
         } else {
           toast({
             title: "Failed",
@@ -83,6 +82,7 @@ const Quiz = () => {
             duration: 5000,
             isClosable: true,
             position: "top",
+            status: 'error'
           });
         }
       } catch (error) {
@@ -92,15 +92,57 @@ const Quiz = () => {
           duration: 5000,
           isClosable: true,
           position: "top",
+            status: 'error'
         });
       } finally {
         setIsSubmitting(false);
+        setShowResult(true);
       }
     }
   };
 
-  const reloadQuiz = () => {
-    window.location.reload(false);
+  
+  // Load course questions
+  async function loadQuestions() {
+    setIsLoadingQuestions(true);
+    const response = await UN_backend.getRandomCourseQuestions(
+      parseInt(courseId),
+      5
+    );
+    console.log("Course questions", response);
+    if (response.ok) {
+      const loadedQuestions = await parseValues(response.ok);
+      const formattedQs = loadedQuestions.map((item) => {
+        const options = item.options.map((opt) => opt.description);
+        return {
+          id: item.id,
+          question: item.description,
+          choices: options,
+          correctAnswer: options[item.correctOption],
+          correctOption: item.correctOption,
+        };
+      });
+      setQuestions(formattedQs);
+    } else {
+      toast({
+        title: "Failed to get questions",
+        description: response.err,
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+      });
+    }
+    setIsLoadingQuestions(false);
+  }
+
+  const reloadQuiz = async () => {
+    setResult({
+      score: 0,
+      correctAnswers: 0,
+      wrongAnswers: 0,
+    })
+    setShowResult(false);
+    await loadQuestions();
   };
 
   const onAnswerSelected = (answer, index) => {
@@ -109,7 +151,7 @@ const Quiz = () => {
         ...prev,
         {
           questionId: currentQuestion.id,
-          option: currentQuestion.correctOption,
+          option: index,
         },
       ];
     });
@@ -124,38 +166,6 @@ const Quiz = () => {
   const addLeadingZero = (number) => (number > 9 ? number : `0${number}`);
 
   useEffect(() => {
-    // Load course questions
-    async function loadQuestions() {
-      setIsLoadingQuestions(true);
-      const response = await UN_backend.getRandomCourseQuestions(
-        parseInt(courseId),
-        5
-      );
-      console.log("Course questions", response);
-      if (response.ok) {
-        const loadedQuestions = await parseValues(response.ok);
-        const formattedQs = loadedQuestions.map((item) => {
-          const options = item.options.map((opt) => opt.description);
-          return {
-            id: item.id,
-            question: item.description,
-            choices: options,
-            correctAnswer: options[item.correctOption],
-            correctOption: item.correctOption,
-          };
-        });
-        setQuestions(formattedQs);
-      } else {
-        toast({
-          title: "Failed to get questions",
-          description: response.err,
-          duration: 5000,
-          isClosable: true,
-          position: "top",
-        });
-      }
-      setIsLoadingQuestions(false);
-    }
     if (courseId) loadQuestions();
   }, [courseId]);
 
@@ -225,7 +235,7 @@ const Quiz = () => {
                 Total Question: <span>{questions.length}</span>
               </p>
               <p>
-                Tokens Earned:<span> 10</span>
+                Tokens Earned:<span> {result.wrongAnswers ? 0 : 10}</span>
               </p>
               <p>
                 Correct Answers:<span> {result.correctAnswers}</span>
@@ -244,7 +254,7 @@ const Quiz = () => {
               ) : (
                 <button
                   className="reload-quiz-button"
-                  onClick={() => reloadQuiz()}
+                  onClick={reloadQuiz}
                 >
                   <span>Take the quiz again?</span>
                 </button>

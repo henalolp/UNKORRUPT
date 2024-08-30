@@ -6,7 +6,8 @@ body, html {
 
 .hbody {
     margin: 0;
-    height: 100%; /* Cover the whole page */
+    height: 100vh; /* Cover the whole page */
+    overflow-y: scroll;
     font-family: Arial, sans-serif;
     background-color: white; /* Light mode background color */
     color: black; /* Light mode text color */

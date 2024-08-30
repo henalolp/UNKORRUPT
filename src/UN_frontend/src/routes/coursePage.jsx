@@ -77,7 +77,7 @@ const CoursePage = () => {
           <h2 className="syllabus-title">Syllabus</h2>
           {isLoading && (
             <Center>
-              <Spinner />
+              <Spinner size={'lg'} borderBottomColor={"#a020f0 !important"}/>
             </Center>
           )}
           {isLoadingEnroll && (
