@@ -59,7 +59,7 @@ export default function HomePage() {
                     <nav className={`nav ${isMenuOpen ? 'active' : ''}`}>
                         <a href="#" onClick={() => scrollToSection('hero')}>Home</a>
                         <a href="#" onClick={() => scrollToSection('benefits')}>Benefits</a>
-                        <a href="#" onClick={() => scrollToSection('cta')}>Contact Us</a>
+                        <a href="https://forms.monday.com/forms/6848b3758ce5c92ec58acbc26ea8a0df?r=euc1" >Contact Us</a>
                     </nav>
                     <button className="btn-primary" onClick={handleLoginClick}>
                         Get Started
