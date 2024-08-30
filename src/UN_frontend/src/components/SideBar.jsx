@@ -17,14 +17,14 @@ const Sidebar = () => {
       <NavLink to="/coursePage" className={({ isActive }) => isActive ? 'active' : undefined}>
         <i className="sidebar-icon"></i> <FaCommentDots style={{ color: "#FFFFFF" }}/>
       </NavLink>
-      <NavLink to="/quizPage" className={({ isActive }) => isActive ? 'active' : undefined}>
-        <i className="sidebar-icon"></i> <FaQuestionCircle style={{ color: "#FFFFFF" }}/>
-      </NavLink>
       <NavLink to="/reportForm" className={({ isActive }) => isActive ? 'active' : undefined}>
         <i className="sidebar-icon"></i> <FaClipboardList style={{ color: "#FFFFFF" }}/>
       </NavLink>      
       <NavLink to="/reportsPage" className={({ isActive }) => isActive ? 'active' : undefined}>
         <i className="sidebar-icon"></i> <FaBalanceScale style={{ color: "#FFFFFF" }}/>
+      </NavLink>
+      <NavLink to="/profilePage" className={({ isActive }) => isActive ? 'active' : undefined}>
+        <i className="sidebar-icon"></i> <CgProfile style={{ color: "#FFFFFF" }}/>
       </NavLink>
       <NavLink to="/admin" className={({ isActive }) => isActive ? 'active' : undefined}>
         <i className="sidebar-icon"></i> <RiAdminFill  style={{ color: "#FFFFFF" }}/>

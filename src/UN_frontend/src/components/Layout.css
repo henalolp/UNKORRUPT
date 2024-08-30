@@ -2,26 +2,26 @@
 
 /* Layout container */
 .layout {
-  display: flex; 
-  justify-content:center; 
+  display: flex;
+  justify-content: center;
   align-items: center;
-  height: 130vh; 
-  }
-  
-  Content area
+}
+
+Content area .content {
+  margin-left: 60px;
+  margin-bottom: 10px;
+  padding: 20px;
+  width: calc(100% - 60px);
+}
+
+/* Optional - You can also add styles for different screen sizes */
+@media (max-width: 768px) {
   .content {
-    margin-left: 60px;  
-    margin-bottom: 10px;
-    padding: 20px; 
-    width: calc(100% - 60px);  
+    margin-left: 0;
+    /* Remove margin on small screens */
+    width: 100%;
+    /* Make content take up the full width */
+    padding: 10px;
+    /* Adjust padding for smaller screens */
   }
-  
-  /* Optional - You can also add styles for different screen sizes */
-  @media (max-width: 768px) {
-    .content {
-      margin-left: 0;  /* Remove margin on small screens */
-      width: 100%;  /* Make content take up the full width */
-      padding: 10px;  /* Adjust padding for smaller screens */
-    }
-  }
-  
+}

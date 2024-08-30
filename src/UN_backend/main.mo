@@ -58,7 +58,7 @@ shared ({ caller }) actor class Backend() {
   stable var owner = caller;
 
   var icrc1Actor_ : ICRC1.Service = actor ("mxzaz-hqaaa-aaaar-qaada-cai");
-  var icrc1TokenCanisterId_ : Text = Types.INVALID_CANISTER_ID;
+  stable var icrc1TokenCanisterId_ : Text = Types.INVALID_CANISTER_ID;
 
   stable var API_KEY : Text = "";
   stable var ASSISTANT_ID : Text = "";
@@ -137,8 +137,10 @@ shared ({ caller }) actor class Backend() {
   };
 
   private func _isOwner(p : Principal) : Bool {
-    return true;
-    // owner == p;
+    Debug.print(Principal.toText(owner));
+    Debug.print(Principal.toText(p));
+    Debug.print(debug_show (Principal.toText(p) == Principal.toText(owner)));
+    Principal.equal(owner, p);
   };
 
   private func _isAllowed(p : Principal) : Bool {
@@ -210,9 +212,9 @@ shared ({ caller }) actor class Backend() {
     };
   };
 
-  public shared ({ caller }) func changeOwner(newOwner : Principal) {
+  public shared ({ caller }) func changeOwner(newOwner : Text) {
     assert _isOwner(caller);
-    owner := newOwner;
+    owner := Principal.fromText(newOwner);
   };
 
   // Set api key
@@ -446,10 +448,14 @@ shared ({ caller }) actor class Backend() {
                 name = "OpenAI-Beta";
                 value = "assistants=v2";
               },
+              {
+                name = "x-forwarded-host";
+                value = "api.openai.com";
+              },
             ];
 
             let response = await Request.post(
-              "https://api.openai.com/v1/threads",
+              "https://idempotent-proxy-cf-worker.zensh.workers.dev/v1/threads",
               null,
               transform,
               headers,
@@ -750,8 +756,7 @@ shared ({ caller }) actor class Backend() {
                 };
 
                 var correctCount = 0;
-                for (i in Iter.range(0, len)) {
-                  let answer = answers[i];
+                for (answer in answers.vals()) {
                   for (question in Vector.vals(c.questions)) {
                     if (question.id == answer.questionId) {
                       if (question.correctOption == answer.option) {
@@ -761,14 +766,15 @@ shared ({ caller }) actor class Backend() {
                   };
                 };
 
-                if (correctCount != len) {
+                if (correctCount != Array.size(answers)) {
                   return #err("You did not get all the questions, Try again");
                 };
 
                 var enrolledCourseIndex = 0;
-                for (i in Iter.range(0, Vector.size(member.enrolledCourses))) {
+                label findCourse for (i in Iter.range(0, Vector.size(member.enrolledCourses))) {
                   if (Vector.get(member.enrolledCourses, i).id == c.id) {
                     enrolledCourseIndex := i;
+                    break findCourse;
                   };
                 };
 
@@ -777,36 +783,49 @@ shared ({ caller }) actor class Backend() {
                   return #err("You have already completed this course before");
                 };
 
-                // Transfer tokens to user
-                // Make the icrc1 intercanister transfer call, catching if error'd:
-                let response : Result<ICRC1.TransferResult, Text> = try {
-                  #ok(await icrc1Actor_.icrc1_transfer({ amount = 5; created_at_time = null; from_subaccount = null; fee = null; memo = null; to = { owner = caller; subaccount = null } }));
-                } catch (e) {
-                  #err(Error.message(e));
-                };
+                let icrc1Canister = try {
+                  #ok(await Utils.createIcrcActor(icrc1TokenCanisterId_));
+                } catch e #err(e);
 
-                // Parse the results of the icrc1 intercansiter transfer call:
-                switch (response) {
-                  case (#ok(transferResult)) {
-                    switch (transferResult) {
-                      case (#Ok _) {
-                        // Updated enrolled course to completed
-                        Vector.put(member.enrolledCourses, enrolledCourseIndex, enrolledCourse);
-                        // Update user object
-                        Map.set(members, phash, caller, member);
-                        return #ok("You have successfully completed the course");
+                switch (icrc1Canister) {
+                  case (#ok(icrc1Actor)) {
+                    // Transfer tokens to user
+                    // Make the icrc1 intercanister transfer call, catching if error'd:
+                    let response : Result<ICRC1.TransferResult, Text> = try {
+                      let decimal = 100000000;
+                      #ok(await icrc1Actor.icrc1_transfer({ amount = 10 * decimal; created_at_time = null; from_subaccount = null; fee = null; memo = null; to = { owner = caller; subaccount = null } }));
+                    } catch (e) {
+                      #err(Error.message(e));
+                    };
+
+                    // Parse the results of the icrc1 intercansiter transfer call:
+                    switch (response) {
+                      case (#ok(transferResult)) {
+                        switch (transferResult) {
+                          case (#Ok _) {
+                            // Updated enrolled course to completed
+                            Vector.put(member.enrolledCourses, enrolledCourseIndex, enrolledCourse);
+                            // Update user object
+                            Map.set(members, phash, caller, member);
+                            return #ok("You have successfully completed the course");
+                          };
+                          case (#Err _) #err(
+                            "The icrc1 transfer call could not be completed as requested."
+                          );
+                        };
                       };
-                      case (#Err _) #err(
-                        "The icrc1 transfer call could not be completed as requested."
-                      );
+                      case (#err(k)) {
+                        #err(
+                          "The intercanister icrc1 transfer call caught an error: " # k
+                        );
+                      };
                     };
                   };
                   case (#err(_)) {
-                    #err(
-                      "The intercanister icrc1 transfer call caught an error and did not finish processing."
-                    );
+                    #err("Internal transfer error");
                   };
                 };
+
               };
             };
           };
@@ -862,10 +881,14 @@ shared ({ caller }) actor class Backend() {
                 name = "OpenAI-Beta";
                 value = "assistants=v2";
               },
+              {
+                name = "x-forwarded-host";
+                value = "api.openai.com";
+              },
             ];
 
             let response = await Request.post(
-              "https://api.openai.com/v1/threads/" # threadId # "/messages",
+              "https://idempotent-proxy-cf-worker.zensh.workers.dev/v1/threads/" # threadId # "/messages",
               ?data,
               transform,
               headers,
@@ -891,7 +914,7 @@ shared ({ caller }) actor class Backend() {
               ("instructions", #String("You are a helpful assistant, here to train users on the impacts of corruption and how to mitigate them based on the files you have been trained with and all your responses must be in markdown format")),
             ]);
             let runResponse = await Request.post(
-              "https://api.openai.com/v1/threads/" # threadId # "/runs",
+              "https://idempotent-proxy-cf-worker.zensh.workers.dev/v1/threads/" # threadId # "/runs",
               ?data,
               transform,
               headers,
@@ -1027,13 +1050,19 @@ shared ({ caller }) actor class Backend() {
       ("messages", #Array([#Object([("role", #String("system")), ("content", #String("You are a helpful assistant."))]), #Object([("role", #String("user")), ("content", #String(prompt))])])),
     ]);
 
-    let headers : ?[Types.HttpHeader] = ?[{
-      name = "Authorization";
-      value = "Bearer " # API_KEY;
-    }];
+    let headers : ?[Types.HttpHeader] = ?[
+      {
+        name = "Authorization";
+        value = "Bearer " # API_KEY;
+      },
+      {
+        name = "x-forwarded-host";
+        value = "api.openai.com";
+      },
+    ];
 
     let response = await Request.post(
-      "https://api.openai.com/v1/chat/completions",
+      "https://idempotent-proxy-cf-worker.zensh.workers.dev/v1/chat/completions",
       ?data,
       transform,
       headers,
@@ -1206,6 +1235,10 @@ shared ({ caller }) actor class Backend() {
             name = "OpenAI-Beta";
             value = "assistants=v2";
           },
+          {
+            name = "x-forwarded-host";
+            value = "api.openai.com";
+          },
         ];
 
         var data = #Object([]);
@@ -1214,7 +1247,7 @@ shared ({ caller }) actor class Backend() {
         Debug.print(JSON.show(data));
 
         let response = await Request.post(
-          "https://api.openai.com/v1/threads",
+          "https://idempotent-proxy-cf-worker.zensh.workers.dev/v1/threads",
           ?data,
           transform,
           headers,
@@ -1292,10 +1325,14 @@ shared ({ caller }) actor class Backend() {
                 name = "OpenAI-Beta";
                 value = "assistants=v2";
               },
+              {
+                name = "x-forwarded-host";
+                value = "api.openai.com";
+              },
             ];
 
             let response = await Request.post(
-              "https://api.openai.com/v1/threads/" # threadId # "/messages",
+              "https://idempotent-proxy-cf-worker.zensh.workers.dev/v1/threads/" # threadId # "/messages",
               ?data,
               transform,
               headers,
@@ -1316,9 +1353,9 @@ shared ({ caller }) actor class Backend() {
 
             Debug.print("DATA RUN");
             Debug.print(JSON.show(data));
-            Debug.print("https://api.openai.com/v1/threads/" # threadId # "/runs");
+            Debug.print("https://idempotent-proxy-cf-worker.zensh.workers.dev/v1/threads/" # threadId # "/runs");
             let runResponse = await Request.post(
-              "https://api.openai.com/v1/threads/" # threadId # "/runs",
+              "https://idempotent-proxy-cf-worker.zensh.workers.dev/v1/threads/" # threadId # "/runs",
               ?data2,
               transform,
               headers,
@@ -1412,10 +1449,14 @@ shared ({ caller }) actor class Backend() {
                     name = "OpenAI-Beta";
                     value = "assistants=v2";
                   },
+                  {
+                    name = "x-forwarded-host";
+                    value = "api.openai.com";
+                  },
                 ];
 
                 let response = await Request.get(
-                  "https://api.openai.com/v1/threads/" # run.threadId # "/messages",
+                  "https://idempotent-proxy-cf-worker.zensh.workers.dev/v1/threads/" # run.threadId # "/messages",
                   transform,
                   headers,
                 );
@@ -1553,11 +1594,9 @@ shared ({ caller }) actor class Backend() {
     };
   };
 
-  // Get run questions
-  public shared ({ caller }) func getCourseQuestions(courseId : Nat) : async Result<[Question], Text> {
-    assert _isAllowed(caller);
+  // Get course questions
+  public query func getCourseQuestions(courseId : Nat) : async Result<[Question], Text> {
     let course = _getCourse(courseId);
-
     switch (course) {
       case (null) { #err("Course not found") };
       case (?c) {
@@ -1600,10 +1639,14 @@ shared ({ caller }) actor class Backend() {
                 name = "OpenAI-Beta";
                 value = "assistants=v2";
               },
+              {
+                name = "x-forwarded-host";
+                value = "api.openai.com";
+              },
             ];
 
             let response = await Request.get(
-              "https://api.openai.com/v1/threads/" # run.threadId # "/messages",
+              "https://idempotent-proxy-cf-worker.zensh.workers.dev/v1/threads/" # run.threadId # "/messages",
               transform,
               headers,
             );
@@ -1869,10 +1912,14 @@ shared ({ caller }) actor class Backend() {
               name = "OpenAI-Beta";
               value = "assistants=v2";
             },
+            {
+              name = "x-forwarded-host";
+              value = "api.openai.com";
+            },
           ];
 
           let response = await Request.get(
-            "https://api.openai.com/v1/threads/" # run.threadId # "/runs/" # run.runId,
+            "https://idempotent-proxy-cf-worker.zensh.workers.dev/v1/threads/" # run.threadId # "/runs/" # run.runId,
             transform,
             headers,
           );

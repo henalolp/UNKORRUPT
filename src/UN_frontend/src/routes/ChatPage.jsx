@@ -7,10 +7,20 @@ import Layout from "../components/Layout";
 import withAuth from "../lib/withAuth";
 import { createBackendActor, createClient } from "../helper/auth";
 import { getEnum, MessgeType, RunStatus } from "../helper/enum";
-import { Box, Center, Flex, Spinner, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Center,
+  Flex,
+  IconButton,
+  Spinner,
+  useToast,
+} from "@chakra-ui/react";
 import { parseValue } from "../helper/parser";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { IoHelp } from "react-icons/io5";
+import { FiHelpCircle } from "react-icons/fi";
 
 const ChatPage = () => {
   const { courseId } = useParams();
@@ -63,6 +73,7 @@ const ChatPage = () => {
         duration: 5000,
         isClosable: true,
         position: "top",
+        status: "error",
       });
     }
   }
@@ -86,6 +97,7 @@ const ChatPage = () => {
             duration: 5000,
             isClosable: true,
             position: "top",
+            status: "error",
           });
           setIsSending(false);
           return;
@@ -120,6 +132,7 @@ const ChatPage = () => {
             duration: 5000,
             isClosable: true,
             position: "top",
+            status: "error",
           });
         }
       }
@@ -150,8 +163,9 @@ const ChatPage = () => {
     async function load() {
       setIsLoading(true);
       const response = await UN_backend.getCourseDetails(parseInt(courseId));
+      console.log("Course details", response);
       if (response.ok) {
-        setCourse(parseValue(response.ok));
+        setCourse(await parseValue(response.ok));
         const authClient = await createClient();
         const actor = await createBackendActor(authClient.getIdentity());
         const enrolledData = await actor.getUserEnrolledCourse(
@@ -220,6 +234,7 @@ const ChatPage = () => {
 
     // Handle system responses
     if (messageText.toLowerCase() === predefinedQuestions[0].toLowerCase()) {
+      console.log("courseDetails", courseDetails);
       setMessages((prevMessages) => [
         ...prevMessages,
         {
@@ -232,7 +247,7 @@ const ChatPage = () => {
     } else if (
       messageText.toLowerCase() === predefinedQuestions[1].toLowerCase()
     ) {
-      if (courseDetails && courseDetails.resources.length > 0) {
+      if (courseDetails && courseDetails?.resources?.length > 0) {
         const resourceMessages = courseDetails.resources.map((resource) => ({
           sender: "system",
           text: `${resource.title}: ${resource.description}`,
@@ -344,6 +359,21 @@ const ChatPage = () => {
               ) : (
                 <button type="submit">Send</button>
               )}
+              <Button
+                _hover={{
+                  bg: "#8b00e0",
+                }}
+                bg={"#a020f0"}
+                rounded={"2rem"}
+                leftIcon={<FiHelpCircle />}
+                onClick={() => {
+                  navigate(`/quizPage/${courseId}`, {
+                    state: { title: courseTitle },
+                  });
+                }}
+              >
+                Quiz
+              </Button>
             </form>
           </div>
         )}

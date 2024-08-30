@@ -4,9 +4,21 @@ body {
   font-family: 'Poppins', sans-serif; /* Updated font family to Poppins */
   background: linear-gradient(to bottom, #030303, #9B51E0) !important; 
   color: white; /* Ensures text is readable against the dark background */
+  overflow: hidden;
 }
 
 
 .markdown > * {
   all: revert;
+}
+
+
+.containerf {
+  display: flex;
+  justify-content: center;
+  /* This centers the container horizontally */
+  min-height: 100vh;
+  margin: auto;
+  padding: 20px;
+  height: 100vh;
 }

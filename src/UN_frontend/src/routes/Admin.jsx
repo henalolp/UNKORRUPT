@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom"; // Import useNavigate from react-router-dom
 import "./admin.css";
 import Layout from "../components/Layout";
@@ -54,6 +54,7 @@ import {
   getEnum,
   ResourceType,
   ResourceTypes,
+  RunStatus,
 } from "../helper/enum";
 import { parseValues } from "../helper/parser";
 import { IoAddCircle } from "react-icons/io5";
@@ -65,13 +66,14 @@ import * as Yup from "yup";
 import { FiTrash } from "react-icons/fi";
 import { Principal } from "@dfinity/principal";
 import withAuth from "../lib/withAuth";
+import { RiAiGenerate } from "react-icons/ri";
 
 const Admin = () => {
   const Pages = {
     courses: 1,
     courseDetail: 2,
     permissions: 3,
-    questions: 4,
+    settings: 4,
   };
   const toast = useToast();
 
@@ -84,6 +86,14 @@ const Admin = () => {
   const [selectedCourse, setSelectCourse] = useState(null);
   const [owner, setOwner] = useState("");
   const [addingNewAdmin, setAddingNewAdmin] = useState(false);
+  const [changingApiKey, setChangingApiKey] = useState(false);
+  const [settingAssistantId, setSettingAssistantId] = useState(false);
+  const [settingCanisterId, setSettingCanisterId] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const apiKeyRef = useRef(null);
+  const assistantIdRef = useRef(null);
+  const canisterIdRef = useRef(null);
 
   const fetcher = useCallback(async () => {
     const response = await UN_backend.listCourses();
@@ -132,17 +142,116 @@ const Admin = () => {
   }, [selectedCourse]);
 
   const { isLoading } = useActorLoader(fetcher);
+  const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
   const navigate = useNavigate(); // Initialize navigate
   const location = useLocation();
+
+  // Handle change api key
+  const handleChangeApiKey = async (apiKey) => {
+    try {
+      setChangingApiKey(true);
+      const authClient = await createClient();
+      const actor = await createBackendActor(authClient.getIdentity());
+      await actor.changeApiKey(apiKey);
+      apiKeyRef.current.value = "";
+      toast({
+        title: "API key changed successfully",
+        position: "top",
+        status: "success",
+        isClosable: true,
+        duration: 3000,
+      });
+    } catch (e) {
+      console.error(e);
+      toast({
+        title: "Failed to change api key",
+        position: "top",
+        status: "error",
+        isClosable: true,
+        duration: 3000,
+      });
+    } finally {
+      setChangingApiKey(false);
+    }
+  };
+
+  // Handle set assistant id
+  const handleSettingAssistantId = async (id) => {
+    try {
+      setSettingAssistantId(true);
+      const authClient = await createClient();
+      const actor = await createBackendActor(authClient.getIdentity());
+      await actor.setAssistantId(id);
+      assistantIdRef.current.value = "";
+      toast({
+        title: "Assistant id changed successfully",
+        position: "top",
+        status: "success",
+        isClosable: true,
+        duration: 3000,
+      });
+    } catch (e) {
+      console.error(e);
+      toast({
+        title: "Failed to change assistant id",
+        position: "top",
+        status: "error",
+        isClosable: true,
+        duration: 3000,
+      });
+    } finally {
+      setSettingAssistantId(false);
+    }
+  };
+
+  // Handle set token canister id
+  const handleSettingTokenCanisterId = async (id) => {
+    try {
+      setSettingCanisterId(true);
+      const authClient = await createClient();
+      const actor = await createBackendActor(authClient.getIdentity());
+      const response = await actor.set_icrc1_token_canister(id);
+      if (response.ok === null) {
+        canisterIdRef.current.value = "";
+        toast({
+          title: "Token canister id set successfully",
+          position: "top",
+          status: "success",
+          isClosable: true,
+          duration: 3000,
+        });
+      } else {
+        toast({
+          title: "Error setting token canister id",
+          description: response.err,
+          position: "top",
+          status: "error",
+          isClosable: true,
+          duration: 3000,
+        });
+      }
+    } catch (e) {
+      console.error(e);
+      toast({
+        title: "Failed to set token canister id",
+        position: "top",
+        status: "error",
+        isClosable: true,
+        duration: 3000,
+      });
+    } finally {
+      setSettingCanisterId(false);
+    }
+  };
 
   // Handle adding a new admin
   const handleAddAdmin = async () => {
     if (newAdmin) {
       let newPrincipal = null;
       try {
-        newPrincipal = Principal.fromText(newAdmin)
-      } catch(e) {
+        newPrincipal = Principal.fromText(newAdmin);
+      } catch (e) {
         toast({
           title: "Invalid principal",
           position: "top",
@@ -155,11 +264,13 @@ const Admin = () => {
       }
       try {
         setAddingNewAdmin(true);
-        const response = await UN_backend.addAcls(newPrincipal);
+        const authClient = await createClient();
+        const actor = await createBackendActor(authClient.getIdentity());
+        await actor.addAcls(newPrincipal);
         setAdmins([...admins, newAdmin]);
         setNewAdmin(""); // Clear the input field after adding
       } catch (e) {
-        console.error(e)
+        console.error(e);
         toast({
           title: "Failed to add principal",
           position: "top",
@@ -208,6 +319,11 @@ const Admin = () => {
     isOpen: isOpenQuestion,
     onOpen: onOpenQuestion,
     onClose: onCloseQuestion,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenCourse,
+    onOpen: onOpenCourse,
+    onClose: onCloseCourse,
   } = useDisclosure();
 
   const courseFormik = useFormik({
@@ -346,14 +462,179 @@ const Admin = () => {
     },
   });
 
+  const addCourseFormik = useFormik({
+    initialValues: {
+      title: "",
+      summary: "",
+    },
+    validationSchema: Yup.object({
+      title: Yup.string().required("Required"),
+      summary: Yup.string().required("Required"),
+    }),
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        const authClient = await createClient();
+        const actor = await createBackendActor(authClient.getIdentity());
+        const response = await actor.createCourse(values.title, values.summary);
+        if (response.ok) {
+          toast({
+            title: "Course created successfully",
+            isClosable: true,
+            position: "top",
+            duration: 3000,
+            status: "success",
+          });
+          await fetcher();
+          resetForm();
+          onCloseCourse();
+        } else {
+          toast({
+            title: "Error creating course",
+            description: response.err,
+            isClosable: true,
+            position: "top",
+            duration: 3000,
+            status: "error",
+          });
+        }
+      } catch (e) {
+        toast({
+          title: "Error creating course",
+          description: "We are looking into the issue now",
+          isClosable: true,
+          position: "top",
+          duration: 3000,
+          status: "error",
+        });
+        throw e;
+      }
+    },
+  });
+
+  // Generate questions
+  async function pollRunStatus(runId) {
+    const authClient = await createClient();
+    const actor = await createBackendActor(authClient.getIdentity());
+    while (true) {
+      const response = await actor.getRunStatus(runId);
+      console.log("PollRunStatus", response);
+      if (response.ok) {
+        const enumStatus = getEnum(response.ok, RunStatus);
+        switch (enumStatus) {
+          case "InProgress":
+            await sleep(1000);
+            break;
+          default:
+            return enumStatus;
+        }
+      } else {
+        console.log("Run ID error", response.err);
+        return;
+      }
+    }
+  }
+
+  async function getRunQuestions(runId) {
+    const authClient = await createClient();
+    const actor = await createBackendActor(authClient.getIdentity());
+    const response = await actor.getRunQuestions(runId);
+    if (response.ok) {
+      return response.ok;
+    } else {
+      console.log(response.err);
+      toast({
+        title: "Could not get response",
+        description: response.err,
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+        status: "error",
+      });
+    }
+  }
+
+  async function generateCourseQuestions(courseId) {
+    const authClient = await createClient();
+    const actor = await createBackendActor(authClient.getIdentity());
+    try {
+      setIsGenerating(true);
+      const response = await actor.generateQuestionsForCourse(courseId);
+      console.log("generateCourseQuestions", response);
+      if (response.ok.Completed) {
+        const runId = response.ok.Completed.runId;
+        const status = await pollRunStatus(runId);
+        console.log("Got success status", status);
+        if (!status) {
+          toast({
+            title: "Message error",
+            description: "Not found",
+            duration: 5000,
+            isClosable: true,
+            position: "top",
+            status: "error",
+          });
+          setIsGenerating(false);
+          return;
+        }
+        switch (status) {
+          case "Completed":
+            const questions = await getRunQuestions(runId);
+            if (questions) {
+              const list = await parseValues(questions);
+              setQuestions(list);
+              toast({
+                title: "Questions generated successfully",
+                duration: 5000,
+                isClosable: true,
+                position: "top",
+                status: "success",
+              });
+            }
+            break;
+          default:
+            break;
+        }
+      } else {
+        if (response.err.ThreadLock) {
+          const pendingRunId = response.err.ThreadLock.runId;
+          console.log("Pending run id", pendingRunId);
+          return;
+        }
+        if (response.err.Failed) {
+          toast({
+            title: "Failed to generate questions",
+            description: response.err.Failed,
+            duration: 5000,
+            isClosable: true,
+            position: "top",
+            status: "error",
+          });
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsGenerating(false);
+    }
+  }
+
   const renderContent = () => {
     switch (selectedPage) {
       case Pages.courses:
         return (
           <div>
-            <h2>Courses</h2>
+            <HStack align={"center"} justify={"space-between"} mb={2}>
+              <Heading size={"md"} mb={0}>
+                Courses
+              </Heading>
+              <IconButton
+                onClick={onOpenCourse}
+                colorScheme={"blue"}
+                icon={<IoAddCircle />}
+              />
+            </HStack>
 
-            <Flex gap={6}>
+            <Flex gap={6} wrap={"wrap"}>
               {courses.map((item, idx) => {
                 return (
                   <CourseCard
@@ -367,6 +648,59 @@ const Admin = () => {
                 );
               })}
             </Flex>
+
+            <Modal isOpen={isOpenCourse} onClose={onCloseCourse}>
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>Create new course</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                  <form onSubmit={addCourseFormik.handleSubmit}>
+                    <Stack gap={6}>
+                      <FormControl isInvalid={addCourseFormik.errors.title}>
+                        <FormLabel>Title</FormLabel>
+                        <Input
+                          placeholder="Course title"
+                          name="title"
+                          value={addCourseFormik.values.title}
+                          onChange={addCourseFormik.handleChange}
+                          onBlur={addCourseFormik.handleBlur}
+                        />
+                        <FormErrorMessage>
+                          {addCourseFormik.errors.title}
+                        </FormErrorMessage>
+                      </FormControl>
+                      <FormControl isInvalid={addCourseFormik.errors.summary}>
+                        <FormLabel>Description</FormLabel>
+                        <Textarea
+                          placeholder="Enter course summary"
+                          name="summary"
+                          value={addCourseFormik.values.summary}
+                          onChange={addCourseFormik.handleChange}
+                          onBlur={addCourseFormik.handleBlur}
+                        />
+                        <FormErrorMessage>
+                          {addCourseFormik.errors.summary}
+                        </FormErrorMessage>
+                      </FormControl>
+                    </Stack>
+                  </form>
+                </ModalBody>
+
+                <ModalFooter>
+                  <Button variant="ghost" mr={3} onClick={onCloseCourse}>
+                    Close
+                  </Button>
+                  <Button
+                    colorScheme="blue"
+                    isLoading={addCourseFormik.isSubmitting}
+                    onClick={addCourseFormik.submitForm}
+                  >
+                    Save
+                  </Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
           </div>
         );
 
@@ -518,7 +852,7 @@ const Admin = () => {
                             <FormControl>
                               <FormLabel>Type</FormLabel>
                               <Select
-                                name="type"
+                                name="rType"
                                 placeholder="Select resource type"
                                 value={resourceFormik.values.rType}
                                 onChange={resourceFormik.handleChange}
@@ -564,11 +898,21 @@ const Admin = () => {
                     <Heading size={"md"} mb={0}>
                       Questions
                     </Heading>
-                    <IconButton
-                      onClick={onOpenQuestion}
-                      colorScheme={"blue"}
-                      icon={<FaPlus />}
-                    />
+                    <HStack align={"center"} spacing={4}>
+                      <IconButton
+                        onClick={onOpenQuestion}
+                        colorScheme={"blue"}
+                        icon={<FaPlus />}
+                      />
+                      <IconButton
+                        onClick={async () => {
+                          await generateCourseQuestions(selectedCourse.id);
+                        }}
+                        colorScheme={"blue"}
+                        icon={<RiAiGenerate />}
+                        isLoading={isGenerating}
+                      />
+                    </HStack>
                   </HStack>
                   <Modal
                     size={"lg"}
@@ -720,7 +1064,9 @@ const Admin = () => {
                             <HStack justify={"flex-end"}>
                               <IconButton
                                 onClick={async (e) => {
-                                  await handleDeleteAdmin(Principal.fromText(admin));
+                                  await handleDeleteAdmin(
+                                    Principal.fromText(admin)
+                                  );
                                 }}
                                 icon={<FiTrash />}
                               />
@@ -744,8 +1090,84 @@ const Admin = () => {
                 value={newAdmin}
                 onChange={(e) => setNewAdmin(e.target.value)}
               />
-              <Button isLoading={addingNewAdmin} colorScheme="blue" onClick={handleAddAdmin}>Add Admin</Button>
+              <Button
+                isLoading={addingNewAdmin}
+                colorScheme="blue"
+                onClick={handleAddAdmin}
+              >
+                Add Admin
+              </Button>
             </HStack>
+          </div>
+        );
+
+      case Pages.settings:
+        return (
+          <div>
+            <h2>Settings</h2>
+            <Stack spacing={6}>
+              <Stack>
+                <FormLabel>OpenAI API Key</FormLabel>
+                <HStack align={"center"}>
+                  <input
+                    type="text"
+                    placeholder="Enter API Key"
+                    ref={apiKeyRef}
+                  />
+                  <Button
+                    isLoading={changingApiKey}
+                    colorScheme="blue"
+                    onClick={async () => {
+                      await handleChangeApiKey(apiKeyRef.current.value);
+                    }}
+                  >
+                    Change
+                  </Button>
+                </HStack>
+              </Stack>
+              <Stack>
+                <FormLabel>OpenAI Assistant ID</FormLabel>
+                <HStack align={"center"}>
+                  <input
+                    type="text"
+                    placeholder="Enter Assistant ID"
+                    ref={assistantIdRef}
+                  />
+                  <Button
+                    isLoading={settingAssistantId}
+                    colorScheme="blue"
+                    onClick={async () => {
+                      await handleSettingAssistantId(
+                        assistantIdRef.current.value
+                      );
+                    }}
+                  >
+                    Change
+                  </Button>
+                </HStack>
+              </Stack>
+              <Stack>
+                <FormLabel>Token Canister ID</FormLabel>
+                <HStack align={"center"}>
+                  <input
+                    type="text"
+                    placeholder="Enter canister id"
+                    ref={canisterIdRef}
+                  />
+                  <Button
+                    isLoading={settingCanisterId}
+                    colorScheme="blue"
+                    onClick={async () => {
+                      await handleSettingTokenCanisterId(
+                        canisterIdRef.current.value
+                      );
+                    }}
+                  >
+                    Change
+                  </Button>
+                </HStack>
+              </Stack>
+            </Stack>
           </div>
         );
 
@@ -764,6 +1186,7 @@ const Admin = () => {
             <li onClick={() => setSelectedPage(Pages.permissions)}>
               Permissions
             </li>
+            <li onClick={() => setSelectedPage(Pages.settings)}>Settings</li>
           </ul>
           {/* Go Back Button */}
           <button

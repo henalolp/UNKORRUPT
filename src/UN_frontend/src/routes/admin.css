@@ -32,7 +32,7 @@
 }
 
 .sbar {
-  width: 200px;
+  min-width: 200px;
   /* Fixed width for the sidebar */
   background-color: #171923;
   padding: 20px;

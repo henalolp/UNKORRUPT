@@ -20,7 +20,7 @@ body {
 .chat-container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 95vh;
     max-width: 800px;
     width: 100%;
     margin: 0 auto;
@@ -184,7 +184,7 @@ body {
     border-color: #a020f0;
 }
 
-.chat-input button[type="submit"] {
+.chat-input button[type="submit"], .cus-btn {
     padding: 12px 20px;
     background-color: #a020f0;
     border: none;
@@ -195,6 +195,6 @@ body {
     transition: background-color 0.2s;
 }
 
-.chat-input button[type="submit"]:hover {
+.chat-input button[type="submit"]:hover, .cus-btn:hover {
     background-color: #8b00e0;
 }

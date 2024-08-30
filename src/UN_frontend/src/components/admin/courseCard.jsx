@@ -33,7 +33,7 @@ export default function CourseCard({ course, onSelect }) {
       statusColor = "gray";
   }
   return (
-    <Center py={6}>
+    <Center>
       <Box
         maxW={"320px"}
         minW={"320px"}
