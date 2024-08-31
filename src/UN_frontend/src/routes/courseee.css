@@ -68,7 +68,13 @@ body {
     display: grid;
     grid-template-columns: 1fr;
     gap: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 20px;    
+}
+
+
+.play-icon {
+    display: block;
+    margin: 0 auto; /* Centers the icon horizontally */
 }
 
 @media (min-width: 600px) {

@@ -1,9 +1,9 @@
 
-p-body {
+.p-body {
     margin: 0;
     padding: 0;
-
-
+    min-height: 100vh;
+    display: flex;  
 }
 
 .profile-container {
@@ -66,7 +66,7 @@ p-body {
     background: none;
     text-align: left;
     margin: 5px 0;
-    transition: background 0.3s; /* Add transition for hover effect */
+    transition: background 0.3s; 
 }
 
 .profile-options button:hover {
@@ -133,5 +133,10 @@ p-body {
 
     .profile-footer {
         width: 100%;
+    }
+
+    .p-body{
+        flex-direction: column;
+        
     }
 }

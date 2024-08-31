@@ -6,7 +6,7 @@ import { BiCheck, BiMessageSquareDetail } from "react-icons/bi";
 import Layout from "../components/Layout";
 import withAuth from "../lib/withAuth";
 import { useAuthClient } from "../use-auth-client";
-import { Center, Heading, Spinner, Text, useToast } from "@chakra-ui/react";
+import { Center, Spinner, Text, useToast, Button } from "@chakra-ui/react"; // Import Button from Chakra UI
 import { createBackendActor, createClient } from "../helper/auth";
 import { parseValues } from "../helper/parser";
 
@@ -39,11 +39,11 @@ const ProgressPage = () => {
       console.log("Enrolled courses", cs);
       setCourses(cs);
     }
-  });
+  }, [toast]);
 
   useEffect(() => {
     fetcher();
-  }, []);
+  }, [fetcher]);
 
   console.log(isLoading);
 
@@ -56,9 +56,14 @@ const ProgressPage = () => {
           <div className="profile-avatar"></div>
           <BiMessageSquareDetail className="message-icon" />
         </div>
-        <Heading color={"#000"} size={"sm"} mt={4}>
+        <Button 
+          colorScheme="purple" 
+          size="sm" 
+          mt={4} 
+          onClick={() => console.log(identity?.getPrincipal().toString())}
+        >
           {identity?.getPrincipal().toString()}
-        </Heading>
+        </Button>
         <div className="toggle-buttons">
           <button className="toggle-button active">Progress</button>
           <button className="toggle-button">Badges</button>
@@ -74,13 +79,11 @@ const ProgressPage = () => {
               <div className="course-item" key={idx}>
                 <div className="progress-circle">
                   <span>
-                    {
-                      item.completed ? (
-                        <BiCheck color="#a020f0" size={'3rem'} />
-                      ) : (
-                        <FiBarChart2 color="#a020f0" size={'3rem'} />
-                      )
-                    }
+                    {item.completed ? (
+                      <BiCheck color="#a020f0" size={'3rem'} />
+                    ) : (
+                      <FiBarChart2 color="#a020f0" size={'3rem'} />
+                    )}
                   </span>
                 </div>
                 <Text fontWeight={500} align={'center'}>{item.title}</Text>

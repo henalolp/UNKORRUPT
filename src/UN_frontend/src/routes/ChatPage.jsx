@@ -329,7 +329,7 @@ const ChatPage = () => {
 
           {messages.length === 1 && !isLoading && (
             <div className="predefined-questions-container">
-              <h2>Try asking one of these questions:</h2>
+              <img src="/patriot.png" alt="" />
               <div className="predefined-questions-grid">
                 {predefinedQuestions.map((question, index) => (
                   <div
