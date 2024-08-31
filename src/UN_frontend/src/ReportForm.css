@@ -106,16 +106,22 @@ body {
 
 @media (max-width: 768px) {
   .form-container {
-    width: 80%;
-    /* More appropriate for tablets */
+    width: 90%;
+    height: 100vh;
+    justify-content: space-between;    
     padding: 15px;
   }
 }
 
 @media (max-width: 480px) {
   .form-container {
-    width: 95%;
-    /* More appropriate for mobile phones */
-    padding: 10px;
+    width: 100%;
+  
+  }
+
+  .containerf {
+    flex-direction: column; 
+    /* height: 100vh;  */
+    
   }
 }

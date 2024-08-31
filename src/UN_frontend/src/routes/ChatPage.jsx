@@ -360,6 +360,7 @@ const ChatPage = () => {
                 <button type="submit">Send</button>
               )}
               <Button
+                className="quiz-button"
                 _hover={{
                   bg: "#8b00e0",
                 }}

@@ -68,7 +68,7 @@ const ProfilePage = () => {
   }, [identity]);
 
   return (
-    <div className="containerf">
+    <div className="p-body">
       <Layout />
       <MDBContainer className="container py-5 h-100 ">
         <MDBRow className="justify-content-center align-items-center h-100">

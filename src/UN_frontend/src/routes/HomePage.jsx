@@ -75,12 +75,15 @@ export default function HomePage() {
             <a href="#" onClick={() => scrollToSection("benefits")}>
               Benefits
             </a>
-            <a href="https://forms.monday.com/forms/6848b3758ce5c92ec58acbc26ea8a0df?r=euc1">
+            <a href="https://forms.monday.com/forms/6848b3758ce5c92ec58acbc26ea8a0df?r=euc1"
+            target="_blank" /* Open in a new tab */
+            rel="noopener noreferrer" /* Security measure */
+            >
               Contact Us
             </a>
           </nav>
           <button className="btn-primary" onClick={handleLoginClick}>
-            Get Started
+            Login
           </button>
           <div className="theme-toggle" onClick={toggleDarkMode}>
             {darkMode ? (
@@ -136,7 +139,6 @@ export default function HomePage() {
                 <li className="listing">
                   <img src="./coin.png" alt="" />
                   <div>
-                    {" "}
                     <strong>Understand corruption</strong>
                     <p>
                       We offer different courses to help you understand
@@ -158,7 +160,7 @@ export default function HomePage() {
                   <img src="./coin.png" alt="" />
                   <div>
                     <strong>Earn rewards</strong>
-                    <p>Complete quizes to earn patriot tokens!</p>
+                    <p>For every successifully completed quize, you earn 10 patriot tokens!</p>
                   </div>
                 </li>
               </ul>

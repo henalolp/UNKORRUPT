@@ -1191,7 +1191,7 @@ const Admin = () => {
           {/* Go Back Button */}
           <button
             className="btn-go-back"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/coursePage")}
             style={{ position: "absolute", bottom: "20px", left: "20px" }}
           >
             Go Back
