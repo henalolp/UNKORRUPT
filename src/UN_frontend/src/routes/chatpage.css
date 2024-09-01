@@ -13,7 +13,6 @@ body {
     padding: 20px;
     min-height: 100vh;
     margin: auto;
-    
 }
 
 /* Chat Container */
@@ -36,11 +35,8 @@ body {
     align-items: center;
     padding: 20px;
     background-color: #a020f0;
-    color:white;
+    color: black;
     justify-content: space-between;
-}
-.chat-header h1{
-    color: #ffffff;
 }
 
 .back-icon {
@@ -109,6 +105,13 @@ body {
     margin-bottom: 20px;
 }
 
+.predefined-questions-container img {    
+    width: 7%;
+    display: block;
+    margin: 0 auto; /* Centers the image horizontally */
+}
+
+
 .predefined-questions-container h2 {
     font-size: 1.5rem;
     font-weight: 600;
@@ -136,12 +139,13 @@ body {
     }
 }
 
-/* Question Card */
 .question-card {
     background-color: #ffffff;
     border: 1px solid #ddd;
     border-radius: 10px;
-    padding: 15px;
+    padding: 8px;
+    width: 70%;
+    flex-direction: column;
     text-align: center;
     font-size: 1rem;
     font-weight: 500;
@@ -149,6 +153,7 @@ body {
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s, box-shadow 0.2s;
+    margin: auto; /* Center the card itself */
 }
 
 .question-card:hover {
@@ -197,4 +202,60 @@ body {
 
 .chat-input button[type="submit"]:hover, .cus-btn:hover {
     background-color: #8b00e0;
+}
+
+/* Media query to adjust chat layout on small screens */
+@media (max-width: 768px) {
+    .chat-body {
+        flex-direction: column; 
+        padding: 10px; 
+    }
+
+    .chat-container {    
+        max-width: 100%; /* Make full width for small screens */
+    }
+
+    .chat-header {
+        padding: 15px; /* Adjust padding for smaller screens */
+    }
+
+    .chat-content {
+        padding: 10px; /* Reduce padding for small screens */
+    }
+
+    .predefined-questions-grid {
+        grid-template-columns: 1fr; /* Single column layout on small screens */
+    }
+
+    .question-card {
+        padding: 10px; 
+    }
+    .quiz-button{
+        width: 100%;
+    }
+
+    .chat-input {
+        padding: 25px 15px;
+        margin-bottom: 25px;
+    }
+
+    .chat-input form {
+        /* flex-direction: column;  */
+        /* gap: 10px;  */
+    }
+
+    .chat-input button[type="submit"], .cus-btn {
+        flex: 20%; /* Make button full flex when stacked */
+        border-radius: 8px;
+        padding: 8px;
+    }
+    .chat-input button[type="button"], .cus-btn {
+        flex: 20%; /* Make button full flex when stacked */
+        border-radius: 8px;
+        padding: 5px;
+    }
+    .chat-input input[type="text"], .cus-btn {
+        flex: 60%; /* Make button full width when stacked */
+        border-radius: 8px;
+    }
 }

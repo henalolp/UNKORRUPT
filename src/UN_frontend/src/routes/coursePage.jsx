@@ -68,13 +68,13 @@ const CoursePage = () => {
       <div className="course-wrapper">
         <img src={logo} alt="Course Selection" className="course-image" />
         <div className="course-content">
-          <h1 className="course-title">Welcome Patriot!</h1>
+          <h1 className="course-title">Hey Patriot!</h1>
           <p className="course-description">
             What do you want to learn today? Interact with our AI powered
-            courses to learn about and fight corruption. Get a token for every
+            courses to <span className="learn">learn about and fight corruption.</span> Get a token for every
             successfully completed course!
           </p>
-          <h2 className="syllabus-title">Syllabus</h2>
+          <h2 className="syllabus-title">Courses</h2>
           {isLoading && (
             <Center>
               <Spinner size={'lg'} borderBottomColor={"#a020f0 !important"}/>
@@ -98,7 +98,8 @@ const CoursePage = () => {
                   {(Number(course.id) + 1).toString()}
                 </div>
                 <h3 className="course-card-title">{course.title}</h3>
-                <FaPlay style={{ color: "#A020F0" }} />
+                <FaPlay className="play-icon" style={{ color: "#A020F0" }} />
+
               </div>
             ))}
           </div>

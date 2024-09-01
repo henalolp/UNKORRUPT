@@ -6,8 +6,7 @@ body {
 
 .all-reports {
   display: flex;
-  /* justify-content: center;   
-  align-content: space-between; */
+  flex-direction: row; /* Default direction for larger screens */
   margin: auto;
   padding: 20px;
   min-height: 100vh;
@@ -49,7 +48,6 @@ h2 {
 .all-reports-section {
   display: flex;
   margin-bottom: 40px;
-
 }
 
 .reports-grid {
@@ -57,13 +55,6 @@ h2 {
   grid-template-columns: repeat(2, 1fr); /* Set to always have 2 columns */
   gap: 20px; /* Keep the gap between items */
 }
-
-@media (max-width: 768px) {
-  .reports-grid {
-    grid-template-columns: 1fr; /* Stack items in a single column on smaller screens */
-  }
-}
-
 
 .report-card {
   background-color: #fff;
@@ -115,16 +106,41 @@ h2 {
 }
 
 @media (max-width: 768px) {
-  h2 {
-    font-size: 1.5rem;
+  .all-reports {
+    flex-direction: column; /* Stack sections vertically */
+    padding: 10px; /* Adjust padding for smaller screens */
+    align-items: center; /* Center items vertically */
   }
 
-  .report-tabs span {
-    font-size: 0.9rem;
-    padding: 8px;
+  .reports-cont {
+    margin: 20px; /* Reduce margin for smaller screens */
+    height: auto; /* Allow height to adjust based on content */
   }
 
   .reports-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* Stack items in a single column on smaller screens */
+  }
+
+  h2 {
+    font-size: 1.5rem; /* Adjust font size for smaller screens */
+  }
+
+  .report-tabs span {
+    font-size: 0.9rem; /* Adjust tab font size */
+    padding: 8px; /* Adjust padding for smaller screens */
+  }
+
+  .new-reports-section,
+  .all-reports-section {
+    flex-direction: column; /* Stack sections vertically */
+    align-items: center; /* Center sections */
+  }
+
+
+
+  .content {
+    /* margin-top: 60px;  */
+       padding: 10px; /* Adjust padding for smaller screens */
+    width: 100%; /* Make content take up the full width */
   }
 }
