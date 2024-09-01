@@ -4,5 +4,8 @@
   },
   "UN_frontend": {
     "ic": "kzwfs-haaaa-aaaak-ak3uq-cai"
+  },
+  "icrc1_ledger_canister": {
+    "ic": "e7ns7-caaaa-aaaak-ak5ja-cai"
   }
 }

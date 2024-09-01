@@ -25,7 +25,7 @@ export MINTER=$(dfx canister id UN_backend --ic)
 
 export FEATURE_FLAGS=true
 
-dfx identity use default
+dfx identity use DevJourney
 dfx start --clean --background
 dfx deploy icrc1_ledger_canister --argument "(variant {Init =
 record {
@@ -44,3 +44,5 @@ record {
      };
  }
 })" --network ic
+moncm-xhwy2-4clkt-pr3qp-ndzhp-irwng-lmlj3-5myps-45z73-u54iv-mae
+3q2ak-3juch-whtsj-xdkao-ktb2i-gpa6n-uhgzc-zp7vf-sygw7-nrj2j-hqe
