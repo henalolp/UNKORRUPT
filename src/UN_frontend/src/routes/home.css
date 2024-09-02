@@ -338,6 +338,10 @@ body, html {
     font-size: 2rem;
     margin-bottom: 10px;
     font-weight: 700;
+    margin-top: 10px;       
+    white-space: nowrap; /* Prevents the text from wrapping to a new line */
+
+    
 }
 
 .cta p {
@@ -351,6 +355,7 @@ body, html {
     color: #A020F0;
     padding: 12px 24px;
     border-radius: 8px;
+    margin-bottom: 10px;
     font-weight: 600;
     text-decoration: none;
     display: inline-block;
@@ -652,8 +657,8 @@ body, html {
     }
 
     .cta {
-        width: 90%;
-        padding: 20px 15px;
+        width: 80%;
+        padding: 10px 10px;
         margin: 20px auto;
         max-width: 400px;
         box-sizing: border-box;
@@ -1059,7 +1064,7 @@ body, html {
     background-color: #A020F0; /* Bright purple background for CTA */
     color: #fff;
     text-align: center;
-    padding: 10px 200px; /* Increased padding for emphasis */
+    padding: 8px 250px; /* Increased padding for emphasis */
     border-radius: 15px; /* Rounded corners */
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
     margin: 40px auto; /* Center the CTA with some margin */
@@ -1067,7 +1072,7 @@ body, html {
 }
 
 .cta h2 {
-    font-size: 2rem; /* Larger font size for the heading */
+    font-size: 1.5rem; /* Larger font size for the heading */
     margin-bottom: 10px;
     font-weight: 700; /* Bold font for emphasis */
 }
@@ -1081,7 +1086,7 @@ body, html {
 .cta .btn-primary {
     background-color: #fff;
     color: #A020F0; /* Button text color matching the CTA background */
-    padding: 12px 24px;
+    padding: 5px 15px;
     border-radius: 8px;
     font-weight: 600;
     text-decoration: none;
@@ -1298,6 +1303,9 @@ body, html {
         align-items: center; /* Center align items */
         padding: 20px; /* Adjust padding */
     }
+    .benefits p{
+        width: 50%;
+    }
 
     .benefits img {
         margin-bottom: 20px; /* Space below image */
@@ -1458,7 +1466,7 @@ body, html {
     }
 
     .cta h2 {
-        font-size: 1.8rem; /* Adjust font size */
+        font-size: 1rem; /* Adjust font size */
         margin-bottom: 10px; /* Add margin below the heading */
     }
 
