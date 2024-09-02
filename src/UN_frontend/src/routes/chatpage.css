@@ -91,7 +91,7 @@ body {
     align-self: flex-end; /* Aligns message to the left */
     background-color: #a020f0; /* Purple background color */
     color: #ffffff; /* White text color */
-    padding: 5px 20px; /* Padding for the bubble */
+    padding: 0 20px; /* Padding for the bubble */
     border-radius: 25px 0 25px 25px; /* Rounded on all corners except the top-left */
     max-width: 60%; /* Limits width to avoid overly long lines */
     margin: 10px 0; /* Space between messages */
