@@ -1828,7 +1828,7 @@ shared ({ caller }) actor class Backend() {
                               id = c.id;
                               title = c.title;
                               summary = c.summary;
-                              enrolledCount = c.enrolledCount + 1;
+                              enrolledCount = c.enrolledCount;
                               reportCount = c.reportCount;
                               status = c.status;
                               resources = c.resources;
