@@ -9,16 +9,15 @@
     box-sizing: border-box;
     border-radius: 5px;
   }
-
+  
   .everything {
-    display: flex;    
-    /* flex-direction: column;  */
+    display: flex;
     justify-content: center; 
-    /* align-items: center;  */
-    margin: 20px;   
-    min-height: 100vh; /* Ensure the container covers the full viewport height */
+    width: 100%; /* Ensures the container occupies the full width */
+    min-height: 100vh; /* Covers the full viewport height */
     padding: 20px;
     box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    margin: 0; /* Remove margin to avoid offset from the edges */
 }
 
   .progress-header {
