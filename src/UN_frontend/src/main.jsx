@@ -10,6 +10,7 @@ import ReportsPage from "./routes/ReportsPage";
 import Quiz from "./routes/QuizPage";
 import App from "./App";
 import Admin from "./routes/Admin";
+import BadgesPage from "./routes/BadgesPage";
 // import LandingPage from "./routes/LandingPage";
 // import RootLayout from "./app/layout";
 import HomePage from "./routes/HomePage";
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
   {
     path: "reportForm",
     element: <ReportForm />,
+  },
+  {
+    path: "badgesPage",
+    element: <BadgesPage />,
   },
   {
     path: "profilePage",

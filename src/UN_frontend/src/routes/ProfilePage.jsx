@@ -1,179 +1,128 @@
-import React, { useEffect, useState } from "react";
-import "./profilepage.css";
-import {
-  MDBCol,
-  MDBContainer,
-  MDBRow,
-  MDBCard,
-  MDBListGroup,
-  MDBListGroupItem,
-  MDBCardText,
-  MDBCardBody,
-  MDBCardImage,
-  MDBBtn,
-  MDBTypography,
-  MDBIcon,
-} from "mdb-react-ui-kit";
-import "mdb-react-ui-kit/dist/css/mdb.min.css";
+import React, { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./progresspage.css";
+import { FiArrowLeft, FiBarChart2 } from "react-icons/fi";
+import { BiCheck, BiMessageSquareDetail } from "react-icons/bi";
 import Layout from "../components/Layout";
 import withAuth from "../lib/withAuth";
 import { useAuthClient } from "../use-auth-client";
-import { createLedgerCanister } from "../helper/ledger";
-import { Spinner, useToast } from "@chakra-ui/react";
-import { IcrcMetadataResponseEntries } from "@dfinity/ledger-icrc";
+import { Center, Spinner, Text, useToast, Button, Box } from "@chakra-ui/react"; // Added Box from Chakra UI
+import { createBackendActor, createClient } from "../helper/auth";
+import { parseValues } from "../helper/parser";
 
-const ProfilePage = () => {
-  const [tokens, setTokens] = useState("-");
+const ProgressPage = () => {
   const toast = useToast();
-
   const { identity } = useAuthClient();
+  const navigate = useNavigate();
+  const [courses, setCourses] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("Progress"); // State to track active tab
+
+  const handleBackClick = () => {
+    navigate("/coursePage"); // Replace with the correct path to your courses page
+  };
+
+  const handleBadgesClick = () => {
+    navigate("/badgesPage"); 
+  };
+
+  const fetcher = useCallback(async () => {
+    const authClient = await createClient();
+    const actor = await createBackendActor(authClient.getIdentity());
+    setIsLoading(true);
+    const response = await actor.getUserEnrolledCourses();
+    setIsLoading(false);
+    if (response.err) {
+      toast({
+        title: "Failed to get your enrolled courses",
+        position: "top",
+        status: "error",
+        isClosable: true,
+        duration: 3000,
+      });
+    } else {
+      const cs = await parseValues(response.ok);
+      console.log("Enrolled courses", cs);
+      setCourses(cs);
+    }
+  }, [toast]);
 
   useEffect(() => {
-    async function getTokens() {
-      const ledger = await createLedgerCanister();
-      const metadata = await ledger.metadata({});
-      if (!metadata) {
-        toast({
-          title: "Can't find metadata",
-          duration: 5000,
-          isClosable: true,
-          position: "top",
-        });
-        return;
-      }
-      let symbol = "";
-      for (const value of metadata) {
-        if (value[0] === IcrcMetadataResponseEntries.SYMBOL) {
-          symbol = value[1].Text;
-          break;
-        }
-      }
-      let decimals = 0;
-      for (const value of metadata) {
-        if (value[0] === IcrcMetadataResponseEntries.DECIMALS) {
-          decimals = parseInt(value[1].Nat);
-          break;
-        }
-      }
-      const balance =
-        Number(
-          await ledger.balance({
-            owner: identity.getPrincipal(),
-          })
-        ) /
-        10 ** decimals;
-      setTokens(`${balance} ${symbol}`);
+    fetcher();
+  }, [fetcher]);
+
+  // Handler to toggle active tab
+  const handleTabClick = (tab) => {
+    if (tab === "Badges") {
+      handleBadgesClick(); // Navigate to badges page
+    } else {
+      setActiveTab(tab); // Update the active tab state
     }
-    if (identity?.getPrincipal()) getTokens();
-  }, [identity]);
+  };
 
   return (
-    <div className="p-body">
+    <div className="everything">
       <Layout />
-      <MDBContainer className="container py-5 h-100 ">
-        <MDBRow className="justify-content-center align-items-center h-100">
-          <MDBCol md="12" xl="4">
-            <MDBCard style={{ borderRadius: "15px" }}>
-              <MDBCardBody className="text-center">
-                <div
-                  className="mt-3 mb-4"
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
-                >
-                  <MDBCardImage
-                    src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp"
-                    className="rounded-circle justify-center"
-                    fluid
-                    style={{ width: "100px" }}
-                  />
+      <div className="progress-container">
+        <div className="progress-header">
+          <FiArrowLeft className="back-icon" onClick={handleBackClick} />
+          <div className="profile-avatar"></div>
+          <BiMessageSquareDetail className="message-icon" />
+        </div>
+        <Box display="flex" justifyContent="center" width="100%" mt={4}>
+          <Button 
+            colorScheme="purple" 
+            size="sm" 
+            onClick={() => console.log(identity?.getPrincipal().toString())}
+            maxWidth={{ base: "100%", md: "auto" }} // Ensures the button doesn't overflow on small screens
+            overflow="hidden"
+            textOverflow="ellipsis"
+            whiteSpace="nowrap"
+          >
+            {identity?.getPrincipal().toString()}
+          </Button>
+        </Box>
+        <div className="toggle-buttons">
+          <button 
+            className={`toggle-button ${activeTab === "Progress" ? "active" : ""}`} 
+            onClick={() => handleTabClick("Progress")}
+          >
+            Progress
+          </button>
+          <button 
+            className={`toggle-button ${activeTab === "Badges" ? "active" : ""}`} 
+            onClick={() => handleTabClick("Badges")}
+          >
+            Badges
+          </button>
+        </div>
+        {isLoading && (
+          <Center>
+            <Spinner borderBottomColor={"#a020f0 !important"} />
+          </Center>
+        )}
+        <div className="course-progress">
+          {courses.map((item, idx) => {
+            return (
+              <div className="course-item" key={idx}>
+                <div className="progress-circle">
+                  <span>
+                    {item.completed ? (
+                      <BiCheck color="#a020f0" size={'3rem'} />
+                    ) : (
+                      <FiBarChart2 color="#a020f0" size={'3rem'} />
+                    )}
+                  </span>
                 </div>
-                <MDBTypography
-                  style={{
-                    color: "#000",
-                  }}
-                  tag="h6"
-                >
-                  Your Principal ID
-                </MDBTypography>
-                <MDBCardText className="text-muted mb-4">
-                  {identity?.getPrincipal().toString()}
-                </MDBCardText>
-                <MDBTypography
-                  style={{
-                    color: "#000",
-                  }}
-                  tag="h6"
-                >
-                  Your Tokens
-                </MDBTypography>
-                <MDBCardText className="text-muted mb-4">
-                  {tokens === "-" ? <Spinner /> : <>{tokens}</>}
-                </MDBCardText>
-                <div className="mb-4 pb-2">
-                  <MDBBtn outline floating>
-                    <MDBIcon fab icon="facebook" size="lg" />
-                  </MDBBtn>
-                  <MDBBtn outline floating className="mx-1">
-                    <MDBIcon fab icon="twitter" size="lg" />
-                  </MDBBtn>
-                  <MDBBtn outline floating>
-                    <MDBIcon fab icon="skype" size="lg" />
-                  </MDBBtn>
-                </div>
-
-                <MDBListGroup
-                  style={{ minWidth: "10rem", display: "none" }}
-                  light
-                >
-                  <MDBListGroupItem
-                    tag="a"
-                    href="#"
-                    action
-                    noBorders
-                    active
-                    aria-current="true"
-                    className="px-3"
-                  >
-                    Edit Profile
-                  </MDBListGroupItem>
-                  <MDBListGroupItem
-                    tag="a"
-                    href="#"
-                    action
-                    noBorders
-                    className="px-3"
-                  >
-                    <i className="icon icon-settings"></i> Settings
-                  </MDBListGroupItem>
-                  <MDBListGroupItem
-                    tag="a"
-                    href="#"
-                    action
-                    noBorders
-                    className="px-3"
-                  >
-                    <i className="icon icon-settings"></i> Invite a friend
-                  </MDBListGroupItem>
-                  <MDBListGroupItem
-                    tag="a"
-                    href="#"
-                    action
-                    noBorders
-                    className="px-3"
-                  >
-                    <i className="icon icon-settings"></i> Help
-                  </MDBListGroupItem>
-                </MDBListGroup>
-              </MDBCardBody>
-            </MDBCard>
-          </MDBCol>
-        </MDBRow>
-      </MDBContainer>
+                <Text fontWeight={500} align={'center'}>{item.title}</Text>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };
 
-const Page = withAuth(ProfilePage);
+const Page = withAuth(ProgressPage);
 export default Page;

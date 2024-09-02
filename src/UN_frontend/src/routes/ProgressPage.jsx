@@ -6,7 +6,7 @@ import { BiCheck, BiMessageSquareDetail } from "react-icons/bi";
 import Layout from "../components/Layout";
 import withAuth from "../lib/withAuth";
 import { useAuthClient } from "../use-auth-client";
-import { Center, Spinner, Text, useToast, Button } from "@chakra-ui/react"; // Import Button from Chakra UI
+import { Center, Spinner, Text, useToast, Button, Box } from "@chakra-ui/react"; // Added Box from Chakra UI
 import { createBackendActor, createClient } from "../helper/auth";
 import { parseValues } from "../helper/parser";
 
@@ -14,11 +14,17 @@ const ProgressPage = () => {
   const toast = useToast();
   const { identity } = useAuthClient();
   const navigate = useNavigate();
+  const [courses, setCourses] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("Progress"); // State to track active tab
+
   const handleBackClick = () => {
     navigate("/coursePage"); // Replace with the correct path to your courses page
   };
-  const [courses, setCourses] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+
+  const handleBadgesClick = () => {
+    navigate("/badgesPage"); // Replace with the correct path to your badges page
+  };
 
   const fetcher = useCallback(async () => {
     const authClient = await createClient();
@@ -45,7 +51,14 @@ const ProgressPage = () => {
     fetcher();
   }, [fetcher]);
 
-  console.log(isLoading);
+  // Handler to toggle active tab
+  const handleTabClick = (tab) => {
+    if (tab === "Badges") {
+      handleBadgesClick(); // Navigate to badges page
+    } else {
+      setActiveTab(tab); // Update the active tab state
+    }
+  };
 
   return (
     <div className="everything">
@@ -56,17 +69,32 @@ const ProgressPage = () => {
           <div className="profile-avatar"></div>
           <BiMessageSquareDetail className="message-icon" />
         </div>
-        <Button 
-          colorScheme="purple" 
-          size="sm" 
-          mt={4} 
-          onClick={() => console.log(identity?.getPrincipal().toString())}
-        >
-          {identity?.getPrincipal().toString()}
-        </Button>
+        <Box display="flex" justifyContent="center" width="100%" mt={4}>
+          <Button 
+            colorScheme="purple" 
+            size="sm" 
+            onClick={() => console.log(identity?.getPrincipal().toString())}
+            maxWidth={{ base: "100%", md: "auto" }} // Ensures the button doesn't overflow on small screens
+            overflow="hidden"
+            textOverflow="ellipsis"
+            whiteSpace="nowrap"
+          >
+            {identity?.getPrincipal().toString()}
+          </Button>
+        </Box>
         <div className="toggle-buttons">
-          <button className="toggle-button active">Progress</button>
-          <button className="toggle-button">Badges</button>
+          <button 
+            className={`toggle-button ${activeTab === "Progress" ? "active" : ""}`} 
+            onClick={() => handleTabClick("Progress")}
+          >
+            Progress
+          </button>
+          <button 
+            className={`toggle-button ${activeTab === "Badges" ? "active" : ""}`} 
+            onClick={() => handleTabClick("Badges")}
+          >
+            Badges
+          </button>
         </div>
         {isLoading && (
           <Center>
