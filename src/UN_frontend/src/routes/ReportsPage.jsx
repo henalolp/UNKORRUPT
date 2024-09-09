@@ -53,8 +53,6 @@ const ReportsPage = () => {
 
   const toast = useToast();
 
-  console.log(reports);
-
   const Data = [
     {
       id: 1,
@@ -247,19 +245,22 @@ const ReportsPage = () => {
         <div className="new-reports-section">
           <div className="reports-grid">
             {renderReports().map((report) => (
-              <div
-                key={report.id}
-                className="report-card"
-                onClick={() => {
-                  setSelectedReport(report);
-                  onOpen();
-                }}
-              >
+              <div key={report.id} className="report-card">
                 <div className="report-image">
                   <img src={report.image} alt={report.name} />
                 </div>
                 <div className="report-details">
-                  <h3>{getCountryName(report.country)}</h3>
+                  <h3
+                    style={{
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => {
+                      setSelectedReport(report);
+                      onOpen();
+                    }}
+                  >
+                    {`Report #${report.id + 1}`}
+                  </h3>
                   <p>{report.category}</p>
                   <button
                     className="like-button"
@@ -320,7 +321,7 @@ const ReportsPage = () => {
             <Modal isOpen={isOpen} onClose={onClose}>
               <ModalOverlay />
               <ModalContent>
-                <ModalHeader>Report #{selectedReport.id}</ModalHeader>
+                <ModalHeader>Report #{selectedReport.id + 1}</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
                   <Box
@@ -346,7 +347,9 @@ const ReportsPage = () => {
                       <Text>{getCountryName(selectedReport.country)}</Text>
                     </Box>
                     <Box>
-                      <Heading size={"xs"} mb={1}>State</Heading>
+                      <Heading size={"xs"} mb={1}>
+                        State
+                      </Heading>
                       <Text>
                         {getStateName(
                           selectedReport.country,
@@ -355,19 +358,27 @@ const ReportsPage = () => {
                       </Text>
                     </Box>
                     <Box>
-                      <Heading size={"xs"} mb={1}>Upvotes</Heading>
+                      <Heading size={"xs"} mb={1}>
+                        Upvotes
+                      </Heading>
                       <Text>{selectedReport.upvotes}</Text>
                     </Box>
                     <Box>
-                      <Heading size={"xs"} mb={1}>Category</Heading>
+                      <Heading size={"xs"} mb={1}>
+                        Category
+                      </Heading>
                       <Text>{selectedReport.category}</Text>
                     </Box>
                     <Box>
-                      <Heading size={"xs"} mb={1}>Details</Heading>
+                      <Heading size={"xs"} mb={1}>
+                        Details
+                      </Heading>
                       <Text>{selectedReport.details}</Text>
                     </Box>
                     <Box>
-                      <Heading size={"xs"} mb={1}>Reporter</Heading>
+                      <Heading size={"xs"} mb={1}>
+                        Reporter
+                      </Heading>
                       <Text>{selectedReport.owner.toText()}</Text>
                     </Box>
                   </Stack>

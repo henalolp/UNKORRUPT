@@ -802,7 +802,13 @@ shared ({ caller }) actor class Backend() {
                         switch (transferResult) {
                           case (#Ok _) {
                             // Updated enrolled course to completed
-                            Vector.put(member.enrolledCourses, enrolledCourseIndex, enrolledCourse);
+                            let updatedECourse: EnrolledCourse = {
+                              id = enrolledCourse.id;
+                              threadId = enrolledCourse.threadId;
+                              completed = true;
+                              messages = enrolledCourse.messages;
+                            };
+                            Vector.put(member.enrolledCourses, enrolledCourseIndex, updatedECourse);
                             // Update user object
                             Map.set(members, phash, caller, member);
                             return #ok("You have successfully completed the course");
