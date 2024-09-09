@@ -62,12 +62,19 @@ h2 {
   overflow: hidden;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   position: relative;
+  width: 100%;
+  max-width: 350px;
+  height: 350px;
+}
+
+.report-image {
+  height: 100%;
 }
 
 .report-image img {
   width: 100%;
-  height: auto;
-  display: block;
+  height: 100%;
+  object-fit: cover;
 }
 
 .report-details {
@@ -83,6 +90,10 @@ h2 {
 .report-details h3 {
   font-size: 1.25rem;
   margin-bottom: 5px;
+}
+
+.chart-container {
+  display: block;
 }
 
 .report-details p {

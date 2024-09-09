@@ -36,3 +36,16 @@ export const getEnum = (option, enumObject) => {
     }
   }
 };
+
+export const Categories = [
+  "Private Sector",
+  "Public Sector",
+  "Judicial Corruption",
+  "Natural Resources",
+  "International Aid and Development",
+  "Elections and Political Processes",
+  "Healthcare",
+  "Education",
+  "Law Enforcement",
+  "Procurement and Public Contracting",
+];

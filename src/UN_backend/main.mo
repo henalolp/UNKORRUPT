@@ -1185,11 +1185,22 @@ shared ({ caller }) actor class Backend() {
           case (?report) {
             let upvotes = Vector.get(reportUpvotes, reportId);
             let hasUpvoted = Vector.forSome<Principal>(upvotes, func x { x == caller });
+            var newVoteCount = report.upvotes;
             if (hasUpvoted) {
-              return #ok(report.upvotes);
+              // Unvote
+              let newVotes = Vector.new<Principal>();
+              for (vote in Vector.vals(upvotes)) {
+                if (Principal.equal(caller, vote) == false) {
+                  Vector.add(newVotes, vote);
+                };
+              };
+              Vector.put(reportUpvotes, reportId, newVotes);
+              newVoteCount := newVoteCount - 1;
+            } else {
+              Vector.add(upvotes, caller);
+              Vector.put(reportUpvotes, reportId, upvotes);
+              newVoteCount := newVoteCount + 1;
             };
-            Vector.add(upvotes, caller);
-            Vector.put(reportUpvotes, reportId, upvotes);
             let updatedReport = {
               id = report.id;
               country = report.country;
@@ -1197,11 +1208,11 @@ shared ({ caller }) actor class Backend() {
               details = report.details;
               category = report.category;
               image = report.image;
-              upvotes = report.upvotes + 1;
+              upvotes = newVoteCount;
               owner = report.owner;
             };
             Vector.put(reports, reportId, updatedReport);
-            #ok(updatedReport.upvotes);
+            #ok(newVoteCount);
           };
           case (null) {
             #err("Report not found");

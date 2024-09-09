@@ -21216,3 +21216,21 @@ export const getCountryStates = (countryCode) => {
   if (!country) return [];
   return country.states;
 }
+
+export const getCountryName = (countryCode) => {
+  const country = allCountries.find((country) => {
+    return country.code2 === countryCode
+  });
+  if (!country) return countryCode;
+  return country.name;
+}
+
+export const getStateName = (countryCode, stateCode) => {
+  const country = allCountries.find((country) => {
+    return country.code2 === countryCode
+  });
+  if (!country) return countryCode;
+  const state = country.states.find((state) => state.code === stateCode)
+  if (!state) return stateCode;
+  return state.name;
+}

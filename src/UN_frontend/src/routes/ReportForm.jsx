@@ -19,23 +19,13 @@ import withAuth from "../lib/withAuth";
 import { useAuthClient } from "../use-auth-client";
 import { createBackendActor, createClient } from "../helper/auth";
 import { Link } from "react-router-dom";
+import { Categories } from "../helper/enum";
 
 const ReportForm = () => {
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
-  const categories = [
-    "Private Sector",
-    "Public Sector",
-    "Judicial Corruption",
-    "Natural Resources",
-    "International Aid and Development",
-    "Elections and Political Processes",
-    "Healthcare",
-    "Education",
-    "Law Enforcement",
-    "Procurement and Public Contracting",
-  ];
+  const categories = Categories
 
   function getExtension(fileName) {
     const lastIndex = fileName.lastIndexOf(".");
