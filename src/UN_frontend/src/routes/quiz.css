@@ -1,23 +1,22 @@
-
 .quizbody {
   display: flex;     
-  justify-content: center; /* This centers the container horizontally */
+  justify-content: center; /* Centers the container horizontally */
   height: 100vh;
-  margin-top: -0px;
+  margin-top: 0;
   padding: 20px;
 }
 
 .quiz-container {
-    max-width: 1200px;
-    margin: auto;
-    background: #fff;
-    padding: 50px;
-    width: 100%;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    color: #333;
-    box-sizing: border-box;
-    overflow: hidden;
+  max-width: 1200px;
+  margin: auto;
+  background: #fff;
+  padding: 50px;
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  color: #333;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .quiz-container .active-question-no {
@@ -98,4 +97,58 @@
 .result p span {
   color: #800080;
   font-size: 22px;
+}
+
+/* Responsive Adjustments for Small Screens */
+@media (max-width: 768px) {
+  .quizbody {
+    flex-direction: column; /* Stack content vertically */
+    align-items: center; 
+    padding: 10px; /* Reduce padding */
+    height: 100vh; /* Allow height to adjust based on content */
+  }
+
+  .quiz-container {
+    max-width: 100%; /* Full width on small screens */
+    padding: auto; 
+    /* margin: 20px 10px;  */
+  }
+
+  .quiz-container .active-question-no {
+    font-size: 24px; /* Reduce font size for better fit */
+  }
+
+  .quiz-container .total-question {
+    font-size: 14px; /* Reduce font size for smaller screens */
+  }
+
+  .quiz-container h2 {
+    font-size: 18px; /* Adjust heading size */
+  }
+
+  .quiz-container ul {
+    margin-left: 0; /* Adjust margin for alignment */
+  }
+
+  .quiz-container ul li {
+    font-size: 14px; /* Reduce font size */
+    padding: 10px; /* Adjust padding */
+  }
+
+  .quiz-container button {
+    font-size: 16px; /* Adjust button font size */
+    padding: 10px 30px; /* Adjust padding for smaller buttons */
+  }
+
+  .result h3 {
+    font-size: 20px; /* Adjust heading size for results */
+  }
+
+  .result p {
+    font-size: 14px; /* Adjust paragraph size */
+  }
+
+  .result p span {
+    font-size: 20px; /* Adjust span size */
+  }
 }

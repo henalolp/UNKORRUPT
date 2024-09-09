@@ -7,17 +7,19 @@
     background-color: #f9f9f9;
     min-height: 100vh;
     box-sizing: border-box;
-  }
-
-  .everything {
-    /* display: flex;
-    flex-direction: column; */
-    display: flex;   
-    margin: 20px;   
-    min-height: 100vh;
-    padding: 20px;
+    border-radius: 5px;
   }
   
+  .everything {
+    display: flex;
+    justify-content: center; 
+    width: 100%; /* Ensures the container occupies the full width */
+    min-height: 100vh; /* Covers the full viewport height */
+    padding: 20px;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    margin: 0; /* Remove margin to avoid offset from the edges */
+}
+
   .progress-header {
     width: 100%;
     padding: 20px;
@@ -147,7 +149,11 @@
       width: 60px;
       height: 60px;
     }
-  
+    .everything{
+      flex-direction: column; 
+      width: 100%;
+    }
+    
     h1 {
       font-size: 18px;
     }
