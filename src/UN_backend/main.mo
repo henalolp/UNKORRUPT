@@ -1,4 +1,5 @@
 import Nat "mo:base/Nat";
+import Nat32 "mo:base/Nat32";
 import Text "mo:base/Text";
 import Float "mo:base/Float";
 import HashMap "mo:base/HashMap";
@@ -21,6 +22,7 @@ import ICRC1 "mo:icrc1-types";
 import Utils "utils";
 import serdeJson "mo:serde/JSON";
 import { recurringTimer } = "mo:base/Timer";
+import Prng "mo:prng";
 
 shared ({ caller }) actor class Backend() {
   type Result<A, B> = Types.Result<A, B>;
@@ -63,6 +65,9 @@ shared ({ caller }) actor class Backend() {
 
   stable var API_KEY : Text = "";
   stable var ASSISTANT_ID : Text = "";
+
+  stable var seed : Nat32 = 0;
+  let rng = Prng.SFC32a(); // or Prng.SFC32b()
 
   private func _getInProgressThreadRuns(threadId : Text) : [ThreadRun] {
     let runs = Map.filter(
@@ -114,27 +119,47 @@ shared ({ caller }) actor class Backend() {
         };
       };
     };
+  };
 
+  private func _getRandomNumberUsingPrng(range : Nat) : Nat {
+    assert range > 0;
+    rng.init(Nat32.fromIntWrap(Time.now()));
+    let val = Nat32.toNat(rng.next());
+    let randN = val * range / 4294967296;
+    Debug.print("Generated number: " # debug_show (randN));
+    return randN;
+  };
+
+  private func _getRandomNumberUsingPrngWithSeed(range : Nat) : Nat {
+    assert range > 0;
+    seed := seed + 1;
+    rng.init(Nat32.fromIntWrap(Time.now()) + seed);
+    let val = Nat32.toNat(rng.next());
+    let randN = val * range / 4294967296;
+    Debug.print("Generated number: " # debug_show (randN) # " With seed " # debug_show(seed));
+    return randN;
   };
 
   public shared ({ caller }) func generateRandomNumber(range : Nat) : async Nat {
     await _getRandomNumber(range);
   };
 
-  public shared ({ caller }) func generateXUniqueRandomNumbers(x : Nat, range : Nat) : async [Nat] {
-    let map = HashMap.HashMap<Nat, Nat>(x, Nat.equal, hash);
-    var idx = 0;
+  public query func generateRandomNumberPrng(range: Nat) : async Nat {
+    _getRandomNumberUsingPrng(range);
+  };
+
+  private func generateXUniqueRandomNumbers(x : Nat, range : Nat) : [Nat] {
+    let vec = Vector.new<Nat>();
+    var idx: Nat = 0;
     while (idx < x) {
-      let n = await _getRandomNumber(range);
-      switch (map.get(n)) {
-        case (null) {
-          map.put(n, n);
-          idx := idx + 1;
-        };
-        case (_) {};
+      let n = _getRandomNumberUsingPrngWithSeed(range);
+      let hasValue = Vector.forSome<Nat>(vec, func x { x == n });
+      if (hasValue == false) {
+        Vector.add(vec, n);
+        idx := idx + 1;
       };
     };
-    Iter.toArray(map.vals());
+    Vector.toArray(vec);
   };
 
   private func _isOwner(p : Principal) : Bool {
@@ -365,7 +390,7 @@ shared ({ caller }) actor class Backend() {
           return #err("Question count " # Nat.toText(questionCount) # " is greater than the number of questions " # Nat.toText(len));
         };
 
-        let choices = await generateXUniqueRandomNumbers(questionCount, len);
+        let choices = generateXUniqueRandomNumbers(questionCount, len);
 
         for (number in choices.vals()) {
           Debug.print("Random: " # debug_show (number));
@@ -802,7 +827,7 @@ shared ({ caller }) actor class Backend() {
                         switch (transferResult) {
                           case (#Ok _) {
                             // Updated enrolled course to completed
-                            let updatedECourse: EnrolledCourse = {
+                            let updatedECourse : EnrolledCourse = {
                               id = enrolledCourse.id;
                               threadId = enrolledCourse.threadId;
                               completed = true;
