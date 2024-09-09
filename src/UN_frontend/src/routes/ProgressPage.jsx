@@ -9,6 +9,8 @@ import { useAuthClient } from "../use-auth-client";
 import { Center, Spinner, Text, useToast, Button, Box } from "@chakra-ui/react"; // Added Box from Chakra UI
 import { createBackendActor, createClient } from "../helper/auth";
 import { parseValues } from "../helper/parser";
+import { createLedgerCanister } from "../helper/ledger";
+import { IcrcMetadataResponseEntries } from "@dfinity/ledger-icrc";
 
 const ProgressPage = () => {
   const toast = useToast();
@@ -60,6 +62,46 @@ const ProgressPage = () => {
     }
   };
 
+  const [tokens, setTokens] = useState("-");
+  useEffect(() => {
+    async function getTokens() {
+      const ledger = await createLedgerCanister();
+      const metadata = await ledger.metadata({});
+      if (!metadata) {
+        toast({
+          title: "Can't find metadata",
+          duration: 5000,
+          isClosable: true,
+          position: "top",
+        });
+        return;
+      }
+      let symbol = "";
+      for (const value of metadata) {
+        if (value[0] === IcrcMetadataResponseEntries.SYMBOL) {
+          symbol = value[1].Text;
+          break;
+        }
+      }
+      let decimals = 0;
+      for (const value of metadata) {
+        if (value[0] === IcrcMetadataResponseEntries.DECIMALS) {
+          decimals = parseInt(value[1].Nat);
+          break;
+        }
+      }
+      const balance =
+        Number(
+          await ledger.balance({
+            owner: identity.getPrincipal(),
+          })
+        ) /
+        10 ** decimals;
+      setTokens(`${balance} ${symbol}`);
+    }
+    if (identity?.getPrincipal()) getTokens();
+  }, [identity]);
+
   return (
     <div className="everything">
       <Layout />
@@ -80,6 +122,19 @@ const ProgressPage = () => {
             whiteSpace="nowrap"
           >
             {identity?.getPrincipal().toString()}
+          </Button>
+        </Box>
+        <Box display="flex" justifyContent="center" width="100%" mt={4}>
+          <Button
+            colorScheme="purple"
+            size="sm"
+            onClick={() => console.log(identity?.getPrincipal().toString())}
+            maxWidth={{ base: "100%", md: "auto" }} // Ensures the button doesn't overflow on small screens
+            overflow="hidden"
+            textOverflow="ellipsis"
+            whiteSpace="nowrap"
+          >
+            {tokens === "-" ? <Spinner size={'xs'} /> : <>{tokens}</>}
           </Button>
         </Box>
         <div className="toggle-buttons">
@@ -118,6 +173,11 @@ const ProgressPage = () => {
               </div>
             );
           })}
+          {
+            courses.length === 0 && !isLoading && (
+              <Text color={'#000'}>No current course in progress</Text>
+            )
+          }
         </div>
       </div>
     </div>

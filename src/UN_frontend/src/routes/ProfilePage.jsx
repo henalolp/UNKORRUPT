@@ -9,6 +9,8 @@ import { useAuthClient } from "../use-auth-client";
 import { Center, Spinner, Text, useToast, Button, Box } from "@chakra-ui/react"; // Added Box from Chakra UI
 import { createBackendActor, createClient } from "../helper/auth";
 import { parseValues } from "../helper/parser";
+import { createLedgerCanister } from "../helper/ledger";
+import { IcrcMetadataResponseEntries } from "@dfinity/ledger-icrc";
 
 const ProgressPage = () => {
   const toast = useToast();
@@ -17,13 +19,14 @@ const ProgressPage = () => {
   const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("Progress"); // State to track active tab
+  const [tokens, setTokens] = useState("-");
 
   const handleBackClick = () => {
     navigate("/coursePage"); // Replace with the correct path to your courses page
   };
 
   const handleBadgesClick = () => {
-    navigate("/badgesPage"); 
+    navigate("/badgesPage");
   };
 
   const fetcher = useCallback(async () => {
@@ -60,6 +63,45 @@ const ProgressPage = () => {
     }
   };
 
+  useEffect(() => {
+    async function getTokens() {
+      const ledger = await createLedgerCanister();
+      const metadata = await ledger.metadata({});
+      if (!metadata) {
+        toast({
+          title: "Can't find metadata",
+          duration: 5000,
+          isClosable: true,
+          position: "top",
+        });
+        return;
+      }
+      let symbol = "";
+      for (const value of metadata) {
+        if (value[0] === IcrcMetadataResponseEntries.SYMBOL) {
+          symbol = value[1].Text;
+          break;
+        }
+      }
+      let decimals = 0;
+      for (const value of metadata) {
+        if (value[0] === IcrcMetadataResponseEntries.DECIMALS) {
+          decimals = parseInt(value[1].Nat);
+          break;
+        }
+      }
+      const balance =
+        Number(
+          await ledger.balance({
+            owner: identity.getPrincipal(),
+          })
+        ) /
+        10 ** decimals;
+      setTokens(`${balance} ${symbol}`);
+    }
+    if (identity?.getPrincipal()) getTokens();
+  }, [identity]);
+
   return (
     <div className="everything">
       <Layout />
@@ -70,9 +112,9 @@ const ProgressPage = () => {
           <BiMessageSquareDetail className="message-icon" />
         </div>
         <Box display="flex" justifyContent="center" width="100%" mt={4}>
-          <Button 
-            colorScheme="purple" 
-            size="sm" 
+          <Button
+            colorScheme="purple"
+            size="sm"
             onClick={() => console.log(identity?.getPrincipal().toString())}
             maxWidth={{ base: "100%", md: "auto" }} // Ensures the button doesn't overflow on small screens
             overflow="hidden"
@@ -82,15 +124,32 @@ const ProgressPage = () => {
             {identity?.getPrincipal().toString()}
           </Button>
         </Box>
+        <Box display="flex" justifyContent="center" width="100%" mt={4}>
+          <Button
+            colorScheme="purple"
+            size="sm"
+            onClick={() => console.log(identity?.getPrincipal().toString())}
+            maxWidth={{ base: "100%", md: "auto" }} // Ensures the button doesn't overflow on small screens
+            overflow="hidden"
+            textOverflow="ellipsis"
+            whiteSpace="nowrap"
+          >
+            {tokens === "-" ? <Spinner /> : <>{tokens}</>}
+          </Button>
+        </Box>
         <div className="toggle-buttons">
-          <button 
-            className={`toggle-button ${activeTab === "Progress" ? "active" : ""}`} 
+          <button
+            className={`toggle-button ${
+              activeTab === "Progress" ? "active" : ""
+            }`}
             onClick={() => handleTabClick("Progress")}
           >
             Progress
           </button>
-          <button 
-            className={`toggle-button ${activeTab === "Badges" ? "active" : ""}`} 
+          <button
+            className={`toggle-button ${
+              activeTab === "Badges" ? "active" : ""
+            }`}
             onClick={() => handleTabClick("Badges")}
           >
             Badges
@@ -108,13 +167,15 @@ const ProgressPage = () => {
                 <div className="progress-circle">
                   <span>
                     {item.completed ? (
-                      <BiCheck color="#a020f0" size={'3rem'} />
+                      <BiCheck color="#a020f0" size={"3rem"} />
                     ) : (
-                      <FiBarChart2 color="#a020f0" size={'3rem'} />
+                      <FiBarChart2 color="#a020f0" size={"3rem"} />
                     )}
                   </span>
                 </div>
-                <Text fontWeight={500} align={'center'}>{item.title}</Text>
+                <Text fontWeight={500} align={"center"}>
+                  {item.title}
+                </Text>
               </div>
             );
           })}
