@@ -82,3 +82,7 @@ let courses : [Text] = [
     Victims of Corruption: Back for Payback
   ];
 ```
+
+#Live link (mainnet)
+
+https://kzwfs-haaaa-aaaak-ak3uq-cai.icp0.io
