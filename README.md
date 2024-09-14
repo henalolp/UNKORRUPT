@@ -1,6 +1,6 @@
 # AI-driven learning and corruption fighting
 
-PatriotAi is a decentralized platform leveraging on UN resources on corruption, ICP blockchain, and AI to educate on corruption and collect data on corruption.
+PatriotAi is a decentralized platform leveraging on UN and policy resources on corruption, ICP blockchain, and AI to educate on corruption and collect data on corruption.
 
 ## Why PatriotAi?
 
@@ -85,4 +85,4 @@ If you are hosting frontend code somewhere without using DFX, you may need to ma
 
 # Live link (mainnet)
 
-[ParrotAI] (https://kzwfs-haaaa-aaaak-ak3uq-cai.icp0.io)
+[ParrotAI] https://kzwfs-haaaa-aaaak-ak3uq-cai.icp0.io
