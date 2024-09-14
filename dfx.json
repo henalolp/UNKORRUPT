@@ -15,7 +15,7 @@
     },
     "UN_frontend": {
       "dependencies": [
-        "UN_backend",
+        "UN-backend",
         "internet-identity"
       ],
       "source": [
