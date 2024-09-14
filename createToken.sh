@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export PRE_MINTED_TOKENS=10_000_000_000_000
-dfx identity use default
+//dfx identity use default//
 export DEFAULT=$(dfx identity get-principal)
 
 export TRANSFER_FEE=10_000
