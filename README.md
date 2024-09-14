@@ -83,6 +83,6 @@ let courses : [Text] = [
   ];
 ```
 
-#Live link (mainnet)
+# Live link (mainnet)
 
-https://kzwfs-haaaa-aaaak-ak3uq-cai.icp0.io
+[ParrotAI] (https://kzwfs-haaaa-aaaak-ak3uq-cai.icp0.io)
