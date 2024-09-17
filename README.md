@@ -27,7 +27,7 @@ PatriotAi used the following from IC:
 
 ## Live link (mainnet)
  Check out our website below:
-  [ParrotAI](https://kzwfs-haaaa-aaaak-ak3uq-cai.icp0.io)
+  [PatriotAI](https://kzwfs-haaaa-aaaak-ak3uq-cai.icp0.io)
 
 
 ## PitchDeck 
