@@ -24,6 +24,16 @@ PatriotAi used the following from IC:
 3. ICRC1
 4. Internet Identity
 
+
+## Live link (mainnet)
+ Check out our website below:
+  [ParrotAI](https://kzwfs-haaaa-aaaak-ak3uq-cai.icp0.io)
+
+
+## PitchDeck 
+ Learn more on our vision and mission:
+  [PitchDeck](https://shorturl.at/Gx6k7)
+
 ## Get Started
 
 To get started, you might want to explore the project directory structure and the default configuration file. Working with this project in your development environment will not affect any production deployment or identity tokens.
@@ -83,6 +93,4 @@ If you are hosting frontend code somewhere without using DFX, you may need to ma
 - Write your own `createActor` constructor
 
 
-# Live link (mainnet)
 
-[ParrotAI] https://kzwfs-haaaa-aaaak-ak3uq-cai.icp0.io
