@@ -1,6 +1,6 @@
 # AI-driven learning and corruption fighting
 
-PatriotAi is a decentralized platform leveraging on UN and policy resources on corruption, ICP blockchain, and AI to educate on corruption and collect data on corruption.
+PatriotAi is a decentralized platform that leverages UN and policy resources on corruption, ICP blockchain, and AI to educate on and collect data on corruption.
 
 ## Why PatriotAi?
 
@@ -12,9 +12,9 @@ PatriotAi is a free learning platform where you get to learn about corruption. W
 
 ## Infrastructure
 
-PatriotAi is built on the IC using Motoko as the backend programming language and ReactJs for the frontend. It uses a custom-trained OpenAI model for course and quiz generation. It has an ACL for managing courses. Generated courses are reviewed by the team and approved before users can take them.
+PatriotAi is built on the IC using Motoko as the backend programming language and ReactJs for the front end. It uses a custom-trained OpenAI model for course and quiz generation and has an ACL for managing courses. The team reviews and approves generated courses before users can take them.
 
-A custom token, UNK,  built and deployed on the IC is minted to users once they complete a course.
+Once users complete a course, they are issued a custom token, UNK, built and deployed on the IC.
 
 It has a chatbot for each course, that helps the user have an interactive learning.
 
